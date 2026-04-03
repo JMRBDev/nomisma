@@ -61,7 +61,7 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar variant="floating" collapsible="icon">
+    <Sidebar variant="inset" collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
