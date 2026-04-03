@@ -1,10 +1,14 @@
 import { Link, useMatchRoute } from "@tanstack/react-router"
 import {
   ChevronsUpDownIcon,
+  LandmarkIcon,
   LayoutDashboardIcon,
   LogOutIcon,
+  PiggyBankIcon,
   ReceiptTextIcon,
+  RepeatIcon,
   SettingsIcon,
+  TargetIcon,
 } from "lucide-react"
 import { UserInfoPreview } from "@/components/user-info-preview"
 import {
@@ -30,6 +34,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile"
 import { authClient } from "@/lib/auth-client"
 import { handleSignOut } from "@/lib/auth"
+import { APP_NAME } from "@/lib/money"
 
 const navItems = [
   {
@@ -37,6 +42,26 @@ const navItems = [
     icon: LayoutDashboardIcon,
     label: "Overview",
     to: "/dashboard" as const,
+  },
+  {
+    icon: PiggyBankIcon,
+    label: "Accounts",
+    to: "/dashboard/accounts" as const,
+  },
+  {
+    icon: ReceiptTextIcon,
+    label: "Transactions",
+    to: "/dashboard/transactions" as const,
+  },
+  {
+    icon: TargetIcon,
+    label: "Budgets",
+    to: "/dashboard/budgets" as const,
+  },
+  {
+    icon: RepeatIcon,
+    label: "Recurring",
+    to: "/dashboard/recurring" as const,
   },
 ]
 
@@ -72,12 +97,12 @@ export function AppSidebar() {
                 onClick={closeSidebarOnMobile}
               >
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <ReceiptTextIcon className="size-4" />
+                  <LandmarkIcon className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">App Template</span>
+                  <span className="truncate font-medium">{APP_NAME}</span>
                   <span className="truncate text-xs text-sidebar-foreground/60">
-                    Auth dashboard starter
+                    Simple money control
                   </span>
                 </div>
               </Link>

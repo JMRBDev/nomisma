@@ -14,7 +14,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as AuthenticatedDashboardTransactionsRouteImport } from './routes/_authenticated/dashboard/transactions'
 import { Route as AuthenticatedDashboardSettingsRouteImport } from './routes/_authenticated/dashboard/settings'
+import { Route as AuthenticatedDashboardRecurringRouteImport } from './routes/_authenticated/dashboard/recurring'
+import { Route as AuthenticatedDashboardBudgetsRouteImport } from './routes/_authenticated/dashboard/budgets'
+import { Route as AuthenticatedDashboardAccountsRouteImport } from './routes/_authenticated/dashboard/accounts'
 
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
@@ -41,23 +45,55 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedDashboardTransactionsRoute =
+  AuthenticatedDashboardTransactionsRouteImport.update({
+    id: '/transactions',
+    path: '/transactions',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardSettingsRoute =
   AuthenticatedDashboardSettingsRouteImport.update({
     id: '/settings',
     path: '/settings',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardRecurringRoute =
+  AuthenticatedDashboardRecurringRouteImport.update({
+    id: '/recurring',
+    path: '/recurring',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardBudgetsRoute =
+  AuthenticatedDashboardBudgetsRouteImport.update({
+    id: '/budgets',
+    path: '/budgets',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardAccountsRoute =
+  AuthenticatedDashboardAccountsRouteImport.update({
+    id: '/accounts',
+    path: '/accounts',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/dashboard/accounts': typeof AuthenticatedDashboardAccountsRoute
+  '/dashboard/budgets': typeof AuthenticatedDashboardBudgetsRoute
+  '/dashboard/recurring': typeof AuthenticatedDashboardRecurringRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
+  '/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard/accounts': typeof AuthenticatedDashboardAccountsRoute
+  '/dashboard/budgets': typeof AuthenticatedDashboardBudgetsRoute
+  '/dashboard/recurring': typeof AuthenticatedDashboardRecurringRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
+  '/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
 }
@@ -66,7 +102,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/_authenticated/dashboard/accounts': typeof AuthenticatedDashboardAccountsRoute
+  '/_authenticated/dashboard/budgets': typeof AuthenticatedDashboardBudgetsRoute
+  '/_authenticated/dashboard/recurring': typeof AuthenticatedDashboardRecurringRoute
   '/_authenticated/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
+  '/_authenticated/dashboard/transactions': typeof AuthenticatedDashboardTransactionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
@@ -75,17 +115,33 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/dashboard/accounts'
+    | '/dashboard/budgets'
+    | '/dashboard/recurring'
     | '/dashboard/settings'
+    | '/dashboard/transactions'
     | '/api/auth/$'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard/settings' | '/api/auth/$' | '/dashboard'
+  to:
+    | '/'
+    | '/dashboard/accounts'
+    | '/dashboard/budgets'
+    | '/dashboard/recurring'
+    | '/dashboard/settings'
+    | '/dashboard/transactions'
+    | '/api/auth/$'
+    | '/dashboard'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/_authenticated/dashboard'
+    | '/_authenticated/dashboard/accounts'
+    | '/_authenticated/dashboard/budgets'
+    | '/_authenticated/dashboard/recurring'
     | '/_authenticated/dashboard/settings'
+    | '/_authenticated/dashboard/transactions'
     | '/api/auth/$'
     | '/_authenticated/dashboard/'
   fileRoutesById: FileRoutesById
@@ -133,6 +189,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/dashboard/transactions': {
+      id: '/_authenticated/dashboard/transactions'
+      path: '/transactions'
+      fullPath: '/dashboard/transactions'
+      preLoaderRoute: typeof AuthenticatedDashboardTransactionsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/dashboard/settings': {
       id: '/_authenticated/dashboard/settings'
       path: '/settings'
@@ -140,17 +203,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardSettingsRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/recurring': {
+      id: '/_authenticated/dashboard/recurring'
+      path: '/recurring'
+      fullPath: '/dashboard/recurring'
+      preLoaderRoute: typeof AuthenticatedDashboardRecurringRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/budgets': {
+      id: '/_authenticated/dashboard/budgets'
+      path: '/budgets'
+      fullPath: '/dashboard/budgets'
+      preLoaderRoute: typeof AuthenticatedDashboardBudgetsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/accounts': {
+      id: '/_authenticated/dashboard/accounts'
+      path: '/accounts'
+      fullPath: '/dashboard/accounts'
+      preLoaderRoute: typeof AuthenticatedDashboardAccountsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
   }
 }
 
 interface AuthenticatedDashboardRouteChildren {
+  AuthenticatedDashboardAccountsRoute: typeof AuthenticatedDashboardAccountsRoute
+  AuthenticatedDashboardBudgetsRoute: typeof AuthenticatedDashboardBudgetsRoute
+  AuthenticatedDashboardRecurringRoute: typeof AuthenticatedDashboardRecurringRoute
   AuthenticatedDashboardSettingsRoute: typeof AuthenticatedDashboardSettingsRoute
+  AuthenticatedDashboardTransactionsRoute: typeof AuthenticatedDashboardTransactionsRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
 }
 
 const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
   {
+    AuthenticatedDashboardAccountsRoute: AuthenticatedDashboardAccountsRoute,
+    AuthenticatedDashboardBudgetsRoute: AuthenticatedDashboardBudgetsRoute,
+    AuthenticatedDashboardRecurringRoute: AuthenticatedDashboardRecurringRoute,
     AuthenticatedDashboardSettingsRoute: AuthenticatedDashboardSettingsRoute,
+    AuthenticatedDashboardTransactionsRoute:
+      AuthenticatedDashboardTransactionsRoute,
     AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   }
 

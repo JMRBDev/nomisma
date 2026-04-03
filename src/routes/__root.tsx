@@ -12,10 +12,9 @@ import type { ConvexQueryClient } from "@convex-dev/react-query"
 import type { QueryClient } from "@tanstack/react-query"
 import { authClient } from "@/lib/auth-client"
 import { getToken } from "@/lib/auth-server"
+import { APP_NAME } from "@/lib/money"
 
 import appCss from "@/styles.css?url"
-
-const APP_NAME = "App Template"
 
 const getAuth = createServerFn({ method: "GET" }).handler(async () => {
   return await getToken()
@@ -41,7 +40,8 @@ export const Route = createRootRouteWithContext<{
       { title: APP_NAME },
       {
         name: "description",
-        content: "Barebones TanStack Start app with Convex and Better Auth.",
+        content:
+          "Personal money control with accounts, transactions, budgets, and recurring reminders.",
       },
     ],
     links: [

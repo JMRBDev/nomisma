@@ -1,6 +1,14 @@
 import { useMemo, useState } from "react"
 import { useNavigate } from "@tanstack/react-router"
-import { LayoutDashboardIcon, SearchIcon, SettingsIcon } from "lucide-react"
+import {
+  LayoutDashboardIcon,
+  PiggyBankIcon,
+  ReceiptTextIcon,
+  RepeatIcon,
+  SearchIcon,
+  SettingsIcon,
+  TargetIcon,
+} from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { useMountEffect } from "@/hooks/use-mount-effect"
 import { Button } from "@/components/ui/button"
@@ -64,13 +72,53 @@ export function GlobalDashboardSearch() {
         },
         {
           group: "Pages",
+          icon: PiggyBankIcon,
+          id: "page-accounts",
+          onSelect: () => {
+            void navigate({ to: "/dashboard/accounts" })
+          },
+          title: "Accounts",
+          value: "accounts balances money places",
+        },
+        {
+          group: "Pages",
+          icon: ReceiptTextIcon,
+          id: "page-transactions",
+          onSelect: () => {
+            void navigate({ to: "/dashboard/transactions" })
+          },
+          title: "Transactions",
+          value: "transactions expenses income transfers ledger",
+        },
+        {
+          group: "Pages",
+          icon: TargetIcon,
+          id: "page-budgets",
+          onSelect: () => {
+            void navigate({ to: "/dashboard/budgets" })
+          },
+          title: "Budgets",
+          value: "budgets spending limits",
+        },
+        {
+          group: "Pages",
+          icon: RepeatIcon,
+          id: "page-recurring",
+          onSelect: () => {
+            void navigate({ to: "/dashboard/recurring" })
+          },
+          title: "Recurring",
+          value: "recurring bills reminders income",
+        },
+        {
+          group: "Pages",
           icon: SettingsIcon,
           id: "page-settings",
           onSelect: () => {
             void navigate({ to: "/dashboard/settings" })
           },
           title: "Settings",
-          value: "settings dashboard",
+          value: "settings currency categories archived accounts",
         },
       ].filter(
         (item) => !normalizedQuery || contains(item.value, normalizedQuery)
@@ -112,7 +160,7 @@ export function GlobalDashboardSearch() {
           <CommandInput
             value={query}
             onValueChange={setQuery}
-            placeholder="Search pages"
+            placeholder="Search overview, budgets, recurring..."
           />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>

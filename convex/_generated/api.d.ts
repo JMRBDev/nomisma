@@ -8,8 +8,24 @@
  * @module
  */
 
+import type * as accounts from "../accounts.js";
 import type * as auth from "../auth.js";
+import type * as budgets from "../budgets.js";
+import type * as categories from "../categories.js";
 import type * as http from "../http.js";
+import type * as model_accounts from "../model/accounts.js";
+import type * as model_budgets from "../model/budgets.js";
+import type * as model_categories from "../model/categories.js";
+import type * as model_overview from "../model/overview.js";
+import type * as model_readModels from "../model/readModels.js";
+import type * as model_recurring from "../model/recurring.js";
+import type * as model_settings from "../model/settings.js";
+import type * as model_shared from "../model/shared.js";
+import type * as model_transactions from "../model/transactions.js";
+import type * as overview from "../overview.js";
+import type * as recurring from "../recurring.js";
+import type * as settings from "../settings.js";
+import type * as transactions from "../transactions.js";
 
 import type {
   ApiFromModules,
@@ -18,8 +34,24 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  accounts: typeof accounts;
   auth: typeof auth;
+  budgets: typeof budgets;
+  categories: typeof categories;
   http: typeof http;
+  "model/accounts": typeof model_accounts;
+  "model/budgets": typeof model_budgets;
+  "model/categories": typeof model_categories;
+  "model/overview": typeof model_overview;
+  "model/readModels": typeof model_readModels;
+  "model/recurring": typeof model_recurring;
+  "model/settings": typeof model_settings;
+  "model/shared": typeof model_shared;
+  "model/transactions": typeof model_transactions;
+  overview: typeof overview;
+  recurring: typeof recurring;
+  settings: typeof settings;
+  transactions: typeof transactions;
 }>;
 
 /**
