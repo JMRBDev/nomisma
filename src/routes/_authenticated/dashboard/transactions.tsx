@@ -1,7 +1,8 @@
 /* eslint-disable max-lines */
 import { useMemo, useState } from "react"
-import { createFileRoute } from "@tanstack/react-router"
 import { useConvexMutation } from "@convex-dev/react-query"
+import { useForm, useStore } from "@tanstack/react-form"
+import { createFileRoute } from "@tanstack/react-router"
 import {
   CalendarRangeIcon,
   FilterIcon,
@@ -31,6 +32,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import {
@@ -59,27 +67,39 @@ import {
   transactionStatusOptions,
   transactionTypeOptions,
 } from "@/lib/money"
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
 
-type TransactionsFiltersProps = {
-  idPrefix: string
-  accountOptions: Array<{ _id: string; name: string }>
-  categoryOptions: Array<{ _id: string; name: string }>
-  filteredCount: number
-  activeFilterCount: number
-  typeFilter: string
-  statusFilter: string
-  accountFilter: string
-  categoryFilter: string
+type TransactionType = (typeof transactionTypeOptions)[number]["value"]
+type TransactionStatus = (typeof transactionStatusOptions)[number]["value"]
+type SelectOption = { _id: string; name: string }
+
+type TransactionFormValues = {
+  type: TransactionType
+  status: TransactionStatus
+  amount: string
+  date: string
+  accountId: string
+  toAccountId: string
+  categoryId: string
+  description: string
+  note: string
+}
+
+type TransactionFilterValues = {
+  type: string
+  status: string
+  accountId: string
+  categoryId: string
   fromDate: string
   toDate: string
-  setTypeFilter: (value: string) => void
-  setStatusFilter: (value: string) => void
-  setAccountFilter: (value: string) => void
-  setCategoryFilter: (value: string) => void
-  setFromDate: (value: string) => void
-  setToDate: (value: string) => void
-  onClear: () => void
+}
+
+const DEFAULT_FILTER_VALUES: TransactionFilterValues = {
+  type: "all",
+  status: "all",
+  accountId: "all",
+  categoryId: "all",
+  fromDate: "",
+  toDate: "",
 }
 
 export const Route = createFileRoute("/_authenticated/dashboard/transactions")({
@@ -104,86 +124,202 @@ function TransactionsPage() {
   const [editingTransactionId, setEditingTransactionId] = useState<
     string | null
   >(null)
-  const [type, setType] =
-    useState<(typeof transactionTypeOptions)[number]["value"]>("expense")
-  const [status, setStatus] =
-    useState<(typeof transactionStatusOptions)[number]["value"]>("posted")
-  const [amount, setAmount] = useState("0")
-  const [date, setDate] = useState(todayInputValue())
-  const [accountId, setAccountId] = useState("")
-  const [toAccountId, setToAccountId] = useState("")
-  const [categoryId, setCategoryId] = useState("")
-  const [description, setDescription] = useState("")
-  const [note, setNote] = useState("")
   const [transactionDialogOpen, setTransactionDialogOpen] = useState(false)
-  const [error, setError] = useState("")
-  const [pending, setPending] = useState(false)
-
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false)
-  const [typeFilter, setTypeFilter] = useState("all")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [accountFilter, setAccountFilter] = useState("all")
-  const [categoryFilter, setCategoryFilter] = useState("all")
-  const [fromDate, setFromDate] = useState("")
-  const [toDate, setToDate] = useState("")
+  const [transactionError, setTransactionError] = useState("")
+
+  const accountOptions = data?.accounts.active ?? []
+  const allCategoryOptions = data?.categories.all ?? []
+  const incomeCategoryOptions = data?.categories.activeIncome ?? []
+  const expenseCategoryOptions = data?.categories.activeExpense ?? []
+
+  const transactionForm = useForm({
+    defaultValues: createTransactionDefaults([], []),
+    validators: {
+      onSubmit: ({ value }) => {
+        const fields: Partial<Record<keyof TransactionFormValues, string>> = {}
+        const resolvedAccountId = resolveOptionValue(
+          value.accountId,
+          accountOptions
+        )
+
+        if (!resolvedAccountId) {
+          fields.accountId =
+            "Add at least one account before recording a transaction."
+        }
+
+        if (Number(value.amount || "0") <= 0) {
+          fields.amount = "Amount must be greater than zero."
+        }
+
+        if (!value.date) {
+          fields.date = "Pick a date."
+        }
+
+        if (value.type === "transfer") {
+          if (!value.toAccountId) {
+            fields.toAccountId = "Transfers need a destination account."
+          } else if (value.toAccountId === resolvedAccountId) {
+            fields.toAccountId = "Pick two different accounts for a transfer."
+          } else if (
+            !accountOptions.some((account) => account._id === value.toAccountId)
+          ) {
+            fields.toAccountId = "Pick a valid destination account."
+          }
+        } else {
+          const categoryOptions = getCategoryOptions(
+            value.type,
+            incomeCategoryOptions,
+            expenseCategoryOptions
+          )
+
+          if (!resolveOptionValue(value.categoryId, categoryOptions)) {
+            fields.categoryId = `Create at least one ${value.type} category in Settings before saving this transaction.`
+          }
+        }
+
+        return Object.keys(fields).length > 0 ? { fields } : undefined
+      },
+    },
+    onSubmitInvalid: () => {
+      setTransactionError("")
+    },
+    onSubmit: async ({ value }) => {
+      setTransactionError("")
+
+      const resolvedAccountId = resolveOptionValue(
+        value.accountId,
+        accountOptions
+      )
+      const categoryOptions = getCategoryOptions(
+        value.type,
+        incomeCategoryOptions,
+        expenseCategoryOptions
+      )
+      const resolvedCategoryId =
+        value.type === "transfer"
+          ? undefined
+          : resolveOptionValue(value.categoryId, categoryOptions) || undefined
+
+      try {
+        const payload = {
+          type: value.type,
+          status: value.status,
+          amount: Number(value.amount || "0"),
+          date: value.date,
+          accountId: resolvedAccountId as Id<"accounts">,
+          toAccountId:
+            value.type === "transfer" && value.toAccountId
+              ? (value.toAccountId as Id<"accounts">)
+              : undefined,
+          categoryId: resolvedCategoryId
+            ? (resolvedCategoryId as Id<"categories">)
+            : undefined,
+          description: value.description,
+          note: value.note || undefined,
+        }
+
+        if (editingTransactionId) {
+          await updateTransaction({
+            transactionId: editingTransactionId as Id<"transactions">,
+            ...payload,
+          })
+        } else {
+          await createTransaction(payload)
+        }
+
+        setEditingTransactionId(null)
+        setTransactionDialogOpen(false)
+        transactionForm.reset(
+          createTransactionDefaults(accountOptions, expenseCategoryOptions)
+        )
+      } catch (mutationError) {
+        setTransactionError(
+          mutationError instanceof Error
+            ? mutationError.message
+            : "Unable to save the transaction."
+        )
+      }
+    },
+  })
+
+  const filtersForm = useForm({
+    defaultValues: DEFAULT_FILTER_VALUES,
+  })
+
+  const transactionValues = useStore(
+    transactionForm.store,
+    (state) => state.values
+  )
+  const transactionPending = useStore(
+    transactionForm.store,
+    (state) => state.isSubmitting
+  )
+  const filterValues = useStore(filtersForm.store, (state) => state.values)
+
+  const categoryOptions = getCategoryOptions(
+    transactionValues.type,
+    incomeCategoryOptions,
+    expenseCategoryOptions
+  )
+  const needsCategory = transactionValues.type !== "transfer"
 
   const filteredTransactions = useMemo(
     () =>
       (data?.transactions ?? []).filter((transaction) => {
-        if (typeFilter !== "all" && transaction.type !== typeFilter) {
-          return false
-        }
-
-        if (statusFilter !== "all" && transaction.status !== statusFilter) {
-          return false
-        }
-
         if (
-          accountFilter !== "all" &&
-          transaction.accountId !== accountFilter &&
-          transaction.toAccountId !== accountFilter
+          filterValues.type !== "all" &&
+          transaction.type !== filterValues.type
         ) {
           return false
         }
 
         if (
-          categoryFilter !== "all" &&
-          transaction.categoryId !== categoryFilter
+          filterValues.status !== "all" &&
+          transaction.status !== filterValues.status
         ) {
           return false
         }
 
-        if (fromDate && transaction.date < fromDate) {
+        if (
+          filterValues.accountId !== "all" &&
+          transaction.accountId !== filterValues.accountId &&
+          transaction.toAccountId !== filterValues.accountId
+        ) {
           return false
         }
 
-        if (toDate && transaction.date > toDate) {
+        if (
+          filterValues.categoryId !== "all" &&
+          transaction.categoryId !== filterValues.categoryId
+        ) {
+          return false
+        }
+
+        if (filterValues.fromDate && transaction.date < filterValues.fromDate) {
+          return false
+        }
+
+        if (filterValues.toDate && transaction.date > filterValues.toDate) {
           return false
         }
 
         return true
       }),
-    [
-      accountFilter,
-      categoryFilter,
-      data?.transactions,
-      fromDate,
-      statusFilter,
-      toDate,
-      typeFilter,
-    ]
+    [data?.transactions, filterValues]
   )
+
   const activeFilterCount = useMemo(
     () =>
       [
-        typeFilter !== "all",
-        statusFilter !== "all",
-        accountFilter !== "all",
-        categoryFilter !== "all",
-        Boolean(fromDate),
-        Boolean(toDate),
+        filterValues.type !== "all",
+        filterValues.status !== "all",
+        filterValues.accountId !== "all",
+        filterValues.categoryId !== "all",
+        Boolean(filterValues.fromDate),
+        Boolean(filterValues.toDate),
       ].filter(Boolean).length,
-    [accountFilter, categoryFilter, fromDate, statusFilter, toDate, typeFilter]
+    [filterValues]
   )
 
   if (!data) {
@@ -191,122 +327,45 @@ function TransactionsPage() {
   }
 
   const currency = data.settings?.baseCurrency
-  const accountOptions = data.accounts.active
-  const categoryOptions =
-    type === "income"
-      ? data.categories.activeIncome
-      : data.categories.activeExpense
-  const needsCategory = type !== "transfer"
-
-  const clearForm = () => {
-    setEditingTransactionId(null)
-    setType("expense")
-    setStatus("posted")
-    setAmount("0")
-    setDate(todayInputValue())
-    setAccountId("")
-    setToAccountId("")
-    setCategoryId("")
-    setDescription("")
-    setNote("")
-    setError("")
-  }
 
   const openCreateDialog = () => {
-    clearForm()
+    setEditingTransactionId(null)
+    setTransactionError("")
+    transactionForm.reset(
+      createTransactionDefaults(accountOptions, expenseCategoryOptions)
+    )
     setTransactionDialogOpen(true)
-  }
-
-  const handleTransactionDialogChange = (open: boolean) => {
-    setTransactionDialogOpen(open)
-    if (!open) {
-      clearForm()
-    }
-  }
-
-  const clearFilters = () => {
-    setTypeFilter("all")
-    setStatusFilter("all")
-    setAccountFilter("all")
-    setCategoryFilter("all")
-    setFromDate("")
-    setToDate("")
-  }
-
-  const handleFiltersButtonClick = () => {
-    setFiltersSheetOpen((open) => !open)
-  }
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setPending(true)
-    setError("")
-
-    const resolvedAccountId = accountId || accountOptions[0]?._id
-    const resolvedCategoryId =
-      type === "transfer" ? undefined : categoryId || categoryOptions[0]?._id
-
-    if (!resolvedAccountId) {
-      setError("Add at least one account before recording a transaction.")
-      setPending(false)
-      return
-    }
-
-    try {
-      const payload = {
-        type,
-        status,
-        amount: Number(amount || "0"),
-        date,
-        accountId: resolvedAccountId as Id<"accounts">,
-        toAccountId:
-          type === "transfer" && toAccountId
-            ? (toAccountId as Id<"accounts">)
-            : undefined,
-        categoryId: resolvedCategoryId
-          ? (resolvedCategoryId as Id<"categories">)
-          : undefined,
-        description,
-        note: note || undefined,
-      }
-
-      if (editingTransactionId) {
-        await updateTransaction({
-          transactionId: editingTransactionId as Id<"transactions">,
-          ...payload,
-        })
-      } else {
-        await createTransaction(payload)
-      }
-
-      clearForm()
-      setTransactionDialogOpen(false)
-    } catch (mutationError) {
-      setError(
-        mutationError instanceof Error
-          ? mutationError.message
-          : "Unable to save the transaction."
-      )
-    } finally {
-      setPending(false)
-    }
   }
 
   const loadTransactionIntoForm = (
     transaction: (typeof data.transactions)[number]
   ) => {
     setEditingTransactionId(transaction._id)
-    setType(transaction.type)
-    setStatus(transaction.status)
-    setAmount(toAmountInput(transaction.amount))
-    setDate(transaction.date)
-    setAccountId(transaction.accountId)
-    setToAccountId(transaction.toAccountId ?? "")
-    setCategoryId(transaction.categoryId ?? "")
-    setDescription(transaction.description)
-    setNote(transaction.note ?? "")
-    setError("")
+    setTransactionError("")
+    transactionForm.reset({
+      type: transaction.type,
+      status: transaction.status,
+      amount: toAmountInput(transaction.amount),
+      date: transaction.date,
+      accountId: transaction.accountId,
+      toAccountId: transaction.toAccountId ?? "",
+      categoryId: transaction.categoryId ?? "",
+      description: transaction.description,
+      note: transaction.note ?? "",
+    })
     setTransactionDialogOpen(true)
+  }
+
+  const handleTransactionDialogChange = (open: boolean) => {
+    setTransactionDialogOpen(open)
+
+    if (!open) {
+      setEditingTransactionId(null)
+      setTransactionError("")
+      transactionForm.reset(
+        createTransactionDefaults(accountOptions, expenseCategoryOptions)
+      )
+    }
   }
 
   return (
@@ -316,7 +375,7 @@ function TransactionsPage() {
         action={
           <div className="flex items-center gap-2">
             <Button
-              onClick={handleFiltersButtonClick}
+              onClick={() => setFiltersSheetOpen((open) => !open)}
               variant={activeFilterCount > 0 ? "secondary" : "outline"}
             >
               {activeFilterCount || null}
@@ -343,9 +402,7 @@ function TransactionsPage() {
           icon={<ReceiptTextIcon className="size-5" />}
         />
       ) : (
-        <div
-          className="grid items-start gap-6"
-        >
+        <div className="grid items-start gap-6">
           {filteredTransactions.length === 0 ? (
             <Empty className="border border-dashed">
               <EmptyHeader>
@@ -354,7 +411,8 @@ function TransactionsPage() {
                 </EmptyMedia>
                 <EmptyTitle>No Transactions Found</EmptyTitle>
                 <EmptyDescription>
-                  There are no transactions available for the current filters. Get started by creating a transaction.
+                  There are no transactions available for the current filters.
+                  Get started by creating a transaction.
                 </EmptyDescription>
               </EmptyHeader>
             </Empty>
@@ -454,27 +512,184 @@ function TransactionsPage() {
               Refine the transaction list without leaving the dashboard.
             </SheetDescription>
           </SheetHeader>
-          <div className="px-6 pb-6">
-            <TransactionsFilters
-              idPrefix="mobile"
-              accountOptions={data.accounts.active}
-              categoryOptions={data.categories.all}
-              filteredCount={filteredTransactions.length}
-              activeFilterCount={activeFilterCount}
-              typeFilter={typeFilter}
-              statusFilter={statusFilter}
-              accountFilter={accountFilter}
-              categoryFilter={categoryFilter}
-              fromDate={fromDate}
-              toDate={toDate}
-              setTypeFilter={setTypeFilter}
-              setStatusFilter={setStatusFilter}
-              setAccountFilter={setAccountFilter}
-              setCategoryFilter={setCategoryFilter}
-              setFromDate={setFromDate}
-              setToDate={setToDate}
-              onClear={clearFilters}
-            />
+          <div className="space-y-5 px-6 pb-6">
+            <div className="grid gap-4">
+              <filtersForm.Field name="type">
+                {(field) => (
+                  <Field>
+                    <FieldLabel htmlFor="mobile-filter-type">
+                      <FieldTitle>Type</FieldTitle>
+                    </FieldLabel>
+                    <NativeSelect
+                      id="mobile-filter-type"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(event) =>
+                        field.handleChange(event.target.value)
+                      }
+                    >
+                      <NativeSelectOption value="all">
+                        All types
+                      </NativeSelectOption>
+                      {transactionTypeOptions.map((option) => (
+                        <NativeSelectOption
+                          key={option.value}
+                          value={option.value}
+                        >
+                          {option.label}
+                        </NativeSelectOption>
+                      ))}
+                    </NativeSelect>
+                  </Field>
+                )}
+              </filtersForm.Field>
+
+              <filtersForm.Field name="status">
+                {(field) => (
+                  <Field>
+                    <FieldLabel htmlFor="mobile-filter-status">
+                      <FieldTitle>Status</FieldTitle>
+                    </FieldLabel>
+                    <NativeSelect
+                      id="mobile-filter-status"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(event) =>
+                        field.handleChange(event.target.value)
+                      }
+                    >
+                      <NativeSelectOption value="all">
+                        All statuses
+                      </NativeSelectOption>
+                      {transactionStatusOptions.map((option) => (
+                        <NativeSelectOption
+                          key={option.value}
+                          value={option.value}
+                        >
+                          {option.label}
+                        </NativeSelectOption>
+                      ))}
+                    </NativeSelect>
+                  </Field>
+                )}
+              </filtersForm.Field>
+
+              <filtersForm.Field name="accountId">
+                {(field) => (
+                  <Field>
+                    <FieldLabel htmlFor="mobile-filter-account">
+                      <FieldTitle>Account</FieldTitle>
+                    </FieldLabel>
+                    <NativeSelect
+                      id="mobile-filter-account"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(event) =>
+                        field.handleChange(event.target.value)
+                      }
+                    >
+                      <NativeSelectOption value="all">
+                        All accounts
+                      </NativeSelectOption>
+                      {accountOptions.map((account) => (
+                        <NativeSelectOption
+                          key={account._id}
+                          value={account._id}
+                        >
+                          {account.name}
+                        </NativeSelectOption>
+                      ))}
+                    </NativeSelect>
+                  </Field>
+                )}
+              </filtersForm.Field>
+
+              <filtersForm.Field name="categoryId">
+                {(field) => (
+                  <Field>
+                    <FieldLabel htmlFor="mobile-filter-category">
+                      <FieldTitle>Category</FieldTitle>
+                    </FieldLabel>
+                    <NativeSelect
+                      id="mobile-filter-category"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(event) =>
+                        field.handleChange(event.target.value)
+                      }
+                    >
+                      <NativeSelectOption value="all">
+                        All categories
+                      </NativeSelectOption>
+                      {allCategoryOptions.map((category) => (
+                        <NativeSelectOption
+                          key={category._id}
+                          value={category._id}
+                        >
+                          {category.name}
+                        </NativeSelectOption>
+                      ))}
+                    </NativeSelect>
+                  </Field>
+                )}
+              </filtersForm.Field>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <filtersForm.Field name="fromDate">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor="mobile-filter-from-date">
+                        <FieldTitle>From</FieldTitle>
+                      </FieldLabel>
+                      <Input
+                        id="mobile-filter-from-date"
+                        type="date"
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(event) =>
+                          field.handleChange(event.target.value)
+                        }
+                      />
+                    </Field>
+                  )}
+                </filtersForm.Field>
+
+                <filtersForm.Field name="toDate">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor="mobile-filter-to-date">
+                        <FieldTitle>To</FieldTitle>
+                      </FieldLabel>
+                      <Input
+                        id="mobile-filter-to-date"
+                        type="date"
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(event) =>
+                          field.handleChange(event.target.value)
+                        }
+                      />
+                    </Field>
+                  )}
+                </filtersForm.Field>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between gap-3 rounded-3xl border border-border/60 bg-background/60 px-4 py-3">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <CalendarRangeIcon className="size-4" />
+                <span>{filteredTransactions.length} matching transactions</span>
+              </div>
+              {activeFilterCount > 0 ? (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => filtersForm.reset(DEFAULT_FILTER_VALUES)}
+                >
+                  Clear all
+                </Button>
+              ) : null}
+            </div>
           </div>
         </SheetContent>
       </Sheet>
@@ -494,118 +709,176 @@ function TransactionsPage() {
             </DialogDescription>
           </DialogHeader>
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
+          <form
+            className="space-y-4"
+            onSubmit={(event) => {
+              event.preventDefault()
+              void transactionForm.handleSubmit()
+            }}
+          >
             <FieldGroup>
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field>
-                  <FieldLabel htmlFor="transaction-type">
-                    <FieldTitle>Type</FieldTitle>
-                  </FieldLabel>
-                  <NativeSelect
-                    id="transaction-type"
-                    value={type}
-                    onChange={(event) =>
-                      setType(event.target.value as typeof type)
-                    }
-                  >
-                    {transactionTypeOptions.map((option) => (
-                      <NativeSelectOption
-                        key={option.value}
-                        value={option.value}
+                <transactionForm.Field name="type">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor="transaction-type">
+                        <FieldTitle>Type</FieldTitle>
+                      </FieldLabel>
+                      <NativeSelect
+                        id="transaction-type"
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(event) => {
+                          const nextType = event.target.value as TransactionType
+                          field.handleChange(nextType)
+
+                          if (nextType === "transfer") {
+                            transactionForm.setFieldValue("categoryId", "")
+                            transactionForm.setFieldValue("toAccountId", "")
+                            return
+                          }
+
+                          const nextCategoryOptions = getCategoryOptions(
+                            nextType,
+                            incomeCategoryOptions,
+                            expenseCategoryOptions
+                          )
+                          const currentCategoryId =
+                            transactionForm.getFieldValue("categoryId")
+
+                          if (
+                            !nextCategoryOptions.some(
+                              (category) => category._id === currentCategoryId
+                            )
+                          ) {
+                            transactionForm.setFieldValue(
+                              "categoryId",
+                              nextCategoryOptions[0]?._id ?? ""
+                            )
+                          }
+
+                          transactionForm.setFieldValue("toAccountId", "")
+                        }}
                       >
-                        {option.label}
-                      </NativeSelectOption>
-                    ))}
-                  </NativeSelect>
-                </Field>
+                        {transactionTypeOptions.map((option) => (
+                          <NativeSelectOption
+                            key={option.value}
+                            value={option.value}
+                          >
+                            {option.label}
+                          </NativeSelectOption>
+                        ))}
+                      </NativeSelect>
+                    </Field>
+                  )}
+                </transactionForm.Field>
 
-                <Field>
-                  <FieldLabel htmlFor="transaction-status">
-                    <FieldTitle>Status</FieldTitle>
-                  </FieldLabel>
-                  <NativeSelect
-                    id="transaction-status"
-                    value={status}
-                    onChange={(event) =>
-                      setStatus(event.target.value as typeof status)
-                    }
-                  >
-                    {transactionStatusOptions.map((option) => (
-                      <NativeSelectOption
-                        key={option.value}
-                        value={option.value}
+                <transactionForm.Field name="status">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor="transaction-status">
+                        <FieldTitle>Status</FieldTitle>
+                      </FieldLabel>
+                      <NativeSelect
+                        id="transaction-status"
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(event) =>
+                          field.handleChange(
+                            event.target.value as TransactionStatus
+                          )
+                        }
                       >
-                        {option.label}
-                      </NativeSelectOption>
-                    ))}
-                  </NativeSelect>
-                </Field>
+                        {transactionStatusOptions.map((option) => (
+                          <NativeSelectOption
+                            key={option.value}
+                            value={option.value}
+                          >
+                            {option.label}
+                          </NativeSelectOption>
+                        ))}
+                      </NativeSelect>
+                    </Field>
+                  )}
+                </transactionForm.Field>
 
-                <Field>
-                  <FieldLabel htmlFor="transaction-amount">
-                    <FieldTitle>Amount</FieldTitle>
-                  </FieldLabel>
-                  <Input
-                    id="transaction-amount"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={amount}
-                    onChange={(event) => setAmount(event.target.value)}
-                  />
-                </Field>
+                <transactionForm.Field name="amount">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor="transaction-amount">
+                        <FieldTitle>Amount</FieldTitle>
+                      </FieldLabel>
+                      <Input
+                        id="transaction-amount"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(event) =>
+                          field.handleChange(event.target.value)
+                        }
+                      />
+                      <FieldErrorMessage
+                        error={getFirstError(field.state.meta.errors)}
+                      />
+                    </Field>
+                  )}
+                </transactionForm.Field>
 
-                <Field>
-                  <FieldLabel htmlFor="transaction-date">
-                    <FieldTitle>Date</FieldTitle>
-                  </FieldLabel>
-                  <Input
-                    id="transaction-date"
-                    type="date"
-                    value={date}
-                    onChange={(event) => setDate(event.target.value)}
-                  />
-                </Field>
+                <transactionForm.Field name="date">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor="transaction-date">
+                        <FieldTitle>Date</FieldTitle>
+                      </FieldLabel>
+                      <Input
+                        id="transaction-date"
+                        type="date"
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(event) =>
+                          field.handleChange(event.target.value)
+                        }
+                      />
+                      <FieldErrorMessage
+                        error={getFirstError(field.state.meta.errors)}
+                      />
+                    </Field>
+                  )}
+                </transactionForm.Field>
               </div>
 
-              <Field>
-                <FieldLabel htmlFor="transaction-account">
-                  <FieldTitle>
-                    {type === "transfer" ? "From account" : "Account"}
-                  </FieldTitle>
-                </FieldLabel>
-                <NativeSelect
-                  id="transaction-account"
-                  value={accountId || accountOptions[0]?._id}
-                  onChange={(event) => setAccountId(event.target.value)}
-                >
-                  {accountOptions.map((account) => (
-                    <NativeSelectOption key={account._id} value={account._id}>
-                      {account.name}
-                    </NativeSelectOption>
-                  ))}
-                </NativeSelect>
-              </Field>
+              <transactionForm.Field name="accountId">
+                {(field) => (
+                  <Field>
+                    <FieldLabel htmlFor="transaction-account">
+                      <FieldTitle>
+                        {transactionValues.type === "transfer"
+                          ? "From account"
+                          : "Account"}
+                      </FieldTitle>
+                    </FieldLabel>
+                    <NativeSelect
+                      id="transaction-account"
+                      value={resolveOptionValue(
+                        field.state.value,
+                        accountOptions
+                      )}
+                      onBlur={field.handleBlur}
+                      onChange={(event) => {
+                        const nextAccountId = event.target.value
+                        field.handleChange(nextAccountId)
 
-              {type === "transfer" ? (
-                <Field>
-                  <FieldLabel htmlFor="transaction-to-account">
-                    <FieldTitle>Destination account</FieldTitle>
-                  </FieldLabel>
-                  <NativeSelect
-                    id="transaction-to-account"
-                    value={toAccountId}
-                    onChange={(event) => setToAccountId(event.target.value)}
-                  >
-                    <NativeSelectOption value="">
-                      Choose account
-                    </NativeSelectOption>
-                    {accountOptions
-                      .filter(
-                        (account) =>
-                          account._id !== (accountId || accountOptions[0]?._id)
-                      )
-                      .map((account) => (
+                        if (
+                          transactionForm.getFieldValue("toAccountId") ===
+                          nextAccountId
+                        ) {
+                          transactionForm.setFieldValue("toAccountId", "")
+                        }
+                      }}
+                    >
+                      {accountOptions.map((account) => (
                         <NativeSelectOption
                           key={account._id}
                           value={account._id}
@@ -613,68 +886,147 @@ function TransactionsPage() {
                           {account.name}
                         </NativeSelectOption>
                       ))}
-                  </NativeSelect>
-                </Field>
-              ) : (
-                <Field>
-                  <FieldLabel htmlFor="transaction-category">
-                    <FieldTitle>Category</FieldTitle>
-                  </FieldLabel>
-                  <NativeSelect
-                    id="transaction-category"
-                    value={categoryId || categoryOptions[0]?._id}
-                    onChange={(event) => setCategoryId(event.target.value)}
-                    disabled={categoryOptions.length === 0}
-                  >
-                    {categoryOptions.length === 0 ? (
-                      <NativeSelectOption value="">
-                        Create a category first
-                      </NativeSelectOption>
-                    ) : null}
-                    {categoryOptions.map((category) => (
-                      <NativeSelectOption
-                        key={category._id}
-                        value={category._id}
+                    </NativeSelect>
+                    <FieldErrorMessage
+                      error={getFirstError(field.state.meta.errors)}
+                    />
+                  </Field>
+                )}
+              </transactionForm.Field>
+
+              {transactionValues.type === "transfer" ? (
+                <transactionForm.Field name="toAccountId">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor="transaction-to-account">
+                        <FieldTitle>Destination account</FieldTitle>
+                      </FieldLabel>
+                      <NativeSelect
+                        id="transaction-to-account"
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(event) =>
+                          field.handleChange(event.target.value)
+                        }
                       >
-                        {category.name}
-                      </NativeSelectOption>
-                    ))}
-                  </NativeSelect>
-                </Field>
+                        <NativeSelectOption value="">
+                          Choose account
+                        </NativeSelectOption>
+                        {accountOptions
+                          .filter(
+                            (account) =>
+                              account._id !==
+                              resolveOptionValue(
+                                transactionValues.accountId,
+                                accountOptions
+                              )
+                          )
+                          .map((account) => (
+                            <NativeSelectOption
+                              key={account._id}
+                              value={account._id}
+                            >
+                              {account.name}
+                            </NativeSelectOption>
+                          ))}
+                      </NativeSelect>
+                      <FieldErrorMessage
+                        error={getFirstError(field.state.meta.errors)}
+                      />
+                    </Field>
+                  )}
+                </transactionForm.Field>
+              ) : (
+                <transactionForm.Field name="categoryId">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor="transaction-category">
+                        <FieldTitle>Category</FieldTitle>
+                      </FieldLabel>
+                      <NativeSelect
+                        id="transaction-category"
+                        value={resolveOptionValue(
+                          field.state.value,
+                          categoryOptions
+                        )}
+                        onBlur={field.handleBlur}
+                        onChange={(event) =>
+                          field.handleChange(event.target.value)
+                        }
+                        disabled={categoryOptions.length === 0}
+                      >
+                        {categoryOptions.length === 0 ? (
+                          <NativeSelectOption value="">
+                            Create a category first
+                          </NativeSelectOption>
+                        ) : null}
+                        {categoryOptions.map((category) => (
+                          <NativeSelectOption
+                            key={category._id}
+                            value={category._id}
+                          >
+                            {category.name}
+                          </NativeSelectOption>
+                        ))}
+                      </NativeSelect>
+                      <FieldErrorMessage
+                        error={getFirstError(field.state.meta.errors)}
+                      />
+                    </Field>
+                  )}
+                </transactionForm.Field>
               )}
 
-              <Field>
-                <FieldLabel htmlFor="transaction-description">
-                  <FieldTitle>Description</FieldTitle>
-                </FieldLabel>
-                <Input
-                  id="transaction-description"
-                  value={description}
-                  onChange={(event) => setDescription(event.target.value)}
-                  placeholder={
-                    type === "transfer" ? "Transfer to savings" : "Groceries"
-                  }
-                />
-              </Field>
+              <transactionForm.Field name="description">
+                {(field) => (
+                  <Field>
+                    <FieldLabel htmlFor="transaction-description">
+                      <FieldTitle>Description</FieldTitle>
+                    </FieldLabel>
+                    <Input
+                      id="transaction-description"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(event) =>
+                        field.handleChange(event.target.value)
+                      }
+                      placeholder={
+                        transactionValues.type === "transfer"
+                          ? "Transfer to savings"
+                          : "Groceries"
+                      }
+                    />
+                  </Field>
+                )}
+              </transactionForm.Field>
 
-              <Field>
-                <FieldLabel htmlFor="transaction-note">
-                  <FieldTitle>Note</FieldTitle>
-                </FieldLabel>
-                <Textarea
-                  id="transaction-note"
-                  value={note}
-                  onChange={(event) => setNote(event.target.value)}
-                  placeholder="Optional context"
-                />
-              </Field>
+              <transactionForm.Field name="note">
+                {(field) => (
+                  <Field>
+                    <FieldLabel htmlFor="transaction-note">
+                      <FieldTitle>Note</FieldTitle>
+                    </FieldLabel>
+                    <Textarea
+                      id="transaction-note"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(event) =>
+                        field.handleChange(event.target.value)
+                      }
+                      placeholder="Optional context"
+                    />
+                  </Field>
+                )}
+              </transactionForm.Field>
             </FieldGroup>
 
-            {error ? <p className="text-sm text-destructive">{error}</p> : null}
+            {transactionError ? (
+              <p className="text-sm text-destructive">{transactionError}</p>
+            ) : null}
             {needsCategory && categoryOptions.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                Create at least one {type} category in Settings before saving
-                this transaction.
+                Create at least one {transactionValues.type} category in
+                Settings before saving this transaction.
               </p>
             ) : null}
 
@@ -682,13 +1034,13 @@ function TransactionsPage() {
               <Button
                 type="submit"
                 disabled={
-                  pending ||
+                  transactionPending ||
                   accountOptions.length === 0 ||
                   (needsCategory && categoryOptions.length === 0)
                 }
                 className="flex-1"
               >
-                {pending
+                {transactionPending
                   ? "Saving..."
                   : editingTransactionId
                     ? "Update transaction"
@@ -711,139 +1063,68 @@ function TransactionsPage() {
   )
 }
 
-function TransactionsFilters({
-  idPrefix,
-  accountOptions,
-  categoryOptions,
-  filteredCount,
-  activeFilterCount,
-  typeFilter,
-  statusFilter,
-  accountFilter,
-  categoryFilter,
-  fromDate,
-  toDate,
-  setTypeFilter,
-  setStatusFilter,
-  setAccountFilter,
-  setCategoryFilter,
-  setFromDate,
-  setToDate,
-  onClear,
-}: TransactionsFiltersProps) {
-  return (
-    <div className="space-y-5">
-      <div className="grid gap-4">
-        <Field>
-          <FieldLabel htmlFor={`${idPrefix}-filter-type`}>
-            <FieldTitle>Type</FieldTitle>
-          </FieldLabel>
-          <NativeSelect
-            id={`${idPrefix}-filter-type`}
-            value={typeFilter}
-            onChange={(event) => setTypeFilter(event.target.value)}
-          >
-            <NativeSelectOption value="all">All types</NativeSelectOption>
-            {transactionTypeOptions.map((option) => (
-              <NativeSelectOption key={option.value} value={option.value}>
-                {option.label}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-        </Field>
+function createTransactionDefaults(
+  accountOptions: Array<{ _id: string }>,
+  expenseCategoryOptions: Array<{ _id: string }>
+): TransactionFormValues {
+  return {
+    type: "expense",
+    status: "posted",
+    amount: "0",
+    date: todayInputValue(),
+    accountId: accountOptions[0]?._id ?? "",
+    toAccountId: "",
+    categoryId: expenseCategoryOptions[0]?._id ?? "",
+    description: "",
+    note: "",
+  }
+}
 
-        <Field>
-          <FieldLabel htmlFor={`${idPrefix}-filter-status`}>
-            <FieldTitle>Status</FieldTitle>
-          </FieldLabel>
-          <NativeSelect
-            id={`${idPrefix}-filter-status`}
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value)}
-          >
-            <NativeSelectOption value="all">All statuses</NativeSelectOption>
-            {transactionStatusOptions.map((option) => (
-              <NativeSelectOption key={option.value} value={option.value}>
-                {option.label}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-        </Field>
+function getCategoryOptions(
+  type: TransactionType,
+  incomeCategoryOptions: Array<SelectOption>,
+  expenseCategoryOptions: Array<SelectOption>
+) {
+  if (type === "income") {
+    return incomeCategoryOptions
+  }
 
-        <Field>
-          <FieldLabel htmlFor={`${idPrefix}-filter-account`}>
-            <FieldTitle>Account</FieldTitle>
-          </FieldLabel>
-          <NativeSelect
-            id={`${idPrefix}-filter-account`}
-            value={accountFilter}
-            onChange={(event) => setAccountFilter(event.target.value)}
-          >
-            <NativeSelectOption value="all">All accounts</NativeSelectOption>
-            {accountOptions.map((account) => (
-              <NativeSelectOption key={account._id} value={account._id}>
-                {account.name}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-        </Field>
+  if (type === "expense") {
+    return expenseCategoryOptions
+  }
 
-        <Field>
-          <FieldLabel htmlFor={`${idPrefix}-filter-category`}>
-            <FieldTitle>Category</FieldTitle>
-          </FieldLabel>
-          <NativeSelect
-            id={`${idPrefix}-filter-category`}
-            value={categoryFilter}
-            onChange={(event) => setCategoryFilter(event.target.value)}
-          >
-            <NativeSelectOption value="all">All categories</NativeSelectOption>
-            {categoryOptions.map((category) => (
-              <NativeSelectOption key={category._id} value={category._id}>
-                {category.name}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-        </Field>
+  return []
+}
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field>
-            <FieldLabel htmlFor={`${idPrefix}-filter-from-date`}>
-              <FieldTitle>From</FieldTitle>
-            </FieldLabel>
-            <Input
-              id={`${idPrefix}-filter-from-date`}
-              type="date"
-              value={fromDate}
-              onChange={(event) => setFromDate(event.target.value)}
-            />
-          </Field>
+function resolveOptionValue(
+  value: string,
+  options: Array<{ _id: string }>
+): string {
+  if (options.some((option) => option._id === value)) {
+    return value
+  }
 
-          <Field>
-            <FieldLabel htmlFor={`${idPrefix}-filter-to-date`}>
-              <FieldTitle>To</FieldTitle>
-            </FieldLabel>
-            <Input
-              id={`${idPrefix}-filter-to-date`}
-              type="date"
-              value={toDate}
-              onChange={(event) => setToDate(event.target.value)}
-            />
-          </Field>
-        </div>
-      </div>
+  return options[0]?._id ?? ""
+}
 
-      <div className="flex items-center justify-between gap-3 rounded-3xl border border-border/60 bg-background/60 px-4 py-3">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <CalendarRangeIcon className="size-4" />
-          <span>{filteredCount} matching transactions</span>
-        </div>
-        {activeFilterCount > 0 ? (
-          <Button size="sm" variant="ghost" onClick={onClear}>
-            Clear all
-          </Button>
-        ) : null}
-      </div>
-    </div>
-  )
+function getFirstError(errors: Array<unknown>) {
+  const [error] = errors
+
+  if (typeof error === "string") {
+    return error
+  }
+
+  if (error instanceof Error) {
+    return error.message
+  }
+
+  return null
+}
+
+function FieldErrorMessage({ error }: { error: string | null }) {
+  if (!error) {
+    return null
+  }
+
+  return <p className="text-sm text-destructive">{error}</p>
 }
