@@ -1,9 +1,10 @@
 /* eslint-disable max-lines */
-import { useDeferredValue, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { useConvexMutation } from "@convex-dev/react-query"
 import {
   CalendarRangeIcon,
+  FilterIcon,
   PencilIcon,
   PlusIcon,
   ReceiptTextIcon,
@@ -14,7 +15,6 @@ import type { Id } from "../../../../convex/_generated/dataModel"
 import {
   DashboardPageHeader,
   GuidedEmptyState,
-  SectionCard,
 } from "@/components/money/money-ui"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -34,6 +34,13 @@ import {
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
+import {
   Table,
   TableBody,
   TableCell,
@@ -52,6 +59,28 @@ import {
   transactionStatusOptions,
   transactionTypeOptions,
 } from "@/lib/money"
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
+
+type TransactionsFiltersProps = {
+  idPrefix: string
+  accountOptions: Array<{ _id: string; name: string }>
+  categoryOptions: Array<{ _id: string; name: string }>
+  filteredCount: number
+  activeFilterCount: number
+  typeFilter: string
+  statusFilter: string
+  accountFilter: string
+  categoryFilter: string
+  fromDate: string
+  toDate: string
+  setTypeFilter: (value: string) => void
+  setStatusFilter: (value: string) => void
+  setAccountFilter: (value: string) => void
+  setCategoryFilter: (value: string) => void
+  setFromDate: (value: string) => void
+  setToDate: (value: string) => void
+  onClear: () => void
+}
 
 export const Route = createFileRoute("/_authenticated/dashboard/transactions")({
   staticData: {
@@ -90,7 +119,7 @@ function TransactionsPage() {
   const [error, setError] = useState("")
   const [pending, setPending] = useState(false)
 
-  const [search, setSearch] = useState("")
+  const [filtersSheetOpen, setFiltersSheetOpen] = useState(false)
   const [typeFilter, setTypeFilter] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
   const [accountFilter, setAccountFilter] = useState("all")
@@ -98,27 +127,9 @@ function TransactionsPage() {
   const [fromDate, setFromDate] = useState("")
   const [toDate, setToDate] = useState("")
 
-  const deferredSearch = useDeferredValue(search.trim().toLowerCase())
-
   const filteredTransactions = useMemo(
     () =>
       (data?.transactions ?? []).filter((transaction) => {
-        if (
-          deferredSearch &&
-          ![
-            transaction.description,
-            transaction.accountName,
-            transaction.toAccountName ?? "",
-            transaction.categoryName ?? "",
-            transaction.note ?? "",
-          ]
-            .join(" ")
-            .toLowerCase()
-            .includes(deferredSearch)
-        ) {
-          return false
-        }
-
         if (typeFilter !== "all" && transaction.type !== typeFilter) {
           return false
         }
@@ -156,12 +167,23 @@ function TransactionsPage() {
       accountFilter,
       categoryFilter,
       data?.transactions,
-      deferredSearch,
       fromDate,
       statusFilter,
       toDate,
       typeFilter,
     ]
+  )
+  const activeFilterCount = useMemo(
+    () =>
+      [
+        typeFilter !== "all",
+        statusFilter !== "all",
+        accountFilter !== "all",
+        categoryFilter !== "all",
+        Boolean(fromDate),
+        Boolean(toDate),
+      ].filter(Boolean).length,
+    [accountFilter, categoryFilter, fromDate, statusFilter, toDate, typeFilter]
   )
 
   if (!data) {
@@ -202,14 +224,27 @@ function TransactionsPage() {
     }
   }
 
+  const clearFilters = () => {
+    setTypeFilter("all")
+    setStatusFilter("all")
+    setAccountFilter("all")
+    setCategoryFilter("all")
+    setFromDate("")
+    setToDate("")
+  }
+
+  const handleFiltersButtonClick = () => {
+    setFiltersSheetOpen((open) => !open)
+  }
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setPending(true)
     setError("")
 
     const resolvedAccountId = accountId || accountOptions[0]?._id
-      const resolvedCategoryId =
-        type === "transfer" ? undefined : categoryId || categoryOptions[0]?._id
+    const resolvedCategoryId =
+      type === "transfer" ? undefined : categoryId || categoryOptions[0]?._id
 
     if (!resolvedAccountId) {
       setError("Add at least one account before recording a transaction.")
@@ -277,17 +312,25 @@ function TransactionsPage() {
   return (
     <section className="space-y-6">
       <DashboardPageHeader
-        eyebrow="Money movements"
         title="Transactions"
-        description="Keep one clean ledger for income, expenses, and transfers. Posted entries affect balances and budgets. Planned entries help you see what is coming next."
         action={
-          <Button
-            onClick={openCreateDialog}
-            disabled={accountOptions.length === 0}
-          >
-            Add transaction
-            <PlusIcon />
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={handleFiltersButtonClick}
+              variant={activeFilterCount > 0 ? "secondary" : "outline"}
+            >
+              {activeFilterCount || null}
+              <FilterIcon />
+            </Button>
+
+            <Button
+              onClick={openCreateDialog}
+              disabled={accountOptions.length === 0}
+            >
+              Add transaction
+              <PlusIcon />
+            </Button>
+          </div>
         }
       />
 
@@ -299,228 +342,142 @@ function TransactionsPage() {
           ctaTo="/dashboard/accounts"
           icon={<ReceiptTextIcon className="size-5" />}
         />
-      ) : null}
-
-      <SectionCard
-        title="Filter list"
-        description="Search and narrow down movements by type, account, category, status, or date range."
-      >
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field>
-              <FieldLabel htmlFor="search-transactions">
-                <FieldTitle>Search</FieldTitle>
-              </FieldLabel>
-              <Input
-                id="search-transactions"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Groceries, salary, wallet..."
-              />
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="filter-type">
-                <FieldTitle>Type</FieldTitle>
-              </FieldLabel>
-              <NativeSelect
-                id="filter-type"
-                value={typeFilter}
-                onChange={(event) => setTypeFilter(event.target.value)}
-              >
-                <NativeSelectOption value="all">All types</NativeSelectOption>
-                {transactionTypeOptions.map((option) => (
-                  <NativeSelectOption key={option.value} value={option.value}>
-                    {option.label}
-                  </NativeSelectOption>
-                ))}
-              </NativeSelect>
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="filter-status">
-                <FieldTitle>Status</FieldTitle>
-              </FieldLabel>
-              <NativeSelect
-                id="filter-status"
-                value={statusFilter}
-                onChange={(event) => setStatusFilter(event.target.value)}
-              >
-                <NativeSelectOption value="all">
-                  All statuses
-                </NativeSelectOption>
-                {transactionStatusOptions.map((option) => (
-                  <NativeSelectOption key={option.value} value={option.value}>
-                    {option.label}
-                  </NativeSelectOption>
-                ))}
-              </NativeSelect>
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="filter-account">
-                <FieldTitle>Account</FieldTitle>
-              </FieldLabel>
-              <NativeSelect
-                id="filter-account"
-                value={accountFilter}
-                onChange={(event) => setAccountFilter(event.target.value)}
-              >
-                <NativeSelectOption value="all">
-                  All accounts
-                </NativeSelectOption>
-                {data.accounts.active.map((account) => (
-                  <NativeSelectOption key={account._id} value={account._id}>
-                    {account.name}
-                  </NativeSelectOption>
-                ))}
-              </NativeSelect>
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="filter-category">
-                <FieldTitle>Category</FieldTitle>
-              </FieldLabel>
-              <NativeSelect
-                id="filter-category"
-                value={categoryFilter}
-                onChange={(event) => setCategoryFilter(event.target.value)}
-              >
-                <NativeSelectOption value="all">
-                  All categories
-                </NativeSelectOption>
-                {data.categories.all.map((category) => (
-                  <NativeSelectOption key={category._id} value={category._id}>
-                    {category.name}
-                  </NativeSelectOption>
-                ))}
-              </NativeSelect>
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="filter-from-date">
-                <FieldTitle>From</FieldTitle>
-              </FieldLabel>
-              <Input
-                id="filter-from-date"
-                type="date"
-                value={fromDate}
-                onChange={(event) => setFromDate(event.target.value)}
-              />
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="filter-to-date">
-                <FieldTitle>To</FieldTitle>
-              </FieldLabel>
-              <Input
-                id="filter-to-date"
-                type="date"
-                value={toDate}
-                onChange={(event) => setToDate(event.target.value)}
-              />
-            </Field>
-          </div>
-
-          <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-            <CalendarRangeIcon className="size-4" />
-            {filteredTransactions.length} matching transactions
-          </div>
-      </SectionCard>
-
-      <SectionCard
-        title="Transaction list"
-        description="Newest entries first. Transfers move money without affecting income or expense totals."
-      >
-        {filteredTransactions.length === 0 ? (
-          <p className="text-sm leading-6 text-muted-foreground">
-            No transactions match the current filters.
-          </p>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Account</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredTransactions.map((transaction) => (
-                <TableRow key={transaction._id}>
-                  <TableCell>{formatDateLabel(transaction.date)}</TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <p className="font-medium">{transaction.description}</p>
-                      {transaction.note ? (
-                        <p className="text-xs text-muted-foreground">
-                          {transaction.note}
-                        </p>
-                      ) : null}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {transaction.accountName}
-                    {transaction.toAccountName
-                      ? ` → ${transaction.toAccountName}`
-                      : ""}
-                  </TableCell>
-                  <TableCell>
-                    {transaction.categoryName ?? "Transfer"}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Badge variant="outline">{transaction.type}</Badge>
-                      <Badge
-                        variant={
-                          transaction.status === "posted"
-                            ? "default"
-                            : "outline"
-                        }
-                      >
-                        {transaction.status}
-                      </Badge>
-                    </div>
-                  </TableCell>
-                  <TableCell
-                    className={`text-right font-medium ${getTransactionTone(transaction.type)}`}
-                  >
-                    {transaction.type === "income" ? "+" : "-"}
-                    {formatCurrency(transaction.amount, currency)}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        size="icon-sm"
-                        variant="outline"
-                        onClick={() => loadTransactionIntoForm(transaction)}
-                        aria-label="Edit transaction"
-                      >
-                        <PencilIcon />
-                      </Button>
-                      <Button
-                        size="icon-sm"
-                        variant="outline"
-                        onClick={() =>
-                          void deleteTransaction({
-                            transactionId: transaction._id,
-                          })
-                        }
-                        aria-label="Delete transaction"
-                      >
-                        <Trash2Icon />
-                      </Button>
-                    </div>
-                  </TableCell>
+      ) : (
+        <div
+          className="grid items-start gap-6"
+        >
+          {filteredTransactions.length === 0 ? (
+            <Empty className="border border-dashed">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <ReceiptTextIcon />
+                </EmptyMedia>
+                <EmptyTitle>No Transactions Found</EmptyTitle>
+                <EmptyDescription>
+                  There are no transactions available for the current filters. Get started by creating a transaction.
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>Account</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </SectionCard>
+              </TableHeader>
+              <TableBody>
+                {filteredTransactions.map((transaction) => (
+                  <TableRow key={transaction._id}>
+                    <TableCell>{formatDateLabel(transaction.date)}</TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        <p className="font-medium">{transaction.description}</p>
+                        {transaction.note ? (
+                          <p className="text-xs text-muted-foreground">
+                            {transaction.note}
+                          </p>
+                        ) : null}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {transaction.accountName}
+                      {transaction.toAccountName
+                        ? ` → ${transaction.toAccountName}`
+                        : ""}
+                    </TableCell>
+                    <TableCell>
+                      {transaction.categoryName ?? "Transfer"}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Badge variant="outline">{transaction.type}</Badge>
+                        <Badge
+                          variant={
+                            transaction.status === "posted"
+                              ? "default"
+                              : "outline"
+                          }
+                        >
+                          {transaction.status}
+                        </Badge>
+                      </div>
+                    </TableCell>
+                    <TableCell
+                      className={`text-right font-medium ${getTransactionTone(transaction.type)}`}
+                    >
+                      {transaction.type === "income" ? "+" : "-"}
+                      {formatCurrency(transaction.amount, currency)}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          size="icon-sm"
+                          variant="outline"
+                          onClick={() => loadTransactionIntoForm(transaction)}
+                          aria-label="Edit transaction"
+                        >
+                          <PencilIcon />
+                        </Button>
+                        <Button
+                          size="icon-sm"
+                          variant="outline"
+                          onClick={() =>
+                            void deleteTransaction({
+                              transactionId: transaction._id,
+                            })
+                          }
+                          aria-label="Delete transaction"
+                        >
+                          <Trash2Icon />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </div>
+      )}
+
+      <Sheet open={filtersSheetOpen} onOpenChange={setFiltersSheetOpen}>
+        <SheetContent side="right" className="w-full sm:max-w-md">
+          <SheetHeader>
+            <SheetTitle>Filters</SheetTitle>
+            <SheetDescription>
+              Refine the transaction list without leaving the dashboard.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="px-6 pb-6">
+            <TransactionsFilters
+              idPrefix="mobile"
+              accountOptions={data.accounts.active}
+              categoryOptions={data.categories.all}
+              filteredCount={filteredTransactions.length}
+              activeFilterCount={activeFilterCount}
+              typeFilter={typeFilter}
+              statusFilter={statusFilter}
+              accountFilter={accountFilter}
+              categoryFilter={categoryFilter}
+              fromDate={fromDate}
+              toDate={toDate}
+              setTypeFilter={setTypeFilter}
+              setStatusFilter={setStatusFilter}
+              setAccountFilter={setAccountFilter}
+              setCategoryFilter={setCategoryFilter}
+              setFromDate={setFromDate}
+              setToDate={setToDate}
+              onClear={clearFilters}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
 
       <Dialog
         open={transactionDialogOpen}
@@ -547,10 +504,15 @@ function TransactionsPage() {
                   <NativeSelect
                     id="transaction-type"
                     value={type}
-                    onChange={(event) => setType(event.target.value as typeof type)}
+                    onChange={(event) =>
+                      setType(event.target.value as typeof type)
+                    }
                   >
                     {transactionTypeOptions.map((option) => (
-                      <NativeSelectOption key={option.value} value={option.value}>
+                      <NativeSelectOption
+                        key={option.value}
+                        value={option.value}
+                      >
                         {option.label}
                       </NativeSelectOption>
                     ))}
@@ -564,10 +526,15 @@ function TransactionsPage() {
                   <NativeSelect
                     id="transaction-status"
                     value={status}
-                    onChange={(event) => setStatus(event.target.value as typeof status)}
+                    onChange={(event) =>
+                      setStatus(event.target.value as typeof status)
+                    }
                   >
                     {transactionStatusOptions.map((option) => (
-                      <NativeSelectOption key={option.value} value={option.value}>
+                      <NativeSelectOption
+                        key={option.value}
+                        value={option.value}
+                      >
                         {option.label}
                       </NativeSelectOption>
                     ))}
@@ -630,14 +597,19 @@ function TransactionsPage() {
                     value={toAccountId}
                     onChange={(event) => setToAccountId(event.target.value)}
                   >
-                    <NativeSelectOption value="">Choose account</NativeSelectOption>
+                    <NativeSelectOption value="">
+                      Choose account
+                    </NativeSelectOption>
                     {accountOptions
                       .filter(
                         (account) =>
                           account._id !== (accountId || accountOptions[0]?._id)
                       )
                       .map((account) => (
-                        <NativeSelectOption key={account._id} value={account._id}>
+                        <NativeSelectOption
+                          key={account._id}
+                          value={account._id}
+                        >
                           {account.name}
                         </NativeSelectOption>
                       ))}
@@ -660,7 +632,10 @@ function TransactionsPage() {
                       </NativeSelectOption>
                     ) : null}
                     {categoryOptions.map((category) => (
-                      <NativeSelectOption key={category._id} value={category._id}>
+                      <NativeSelectOption
+                        key={category._id}
+                        value={category._id}
+                      >
                         {category.name}
                       </NativeSelectOption>
                     ))}
@@ -720,7 +695,11 @@ function TransactionsPage() {
                     : "Save transaction"}
               </Button>
               {editingTransactionId ? (
-                <Button type="button" variant="outline" onClick={openCreateDialog}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={openCreateDialog}
+                >
                   New transaction
                 </Button>
               ) : null}
@@ -729,5 +708,142 @@ function TransactionsPage() {
         </DialogContent>
       </Dialog>
     </section>
+  )
+}
+
+function TransactionsFilters({
+  idPrefix,
+  accountOptions,
+  categoryOptions,
+  filteredCount,
+  activeFilterCount,
+  typeFilter,
+  statusFilter,
+  accountFilter,
+  categoryFilter,
+  fromDate,
+  toDate,
+  setTypeFilter,
+  setStatusFilter,
+  setAccountFilter,
+  setCategoryFilter,
+  setFromDate,
+  setToDate,
+  onClear,
+}: TransactionsFiltersProps) {
+  return (
+    <div className="space-y-5">
+      <div className="grid gap-4">
+        <Field>
+          <FieldLabel htmlFor={`${idPrefix}-filter-type`}>
+            <FieldTitle>Type</FieldTitle>
+          </FieldLabel>
+          <NativeSelect
+            id={`${idPrefix}-filter-type`}
+            value={typeFilter}
+            onChange={(event) => setTypeFilter(event.target.value)}
+          >
+            <NativeSelectOption value="all">All types</NativeSelectOption>
+            {transactionTypeOptions.map((option) => (
+              <NativeSelectOption key={option.value} value={option.value}>
+                {option.label}
+              </NativeSelectOption>
+            ))}
+          </NativeSelect>
+        </Field>
+
+        <Field>
+          <FieldLabel htmlFor={`${idPrefix}-filter-status`}>
+            <FieldTitle>Status</FieldTitle>
+          </FieldLabel>
+          <NativeSelect
+            id={`${idPrefix}-filter-status`}
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+          >
+            <NativeSelectOption value="all">All statuses</NativeSelectOption>
+            {transactionStatusOptions.map((option) => (
+              <NativeSelectOption key={option.value} value={option.value}>
+                {option.label}
+              </NativeSelectOption>
+            ))}
+          </NativeSelect>
+        </Field>
+
+        <Field>
+          <FieldLabel htmlFor={`${idPrefix}-filter-account`}>
+            <FieldTitle>Account</FieldTitle>
+          </FieldLabel>
+          <NativeSelect
+            id={`${idPrefix}-filter-account`}
+            value={accountFilter}
+            onChange={(event) => setAccountFilter(event.target.value)}
+          >
+            <NativeSelectOption value="all">All accounts</NativeSelectOption>
+            {accountOptions.map((account) => (
+              <NativeSelectOption key={account._id} value={account._id}>
+                {account.name}
+              </NativeSelectOption>
+            ))}
+          </NativeSelect>
+        </Field>
+
+        <Field>
+          <FieldLabel htmlFor={`${idPrefix}-filter-category`}>
+            <FieldTitle>Category</FieldTitle>
+          </FieldLabel>
+          <NativeSelect
+            id={`${idPrefix}-filter-category`}
+            value={categoryFilter}
+            onChange={(event) => setCategoryFilter(event.target.value)}
+          >
+            <NativeSelectOption value="all">All categories</NativeSelectOption>
+            {categoryOptions.map((category) => (
+              <NativeSelectOption key={category._id} value={category._id}>
+                {category.name}
+              </NativeSelectOption>
+            ))}
+          </NativeSelect>
+        </Field>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field>
+            <FieldLabel htmlFor={`${idPrefix}-filter-from-date`}>
+              <FieldTitle>From</FieldTitle>
+            </FieldLabel>
+            <Input
+              id={`${idPrefix}-filter-from-date`}
+              type="date"
+              value={fromDate}
+              onChange={(event) => setFromDate(event.target.value)}
+            />
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor={`${idPrefix}-filter-to-date`}>
+              <FieldTitle>To</FieldTitle>
+            </FieldLabel>
+            <Input
+              id={`${idPrefix}-filter-to-date`}
+              type="date"
+              value={toDate}
+              onChange={(event) => setToDate(event.target.value)}
+            />
+          </Field>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between gap-3 rounded-3xl border border-border/60 bg-background/60 px-4 py-3">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <CalendarRangeIcon className="size-4" />
+          <span>{filteredCount} matching transactions</span>
+        </div>
+        {activeFilterCount > 0 ? (
+          <Button size="sm" variant="ghost" onClick={onClear}>
+            Clear all
+          </Button>
+        ) : null}
+      </div>
+    </div>
   )
 }

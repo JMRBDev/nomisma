@@ -27,7 +27,7 @@ export function DashboardPageHeader({
 }: {
   eyebrow?: string
   title: string
-  description: string
+  description?: string
   action?: ReactNode
 }) {
   return (
