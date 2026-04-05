@@ -1,3 +1,11 @@
+import {
+  addDays,
+  endOfMonth,
+  endOfWeek,
+  startOfMonth,
+  startOfWeek,
+  subMonths,
+} from "date-fns"
 import { formatDateLabel } from "@/lib/money"
 
 const ISO_DAY_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/
@@ -10,6 +18,11 @@ export type OverviewDateFilterSearch = {
 export type OverviewDateFilterValues = {
   fromDate: string
   toDate: string
+}
+
+export type OverviewDateFilterPreset = {
+  label: string
+  values: OverviewDateFilterValues
 }
 
 export const DEFAULT_OVERVIEW_DATE_FILTER_VALUES: OverviewDateFilterValues = {
@@ -38,6 +51,63 @@ export function toOverviewDayKey(date: Date) {
   const day = String(date.getDate()).padStart(2, "0")
 
   return `${year}-${month}-${day}`
+}
+
+function createOverviewDateFilterValues(
+  startDate: Date,
+  endDate: Date = startDate
+): OverviewDateFilterValues {
+  return {
+    fromDate: toOverviewDayKey(startDate),
+    toDate: toOverviewDayKey(endDate),
+  }
+}
+
+export function getOverviewDateFilterPresets(
+  referenceDate: Date = new Date()
+): Array<OverviewDateFilterPreset> {
+  const previousDay = addDays(referenceDate, -1)
+  const previousWeek = addDays(referenceDate, -7)
+  const previousMonth = subMonths(referenceDate, 1)
+
+  return [
+    {
+      label: "Today",
+      values: createOverviewDateFilterValues(referenceDate),
+    },
+    {
+      label: "Yesterday",
+      values: createOverviewDateFilterValues(previousDay),
+    },
+    {
+      label: "This week",
+      values: createOverviewDateFilterValues(
+        startOfWeek(referenceDate),
+        endOfWeek(referenceDate)
+      ),
+    },
+    {
+      label: "Last week",
+      values: createOverviewDateFilterValues(
+        startOfWeek(previousWeek),
+        endOfWeek(previousWeek)
+      ),
+    },
+    {
+      label: "This month",
+      values: createOverviewDateFilterValues(
+        startOfMonth(referenceDate),
+        endOfMonth(referenceDate)
+      ),
+    },
+    {
+      label: "Last month",
+      values: createOverviewDateFilterValues(
+        startOfMonth(previousMonth),
+        endOfMonth(previousMonth)
+      ),
+    },
+  ]
 }
 
 export function parseOverviewDateFilterSearch(

@@ -1,9 +1,14 @@
 import type { DateRange } from "react-day-picker"
-import type { OverviewDateFilterValues } from "@/components/dashboard/overview/overview-date-filter"
+import type {
+  OverviewDateFilterPreset,
+  OverviewDateFilterValues,
+} from "@/components/dashboard/overview/overview-date-filter"
 import { DashboardFilterSheet } from "@/components/dashboard/dashboard-filter-sheet"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import {
+  createOverviewDateFilterSearch,
+  getOverviewDateFilterPresets,
   parseOverviewDayKey,
   toOverviewDayKey,
 } from "@/components/dashboard/overview/overview-date-filter"
@@ -27,6 +32,18 @@ export function OverviewDateFilterSheet({
   canApply: boolean
   canReset: boolean
 }) {
+  const presets = getOverviewDateFilterPresets()
+  const selectedSearch = createOverviewDateFilterSearch(values)
+
+  const isPresetActive = (preset: OverviewDateFilterPreset) => {
+    const presetSearch = createOverviewDateFilterSearch(preset.values)
+
+    return (
+      presetSearch.from === selectedSearch.from &&
+      presetSearch.to === selectedSearch.to
+    )
+  }
+
   return (
     <DashboardFilterSheet
       open={open}
@@ -35,6 +52,20 @@ export function OverviewDateFilterSheet({
       description="Filter dashboard activity by a single day or a custom date range."
     >
       <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {presets.map((preset) => (
+            <Button
+              key={preset.label}
+              type="button"
+              size="sm"
+              variant={isPresetActive(preset) ? "secondary" : "outline"}
+              onClick={() => onChange(preset.values)}
+            >
+              {preset.label}
+            </Button>
+          ))}
+        </div>
+
         <div className="overflow-hidden rounded-4xl border border-border/60 bg-background/60">
           <Calendar
             mode="range"
