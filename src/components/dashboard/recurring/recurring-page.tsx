@@ -232,13 +232,17 @@ export function RecurringPage() {
             />
           </div>
 
-          <RecurringTable
-            recurringItems={recurringItems}
-            currency={currency}
-            pendingRuleId={pendingRuleId}
-            today={today}
-            onConfirm={handleConfirm}
-          />
+          <Card>
+            <CardContent>
+              <RecurringTable
+                recurringItems={recurringItems}
+                currency={currency}
+                pendingRuleId={pendingRuleId}
+                today={today}
+                onConfirm={handleConfirm}
+              />
+            </CardContent>
+          </Card>
         </>
       ) : accountOptions.length === 0 ? (
         <GuidedEmptyState

@@ -20,6 +20,7 @@ import { TransactionsTable } from "@/components/dashboard/transactions/transacti
 import { useTransactionEditor } from "@/hooks/use-transaction-editor"
 import { Button } from "@/components/ui/button"
 import { useTransactionsPageData } from "@/hooks/use-money-dashboard"
+import { Card, CardContent } from "@/components/ui/card"
 
 export function TransactionsPage() {
   const { data } = useTransactionsPageData()
@@ -108,25 +109,27 @@ export function TransactionsPage() {
           icon={<ReceiptTextIcon className="size-5" />}
         />
       ) : (
-        <>
-          {filteredTransactions.length === 0 ? (
-            <TransactionsEmptyState
-              hasFilters={activeFilterCount > 0}
-              onAddTransaction={transactionEditor.openCreateDialog}
-              onClearFilters={() => setFilters(DEFAULT_FILTER_VALUES)}
-              title="No transactions yet"
-              description="Add your first income, expense, or transfer to start building a reliable activity history."
-              actionLabel="Add transaction"
-            />
-          ) : (
-            <TransactionsTable
-              transactions={filteredTransactions}
-              currency={data.settings?.baseCurrency}
-              onEdit={transactionEditor.openEditDialog}
-              onDelete={transactionEditor.deleteTransaction}
-            />
-          )}
-        </>
+        <Card>
+          <CardContent>
+            {filteredTransactions.length === 0 ? (
+              <TransactionsEmptyState
+                hasFilters={activeFilterCount > 0}
+                onAddTransaction={transactionEditor.openCreateDialog}
+                onClearFilters={() => setFilters(DEFAULT_FILTER_VALUES)}
+                title="No transactions yet"
+                description="Add your first income, expense, or transfer to start building a reliable activity history."
+                actionLabel="Add transaction"
+              />
+            ) : (
+              <TransactionsTable
+                transactions={filteredTransactions}
+                currency={data.settings?.baseCurrency}
+                onEdit={transactionEditor.openEditDialog}
+                onDelete={transactionEditor.deleteTransaction}
+              />
+            )}
+          </CardContent>
+        </Card>
       )}
 
       <TransactionFiltersSheet

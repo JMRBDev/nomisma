@@ -190,13 +190,17 @@ export function BudgetsPage() {
             />
           </div>
 
-          <BudgetsTable
-            budgets={budgets}
-            currency={currency}
-            pendingBudgetId={pendingBudgetId}
-            onEdit={openEditDialog}
-            onDelete={handleDelete}
-          />
+          <Card>
+            <CardContent>
+              <BudgetsTable
+                budgets={budgets}
+                currency={currency}
+                pendingBudgetId={pendingBudgetId}
+                onEdit={openEditDialog}
+                onDelete={handleDelete}
+              />
+            </CardContent>
+          </Card>
         </>
       ) : (
         <BudgetsEmptyState

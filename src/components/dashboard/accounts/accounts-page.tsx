@@ -117,17 +117,21 @@ export function AccountsPage() {
           </div>
 
           {activeAccounts.length > 0 ? (
-            <>
-              <p className="font-heading font-medium text-xl mb-2">Active</p>
+            <Card>
+              <CardHeader>
+                <CardTitle>Active accounts</CardTitle>
+              </CardHeader>
 
-              <AccountsTable
-                accounts={activeAccounts}
-                currency={currency}
-                archived={false}
-                pendingAccountId={pendingArchiveId}
-                onToggleArchived={handleToggleArchived}
-              />
-            </>
+              <CardContent>
+                <AccountsTable
+                  accounts={activeAccounts}
+                  currency={currency}
+                  archived={false}
+                  pendingAccountId={pendingArchiveId}
+                  onToggleArchived={handleToggleArchived}
+                />
+              </CardContent>
+            </Card>
           ) : (
             <AccountsEmptyState
               hasArchivedAccounts={archivedAccounts.length > 0}
@@ -136,17 +140,21 @@ export function AccountsPage() {
           )}
 
           {archivedAccounts.length > 0 ? (
-            <>
-              <p className="font-heading font-medium text-xl mb-2">Archived</p>
+            <Card>
+              <CardHeader>
+                <CardTitle>Archived accounts</CardTitle>
+              </CardHeader>
 
-              <AccountsTable
-                accounts={archivedAccounts}
-                currency={currency}
-                archived
-                pendingAccountId={pendingArchiveId}
-                onToggleArchived={handleToggleArchived}
-              />
-            </>
+              <CardContent>
+                <AccountsTable
+                  accounts={archivedAccounts}
+                  currency={currency}
+                  archived
+                  pendingAccountId={pendingArchiveId}
+                  onToggleArchived={handleToggleArchived}
+                />
+              </CardContent>
+            </Card>
           ) : null}
         </>
       ) : (
