@@ -2,13 +2,9 @@ import { useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { PlusIcon } from "lucide-react"
 import { api } from "../../../../convex/_generated/api"
+import type { BudgetRecord } from "@/components/dashboard/budgets/budgets-shared"
 import { BudgetFormDialog } from "@/components/dashboard/budgets/budget-form-dialog"
 import { BudgetsEmptyState } from "@/components/dashboard/budgets/budgets-empty-state"
-import type {
-  BudgetFieldErrors,
-  BudgetFormValues,
-  BudgetRecord,
-} from "@/components/dashboard/budgets/budgets-shared"
 import { BudgetsTable } from "@/components/dashboard/budgets/budgets-table"
 import {
   buildBudgetPayload,
@@ -19,34 +15,34 @@ import {
 import { DashboardPageActions } from "@/components/dashboard/dashboard-page-actions"
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
 import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
+import { DashboardSummaryCard } from "@/components/dashboard/dashboard-summary-card"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
+import { useFormDialog } from "@/hooks/use-form-dialog"
 import { useBudgetsPageData } from "@/hooks/use-money-dashboard"
-import { cn } from "@/lib/utils"
 import { formatCurrency, formatMonthLabel } from "@/lib/money"
 
 export function BudgetsPage() {
   const { data } = useBudgetsPageData()
   const upsertBudget = useConvexMutation(api.budgets.upsertBudget)
   const deleteBudget = useConvexMutation(api.budgets.deleteBudget)
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [editingBudget, setEditingBudget] = useState<BudgetRecord | null>(null)
-  const [values, setValues] = useState<BudgetFormValues>({
-    categoryId: "total",
-    limitAmount: "0",
-  })
-  const [errors, setErrors] = useState<BudgetFieldErrors>({})
-  const [formError, setFormError] = useState("")
-  const [pending, setPending] = useState(false)
   const [pendingBudgetId, setPendingBudgetId] = useState<
     BudgetRecord["_id"] | null
   >(null)
+
+  const dialog = useFormDialog({
+    createDefaults: () => {
+      const categoryOptions = data?.categories.activeExpense ?? []
+      return createBudgetDefaults(categoryOptions)
+    },
+    createFormValues: createBudgetFormValues,
+    validate: (values) =>
+      validateBudgetValues(values, data?.categories.activeExpense ?? []),
+    onSubmit: async (values) => {
+      if (!data) return
+      await upsertBudget(buildBudgetPayload(values, data.budgets.currentMonth))
+    },
+  })
 
   if (!data) {
     return <section className="min-h-[calc(100vh-12rem)]" />
@@ -63,82 +59,13 @@ export function BudgetsPage() {
     (budget) => budget.status === "near"
   ).length
 
-  const resetDialogState = () => {
-    setErrors({})
-    setFormError("")
-    setPending(false)
-  }
-
-  const openCreateDialog = () => {
-    setEditingBudget(null)
-    setValues(createBudgetDefaults(categoryOptions))
-    resetDialogState()
-    setDialogOpen(true)
-  }
-
-  const openEditDialog = (budget: BudgetRecord) => {
-    setEditingBudget(budget)
-    setValues(createBudgetFormValues(budget))
-    resetDialogState()
-    setDialogOpen(true)
-  }
-
-  const handleDialogOpenChange = (open: boolean) => {
-    setDialogOpen(open)
-
-    if (!open) {
-      setEditingBudget(null)
-      resetDialogState()
-    }
-  }
-
-  const handleValueChange = (name: keyof BudgetFormValues, value: string) => {
-    setValues((current) => ({
-      ...current,
-      [name]: value,
-    }))
-    setErrors((current) => ({
-      ...current,
-      [name]: undefined,
-    }))
-    setFormError("")
-  }
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
-    const nextErrors = validateBudgetValues(values, categoryOptions)
-    if (Object.keys(nextErrors).length > 0) {
-      setErrors(nextErrors)
-      return
-    }
-
-    setPending(true)
-    setFormError("")
-
-    try {
-      await upsertBudget(buildBudgetPayload(values, data.budgets.currentMonth))
-      setDialogOpen(false)
-      setEditingBudget(null)
-      setValues(createBudgetDefaults(categoryOptions))
-      setErrors({})
-    } catch (error) {
-      setFormError(
-        error instanceof Error ? error.message : "Could not save this budget."
-      )
-    } finally {
-      setPending(false)
-    }
-  }
-
   const handleDelete = async (budgetId: BudgetRecord["_id"]) => {
     setPendingBudgetId(budgetId)
 
     try {
       await deleteBudget({ budgetId })
-      if (editingBudget?._id === budgetId) {
-        setDialogOpen(false)
-        setEditingBudget(null)
+      if (dialog.editingEntity?._id === budgetId) {
+        dialog.handleDialogOpenChange(false)
       }
     } finally {
       setPendingBudgetId(null)
@@ -151,7 +78,7 @@ export function BudgetsPage() {
         title="Budgets"
         action={
           <DashboardPageActions>
-            <Button onClick={openCreateDialog}>
+            <Button onClick={dialog.openCreateDialog}>
               Add budget
               <PlusIcon />
             </Button>
@@ -162,17 +89,17 @@ export function BudgetsPage() {
       {budgets.length > 0 ? (
         <>
           <div className="grid gap-4 md:grid-cols-3">
-            <BudgetSummaryCard
+            <DashboardSummaryCard
               title="Planned this month"
               value={formatCurrency(data.budgets.totalPlanned, currency)}
               description={`${budgets.length} budget${budgets.length === 1 ? "" : "s"} in ${monthLabel}`}
             />
-            <BudgetSummaryCard
+            <DashboardSummaryCard
               title="Posted spending"
               value={formatCurrency(data.budgets.totalSpent, currency)}
               description={`Tracked posted expenses for ${monthLabel}`}
             />
-            <BudgetSummaryCard
+            <DashboardSummaryCard
               title="Remaining"
               value={
                 data.budgets.budgetRemaining === null
@@ -196,7 +123,7 @@ export function BudgetsPage() {
                 budgets={budgets}
                 currency={currency}
                 pendingBudgetId={pendingBudgetId}
-                onEdit={openEditDialog}
+                onEdit={dialog.openEditDialog}
                 onDelete={handleDelete}
               />
             </CardContent>
@@ -205,61 +132,33 @@ export function BudgetsPage() {
       ) : (
         <BudgetsEmptyState
           monthLabel={monthLabel}
-          onAddBudget={openCreateDialog}
+          onAddBudget={dialog.openCreateDialog}
         />
       )}
 
       <BudgetFormDialog
-        open={dialogOpen}
-        onOpenChange={handleDialogOpenChange}
-        onSubmit={handleSubmit}
+        open={dialog.dialogOpen}
+        onOpenChange={dialog.handleDialogOpenChange}
+        onSubmit={dialog.handleSubmit}
         onDelete={
-          editingBudget ? () => handleDelete(editingBudget._id) : undefined
+          dialog.editingEntity
+            ? () => handleDelete(dialog.editingEntity!._id)
+            : undefined
         }
-        editing={editingBudget !== null}
+        editing={dialog.isEditing}
         monthLabel={monthLabel}
-        values={values}
-        errors={errors}
-        formError={formError}
+        values={dialog.values}
+        errors={dialog.errors}
+        formError={dialog.formError}
         pending={
-          pending ||
-          (editingBudget ? pendingBudgetId === editingBudget._id : false)
+          dialog.pending ||
+          (dialog.editingEntity
+            ? pendingBudgetId === dialog.editingEntity._id
+            : false)
         }
         categoryOptions={categoryOptions}
-        onValueChange={handleValueChange}
+        onValueChange={dialog.handleValueChange}
       />
     </DashboardPageSection>
-  )
-}
-
-function BudgetSummaryCard({
-  title,
-  value,
-  description,
-  toneClassName,
-}: {
-  title: string
-  value: string
-  description: string
-  toneClassName?: string
-}) {
-  return (
-    <Card size="sm">
-      <CardHeader>
-        <CardTitle className="text-2xl">{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-
-      <CardContent className="flex-1 flex items-end">
-        <p
-          className={cn(
-            "font-heading text-2xl leading-none font-medium",
-            toneClassName
-          )}
-        >
-          {value}
-        </p>
-      </CardContent>
-    </Card>
   )
 }

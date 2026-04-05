@@ -4,12 +4,16 @@ import type {
   transactionStatusOptions,
   transactionTypeOptions,
 } from "@/lib/money"
+import {
+  getCategoryOptions as getCategoryOptionsGeneric,
+  getFirstOptionId,
+  resolveValidOption as resolveValidOptionGeneric,
+} from "@/lib/form-helpers"
 import { toAmountInput, todayInputValue } from "@/lib/money"
 
 type TransactionsData = NonNullable<
   ReturnType<typeof useTransactionsPageData>["data"]
 >
-type TransactionOption = { _id: string }
 type TransactionEditorOptions = {
   accountOptions: Array<AccountOption>
   incomeCategoryOptions: Array<CategoryOption>
@@ -77,10 +81,6 @@ export const DEFAULT_FILTER_VALUES: TransactionFilterValues = {
   categoryId: ALL_FILTER_VALUE,
 }
 
-function getFirstOptionId(options: Array<TransactionOption>) {
-  return options[0]?._id ?? ""
-}
-
 export function createTransactionDefaults(
   accountOptions: Array<AccountOption>,
   expenseCategoryOptions: Array<CategoryOption>
@@ -114,32 +114,12 @@ export function createTransactionFormValues(
   }
 }
 
-export function getCategoryOptions(
-  type: TransactionType,
-  incomeCategoryOptions: Array<CategoryOption>,
-  expenseCategoryOptions: Array<CategoryOption>
-): Array<CategoryOption> {
-  if (type === "income") {
-    return incomeCategoryOptions
-  }
+export const getCategoryOptions = getCategoryOptionsGeneric<
+  CategoryOption,
+  CategoryOption
+>
 
-  if (type === "expense") {
-    return expenseCategoryOptions
-  }
-
-  return []
-}
-
-export function resolveValidOption(
-  value: string,
-  options: Array<TransactionOption>
-): string {
-  if (options.some((option) => option._id === value)) {
-    return value
-  }
-
-  return getFirstOptionId(options)
-}
+export const resolveValidOption = resolveValidOptionGeneric
 
 export function filterTransactions(
   transactions: Array<TransactionRecord>,

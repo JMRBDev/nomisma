@@ -45,12 +45,9 @@ export function AccountFormDialog({
           onIncludeInTotalsChange={onIncludeInTotalsChange}
         />
 
-        {formError ? (
-          <p className="text-sm text-destructive">{formError}</p>
-        ) : null}
-
         <DashboardFormActions
           pending={pending}
+          formError={formError}
           submitLabel="Save account"
           pendingLabel="Saving..."
         />

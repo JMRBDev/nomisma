@@ -50,12 +50,9 @@ export function BudgetFormDialog({
           onValueChange={onValueChange}
         />
 
-        {formError ? (
-          <p className="text-sm text-destructive">{formError}</p>
-        ) : null}
-
         <DashboardFormActions
           pending={pending}
+          formError={formError}
           submitLabel={editing ? "Save changes" : "Save budget"}
           secondaryAction={
             editing && onDelete ? (

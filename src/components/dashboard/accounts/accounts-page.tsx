@@ -2,20 +2,15 @@ import { useMemo, useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { PlusIcon } from "lucide-react"
 import { api } from "../../../../convex/_generated/api"
+import type { AccountRecord } from "@/components/dashboard/accounts/accounts-shared"
 import { AccountFormDialog } from "@/components/dashboard/accounts/account-form-dialog"
 import { AccountsEmptyState } from "@/components/dashboard/accounts/accounts-empty-state"
-import type { AccountRecord } from "@/components/dashboard/accounts/accounts-shared"
 import { AccountsTable } from "@/components/dashboard/accounts/accounts-table"
 import { DashboardPageActions } from "@/components/dashboard/dashboard-page-actions"
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
 import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { DashboardSummaryCard } from "@/components/dashboard/dashboard-summary-card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useAccountsPageData } from "@/hooks/use-money-dashboard"
 import { useAccountCreator } from "@/hooks/use-account-creator"
@@ -99,17 +94,17 @@ export function AccountsPage() {
       {hasAnyAccounts ? (
         <>
           <div className="grid gap-4 md:grid-cols-3">
-            <AccountSummaryCard
+            <DashboardSummaryCard
               title="Active balance"
               value={formatCurrency(totalBalance, currency)}
               description={`${activeAccounts.length} active account${activeAccounts.length === 1 ? "" : "s"}`}
             />
-            <AccountSummaryCard
+            <DashboardSummaryCard
               title="Included in totals"
               value={formatCurrency(includedBalance, currency)}
               description="Balances that count toward dashboard totals"
             />
-            <AccountSummaryCard
+            <DashboardSummaryCard
               title="Excluded from totals"
               value={formatCurrency(excludedBalance, currency)}
               description={`${excludedAccountsCount} active account${excludedAccountsCount === 1 ? "" : "s"} kept out of totals`}
@@ -162,8 +157,7 @@ export function AccountsPage() {
           hasArchivedAccounts={false}
           onAddAccount={accountCreator.openDialog}
         />
-      )
-      }
+      )}
 
       <AccountFormDialog
         open={accountCreator.dialogOpen}
@@ -176,30 +170,6 @@ export function AccountsPage() {
         onValueChange={accountCreator.handleValueChange}
         onIncludeInTotalsChange={accountCreator.handleIncludeInTotalsChange}
       />
-    </DashboardPageSection >
-  )
-}
-
-function AccountSummaryCard({
-  title,
-  value,
-  description,
-}: {
-  title: string
-  value: string
-  description: string
-}) {
-  return (
-    <Card size="sm">
-      <CardHeader>
-        <CardTitle className="text-2xl">{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1 flex items-end">
-        <p className="font-heading text-2xl leading-none font-medium">
-          {value}
-        </p>
-      </CardContent>
-    </Card>
+    </DashboardPageSection>
   )
 }

@@ -63,9 +63,6 @@ export function RecurringFormDialog({
           onTypeChange={onTypeChange}
         />
 
-        {formError ? (
-          <p className="text-sm text-destructive">{formError}</p>
-        ) : null}
         {categoryOptions.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             Create at least one {values.type} category in Settings before saving
@@ -75,6 +72,7 @@ export function RecurringFormDialog({
 
         <DashboardFormActions
           pending={pending}
+          formError={formError}
           disabled={submitDisabled}
           submitLabel="Save recurring item"
         />

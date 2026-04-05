@@ -7,6 +7,7 @@ export function DashboardFormActions({
   pendingLabel = "Saving...",
   pending,
   disabled,
+  formError,
   secondaryAction,
   className,
 }: {
@@ -14,15 +15,21 @@ export function DashboardFormActions({
   pendingLabel?: string
   pending: boolean
   disabled?: boolean
+  formError?: string
   secondaryAction?: ReactNode
   className?: string
 }) {
   return (
-    <div className={cn("flex flex-wrap gap-3", className)}>
-      <Button type="submit" disabled={disabled || pending} className="flex-1">
-        {pending ? pendingLabel : submitLabel}
-      </Button>
-      {secondaryAction}
-    </div>
+    <>
+      {formError ? (
+        <p className="text-sm text-destructive">{formError}</p>
+      ) : null}
+      <div className={cn("flex flex-wrap gap-3", className)}>
+        <Button type="submit" disabled={disabled || pending} className="flex-1">
+          {pending ? pendingLabel : submitLabel}
+        </Button>
+        {secondaryAction}
+      </div>
+    </>
   )
 }

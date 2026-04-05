@@ -1,12 +1,15 @@
 import type { Id } from "../../../../convex/_generated/dataModel"
 import type { useRecurringPageData } from "@/hooks/use-money-dashboard"
 import type { recurringFrequencyOptions } from "@/lib/money"
+import {
+  getFirstOptionId,
+  resolveValidOption as resolveValidOptionGeneric,
+} from "@/lib/form-helpers"
 import { todayInputValue } from "@/lib/money"
 
 type RecurringData = NonNullable<
   ReturnType<typeof useRecurringPageData>["data"]
 >
-type RecurringOption = { _id: string }
 type RecurringEditorOptions = {
   accountOptions: Array<RecurringAccountOption>
   incomeCategoryOptions: Array<RecurringCategoryOption>
@@ -45,10 +48,6 @@ export type RecurringFieldErrors = Partial<
   Record<keyof RecurringFormValues, string>
 >
 
-function getFirstOptionId(options: Array<RecurringOption>) {
-  return options[0]?._id ?? ""
-}
-
 export function getCategoryOptions(
   type: RecurringType,
   incomeCategoryOptions: Array<RecurringCategoryOption>,
@@ -72,16 +71,7 @@ export function getDefaultRecurringType(
   return "expense"
 }
 
-export function resolveValidOption(
-  value: string,
-  options: Array<RecurringOption>
-) {
-  if (options.some((option) => option._id === value)) {
-    return value
-  }
-
-  return getFirstOptionId(options)
-}
+export const resolveValidOption = resolveValidOptionGeneric
 
 export function createRecurringDefaults(
   accountOptions: Array<RecurringAccountOption>,

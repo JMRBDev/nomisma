@@ -1,22 +1,16 @@
 import { useMemo, useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { getRouteApi, useNavigate } from "@tanstack/react-router"
-import {
-  FunnelIcon,
-  PlusIcon,
-  ShapesIcon,
-  WalletCardsIcon,
-} from "lucide-react"
+import { FunnelIcon, PlusIcon, ShapesIcon, WalletCardsIcon } from "lucide-react"
 import { api } from "../../../../convex/_generated/api"
 import type {
-  RecurringFieldErrors,
-  RecurringFormValues,
   RecurringRecord,
   RecurringType,
 } from "@/components/dashboard/recurring/recurring-shared"
 import { DashboardPageActions } from "@/components/dashboard/dashboard-page-actions"
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
 import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
+import { DashboardSummaryCard } from "@/components/dashboard/dashboard-summary-card"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
 import {
   getOverviewDateFilterLabel,
@@ -37,16 +31,10 @@ import {
 import { RecurringTable } from "@/components/dashboard/recurring/recurring-table"
 import { GuidedEmptyState } from "@/components/guided-empty-state"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
+import { useFormDialog } from "@/hooks/use-form-dialog"
 import { useRecurringPageData } from "@/hooks/use-money-dashboard"
 import { formatDateLabel, todayInputValue } from "@/lib/money"
-import { cn } from "@/lib/utils"
 
 const dashboardRouteApi = getRouteApi("/_authenticated/dashboard")
 
@@ -67,16 +55,34 @@ export function RecurringPage() {
   const confirmRecurringRule = useConvexMutation(
     api.recurring.confirmRecurringRule
   )
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [values, setValues] = useState<RecurringFormValues>(
-    createRecurringDefaults([], [], [])
-  )
-  const [errors, setErrors] = useState<RecurringFieldErrors>({})
-  const [formError, setFormError] = useState("")
-  const [pending, setPending] = useState(false)
   const [pendingRuleId, setPendingRuleId] = useState<
     RecurringRecord["_id"] | null
   >(null)
+
+  const dialog = useFormDialog({
+    createDefaults: () =>
+      createRecurringDefaults(
+        data?.accounts.active ?? [],
+        data?.categories.activeIncome ?? [],
+        data?.categories.activeExpense ?? []
+      ),
+    validate: (values) =>
+      validateRecurringValues(values, {
+        accountOptions: data?.accounts.active ?? [],
+        incomeCategoryOptions: data?.categories.activeIncome ?? [],
+        expenseCategoryOptions: data?.categories.activeExpense ?? [],
+      }),
+    onSubmit: async (values) => {
+      if (!data) return
+      await createRecurringRule(
+        buildRecurringPayload(values, {
+          accountOptions: data.accounts.active,
+          incomeCategoryOptions: data.categories.activeIncome,
+          expenseCategoryOptions: data.categories.activeExpense,
+        })
+      )
+    },
+  })
 
   if (!data) {
     return <section className="min-h-[calc(100vh-12rem)]" />
@@ -111,6 +117,7 @@ export function RecurringPage() {
     canConfirmRecurringItem(item, today)
   ).length
   const nextItem = recurringItems[0] ?? null
+
   const handleClearDateFilter = () => {
     void navigate({
       to: ".",
@@ -122,47 +129,6 @@ export function RecurringPage() {
     })
   }
 
-  const resetDialogState = () => {
-    setErrors({})
-    setFormError("")
-    setPending(false)
-  }
-
-  const openCreateDialog = () => {
-    setValues(
-      createRecurringDefaults(
-        accountOptions,
-        incomeCategoryOptions,
-        expenseCategoryOptions
-      )
-    )
-    resetDialogState()
-    setDialogOpen(true)
-  }
-
-  const handleDialogOpenChange = (open: boolean) => {
-    setDialogOpen(open)
-
-    if (!open) {
-      resetDialogState()
-    }
-  }
-
-  const handleValueChange = (
-    name: keyof RecurringFormValues,
-    value: string
-  ) => {
-    setValues((current) => ({
-      ...current,
-      [name]: value,
-    }))
-    setErrors((current) => ({
-      ...current,
-      [name]: undefined,
-    }))
-    setFormError("")
-  }
-
   const handleTypeChange = (value: RecurringType) => {
     const nextCategoryOptions = getCategoryOptions(
       value,
@@ -170,60 +136,11 @@ export function RecurringPage() {
       expenseCategoryOptions
     )
 
-    setValues((current) => ({
+    dialog.setValues((current) => ({
       ...current,
       type: value,
       categoryId: resolveValidOption(current.categoryId, nextCategoryOptions),
     }))
-    setErrors((current) => ({
-      ...current,
-      categoryId: undefined,
-    }))
-    setFormError("")
-  }
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
-    const nextErrors = validateRecurringValues(values, {
-      accountOptions,
-      incomeCategoryOptions,
-      expenseCategoryOptions,
-    })
-    if (Object.keys(nextErrors).length > 0) {
-      setErrors(nextErrors)
-      return
-    }
-
-    setPending(true)
-    setFormError("")
-
-    try {
-      await createRecurringRule(
-        buildRecurringPayload(values, {
-          accountOptions,
-          incomeCategoryOptions,
-          expenseCategoryOptions,
-        })
-      )
-      setDialogOpen(false)
-      setValues(
-        createRecurringDefaults(
-          accountOptions,
-          incomeCategoryOptions,
-          expenseCategoryOptions
-        )
-      )
-      setErrors({})
-    } catch (error) {
-      setFormError(
-        error instanceof Error
-          ? error.message
-          : "Could not save this recurring item."
-      )
-    } finally {
-      setPending(false)
-    }
   }
 
   const handleConfirm = async (ruleId: RecurringRecord["_id"]) => {
@@ -242,7 +159,7 @@ export function RecurringPage() {
         title="Recurring"
         action={
           <DashboardPageActions>
-            <Button onClick={openCreateDialog} disabled={createDisabled}>
+            <Button onClick={dialog.openCreateDialog} disabled={createDisabled}>
               Add recurring item
               <PlusIcon />
             </Button>
@@ -253,18 +170,18 @@ export function RecurringPage() {
       {hasRecurringItems ? (
         <>
           <div className="grid gap-4 md:grid-cols-3">
-            <RecurringSummaryCard
+            <DashboardSummaryCard
               title="Active schedules"
               value={recurringItems.length.toString()}
               description={`${activeExpenseCount} expense item${activeExpenseCount === 1 ? "" : "s"}, ${activeIncomeCount} income item${activeIncomeCount === 1 ? "" : "s"}`}
             />
-            <RecurringSummaryCard
+            <DashboardSummaryCard
               title="Due now"
               value={dueNowCount.toString()}
               description={`${data.recurring.overdue.length} overdue, ${data.recurring.dueSoon.length} due within 7 days`}
               toneClassName={dueNowCount > 0 ? "text-destructive" : undefined}
             />
-            <RecurringSummaryCard
+            <DashboardSummaryCard
               title="Next scheduled"
               value={formatDateLabel(nextItem.nextDueDate)}
               description={`${nextItem.description} • ${nextItem.frequency}`}
@@ -313,55 +230,23 @@ export function RecurringPage() {
           icon={<ShapesIcon className="size-5" />}
         />
       ) : (
-        <RecurringEmptyState onAddRecurring={openCreateDialog} />
+        <RecurringEmptyState onAddRecurring={dialog.openCreateDialog} />
       )}
 
       <RecurringFormDialog
-        open={dialogOpen}
-        onOpenChange={handleDialogOpenChange}
-        onSubmit={handleSubmit}
-        values={values}
-        errors={errors}
-        formError={formError}
-        pending={pending}
+        open={dialog.dialogOpen}
+        onOpenChange={dialog.handleDialogOpenChange}
+        onSubmit={dialog.handleSubmit}
+        values={dialog.values}
+        errors={dialog.errors}
+        formError={dialog.formError}
+        pending={dialog.pending}
         accountOptions={accountOptions}
         incomeCategoryOptions={incomeCategoryOptions}
         expenseCategoryOptions={expenseCategoryOptions}
-        onValueChange={handleValueChange}
+        onValueChange={dialog.handleValueChange}
         onTypeChange={handleTypeChange}
       />
     </DashboardPageSection>
-  )
-}
-
-function RecurringSummaryCard({
-  title,
-  value,
-  description,
-  toneClassName,
-}: {
-  title: string
-  value: string
-  description: string
-  toneClassName?: string
-}) {
-  return (
-    <Card size="sm">
-      <CardHeader>
-        <CardTitle className="text-2xl">{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-
-      <CardContent className="flex-1 flex items-end">
-        <p
-          className={cn(
-            "font-heading text-2xl leading-none font-medium",
-            toneClassName
-          )}
-        >
-          {value}
-        </p>
-      </CardContent>
-    </Card>
   )
 }

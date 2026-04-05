@@ -16,9 +16,9 @@ import {
 } from "@/components/dashboard/overview/overview-date-filter"
 import { OverviewAlerts } from "@/components/dashboard/overview/overview-alerts"
 import { OverviewChecklist } from "@/components/dashboard/overview/overview-checklist"
-import { OverviewEmptyState } from "@/components/dashboard/overview/overview-empty-state"
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
 import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
+import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
 import { OverviewPanelCard } from "@/components/dashboard/overview/overview-panel-card"
 import { OverviewRecentTransactionsTable } from "@/components/dashboard/overview/overview-recent-transactions-table"
 import { OverviewSummaryCards } from "@/components/dashboard/overview/overview-summary-cards"
@@ -34,9 +34,7 @@ export function OverviewPage() {
   const dateFilter = resolveOverviewDateFilterValues(search)
   const hasDateFilter = hasOverviewDateFilter(dateFilter)
   const filterLabel = getOverviewDateFilterLabel(dateFilter)
-  const activityLabel = hasDateFilter
-    ? filterLabel
-    : "the current month"
+  const activityLabel = hasDateFilter ? filterLabel : "the current month"
   const queryArgs = useMemo(
     () => getOverviewDateFilterQuery(dateFilter),
     [dateFilter.fromDate, dateFilter.toDate]
@@ -75,7 +73,10 @@ export function OverviewPage() {
           }
           action={
             <Button asChild size="sm" variant="outline">
-              <Link to="/dashboard/transactions" search={(previous) => previous}>
+              <Link
+                to="/dashboard/transactions"
+                search={(previous) => previous}
+              >
                 View all
                 <ArrowRightIcon />
               </Link>
@@ -88,7 +89,7 @@ export function OverviewPage() {
               currency={currency}
             />
           ) : (
-            <OverviewEmptyState
+            <FilteredResultsEmptyState
               title={
                 hasDateFilter
                   ? "No transactions in this date filter"
@@ -125,7 +126,7 @@ export function OverviewPage() {
             {data.overview.alerts.length > 0 ? (
               <OverviewAlerts alerts={data.overview.alerts} />
             ) : (
-              <OverviewEmptyState
+              <FilteredResultsEmptyState
                 title="No alerts right now"
                 description="Your dashboard is clear. New budget or recurring issues will show up here."
                 icon={CheckCircle2Icon}
@@ -158,7 +159,10 @@ export function OverviewPage() {
           }
           action={
             <Button asChild size="sm" variant="outline">
-              <Link to="/dashboard/transactions" search={(previous) => previous}>
+              <Link
+                to="/dashboard/transactions"
+                search={(previous) => previous}
+              >
                 View transactions
                 <ArrowRightIcon />
               </Link>
@@ -172,7 +176,7 @@ export function OverviewPage() {
               currency={currency}
             />
           ) : (
-            <OverviewEmptyState
+            <FilteredResultsEmptyState
               title={
                 hasDateFilter
                   ? "No expense activity in this date filter"
@@ -206,7 +210,7 @@ export function OverviewPage() {
               currency={currency}
             />
           ) : (
-            <OverviewEmptyState
+            <FilteredResultsEmptyState
               title="No recurring items yet"
               description="Add recurring income or bills so future cash movement is visible here."
               icon={RepeatIcon}
