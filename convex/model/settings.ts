@@ -27,14 +27,25 @@ export async function getSettingsPageData(ctx: QueryCtx) {
   }
 }
 
+export async function getUserSettings(ctx: QueryCtx) {
+  const user = await requireUser(ctx)
+  const { settings } = await getResolvedSettings(ctx, user._id)
+
+  return {
+    settings,
+  }
+}
+
 export async function upsertSettings(
   ctx: MutationCtx,
   args: {
     baseCurrency: string
+    weekStartsOn: "sunday" | "monday"
   }
 ) {
   const user = await requireUser(ctx)
   const baseCurrency = args.baseCurrency.trim()
+  const weekStartsOn = args.weekStartsOn
 
   if (!baseCurrency) {
     throw new ConvexError("Currency is required.")
@@ -49,6 +60,7 @@ export async function upsertSettings(
     await ctx.db.replace(existingSettings._id, {
       userId: existingSettings.userId,
       baseCurrency,
+      weekStartsOn,
       createdAt: existingSettings.createdAt,
       updatedAt: Date.now(),
     })
@@ -58,6 +70,7 @@ export async function upsertSettings(
   return ctx.db.insert("userSettings", {
     userId: user._id,
     baseCurrency,
+    weekStartsOn,
     createdAt: Date.now(),
     updatedAt: Date.now(),
   })

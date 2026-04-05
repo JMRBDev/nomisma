@@ -8,6 +8,7 @@ import {
   Field,
   FieldContent,
   FieldDescription,
+  FieldGroup,
   FieldTitle,
 } from "@/components/ui/field"
 import {
@@ -19,7 +20,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
-import { defaultCurrencyOptions } from "@/components/dashboard/settings/settings-shared"
+import {
+  defaultCurrencyOptions,
+  weekStartsOnOptions,
+} from "@/components/dashboard/settings/settings-shared"
 
 export function SettingsForm({
   initialValues,
@@ -44,7 +48,9 @@ export function SettingsForm({
       ...defaultCurrencyOptions,
     ]
 
-  const isDirty = values.baseCurrency !== savedValues.baseCurrency
+  const isDirty =
+    values.baseCurrency !== savedValues.baseCurrency ||
+    values.weekStartsOn !== savedValues.weekStartsOn
 
   const handleValueChange = (name: keyof SettingsFormValues, value: string) => {
     setValues((current) => ({
@@ -67,6 +73,7 @@ export function SettingsForm({
     try {
       await upsertSettings({
         baseCurrency: values.baseCurrency,
+        weekStartsOn: values.weekStartsOn,
       })
       setSavedValues(values)
     } catch (error) {
@@ -79,48 +86,76 @@ export function SettingsForm({
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col gap-4"
-    >
-      <Field>
-        <FieldContent>
-          <FieldTitle className="font-heading text-lg">Base currency</FieldTitle>
-          <FieldDescription>
-            Format balances, totals, and budget limits with one shared
-            currency.
-          </FieldDescription>
-        </FieldContent>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <FieldGroup>
+        <Field>
+          <FieldContent>
+            <FieldTitle className="font-heading text-lg">
+              Base currency
+            </FieldTitle>
+            <FieldDescription>
+              Format balances, totals, and budget limits with one shared currency.
+            </FieldDescription>
+          </FieldContent>
 
-        <Select
-          value={values.baseCurrency}
-          onValueChange={(value) => handleValueChange("baseCurrency", value)}
-        >
-          <SelectTrigger className="w-full sm:w-56">
-            <SelectValue placeholder="Choose a currency" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {currencyOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </Field>
+          <Select
+            value={values.baseCurrency}
+            onValueChange={(value) => handleValueChange("baseCurrency", value)}
+          >
+            <SelectTrigger className="w-full sm:w-56">
+              <SelectValue placeholder="Choose a currency" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {currencyOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </Field>
+
+        <Field>
+          <FieldContent>
+            <FieldTitle className="font-heading text-lg">
+              Week starts on
+            </FieldTitle>
+            <FieldDescription>
+              Control how weekly ranges and calendars are aligned across the app.
+            </FieldDescription>
+          </FieldContent>
+
+          <Select
+            value={values.weekStartsOn}
+            onValueChange={(value) => handleValueChange("weekStartsOn", value)}
+          >
+            <SelectTrigger className="w-full sm:w-56">
+              <SelectValue placeholder="Choose a day" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {weekStartsOnOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </Field>
+      </FieldGroup>
 
       <Separator />
 
       {formError ? (
         <>
           <FormErrorMessage error={formError} />
-          <Separator className="mt-5" />
         </>
       ) : null}
 
-      <div className="flex justify-end flex-wrap gap-2">
+      <div className="flex flex-wrap justify-end gap-2">
         <Button
           type="button"
           variant="outline"

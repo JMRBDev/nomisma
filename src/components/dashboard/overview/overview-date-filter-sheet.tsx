@@ -3,6 +3,7 @@ import type {
   OverviewDateFilterPreset,
   OverviewDateFilterValues,
 } from "@/components/dashboard/overview/overview-date-filter"
+import type { WeekStartsOnPreference } from "@/components/dashboard/settings/settings-shared"
 import { DashboardFilterSheet } from "@/components/dashboard/dashboard-filter-sheet"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -12,6 +13,7 @@ import {
   parseOverviewDayKey,
   toOverviewDayKey,
 } from "@/components/dashboard/overview/overview-date-filter"
+import { toWeekStartsOnDayIndex } from "@/components/dashboard/settings/settings-shared"
 
 export function OverviewDateFilterSheet({
   open,
@@ -22,6 +24,7 @@ export function OverviewDateFilterSheet({
   onReset,
   canApply,
   canReset,
+  weekStartsOn,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -31,8 +34,9 @@ export function OverviewDateFilterSheet({
   onReset: () => void
   canApply: boolean
   canReset: boolean
+  weekStartsOn: WeekStartsOnPreference
 }) {
-  const presets = getOverviewDateFilterPresets()
+  const presets = getOverviewDateFilterPresets(new Date(), weekStartsOn)
   const selectedSearch = createOverviewDateFilterSearch(values)
 
   const isPresetActive = (preset: OverviewDateFilterPreset) => {
@@ -76,13 +80,13 @@ export function OverviewDateFilterSheet({
             selected={
               values.fromDate || values.toDate
                 ? ({
-                  from: values.fromDate
-                    ? parseOverviewDayKey(values.fromDate)
-                    : undefined,
-                  to: values.toDate
-                    ? parseOverviewDayKey(values.toDate)
-                    : undefined,
-                } satisfies DateRange)
+                    from: values.fromDate
+                      ? parseOverviewDayKey(values.fromDate)
+                      : undefined,
+                    to: values.toDate
+                      ? parseOverviewDayKey(values.toDate)
+                      : undefined,
+                  } satisfies DateRange)
                 : undefined
             }
             onSelect={(range) =>
@@ -91,8 +95,9 @@ export function OverviewDateFilterSheet({
                 toDate: range?.to ? toOverviewDayKey(range.to) : "",
               })
             }
-            footer={(
-              <div className="flex items-center gap-2 mt-4 justify-end">
+            weekStartsOn={toWeekStartsOnDayIndex(weekStartsOn)}
+            footer={
+              <div className="mt-4 flex items-center justify-end gap-2">
                 {canReset ? (
                   <Button size="sm" variant="outline" onClick={onReset}>
                     Clear all
@@ -102,7 +107,7 @@ export function OverviewDateFilterSheet({
                   Apply
                 </Button>
               </div>
-            )}
+            }
             className="w-full"
           />
         </div>

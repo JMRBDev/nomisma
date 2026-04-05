@@ -28,3 +28,7 @@ export function useRecurringPageData() {
 export function useSettingsPageData() {
   return useQuery(convexQuery(api.settings.getSettingsPageData, {}))
 }
+
+export function useUserSettings() {
+  return useQuery(convexQuery(api.settings.getUserSettings, {}))
+}

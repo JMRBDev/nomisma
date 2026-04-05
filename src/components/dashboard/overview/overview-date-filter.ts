@@ -6,7 +6,9 @@ import {
   startOfWeek,
   subMonths,
 } from "date-fns"
+import type { WeekStartsOnPreference } from "@/components/dashboard/settings/settings-shared"
 import { formatDateLabel } from "@/lib/money"
+import { toWeekStartsOnDayIndex } from "@/components/dashboard/settings/settings-shared"
 
 const ISO_DAY_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/
 
@@ -64,11 +66,13 @@ function createOverviewDateFilterValues(
 }
 
 export function getOverviewDateFilterPresets(
-  referenceDate: Date = new Date()
+  referenceDate: Date = new Date(),
+  weekStartsOn: WeekStartsOnPreference = "sunday"
 ): Array<OverviewDateFilterPreset> {
   const previousDay = addDays(referenceDate, -1)
   const previousWeek = addDays(referenceDate, -7)
   const previousMonth = subMonths(referenceDate, 1)
+  const weekStartsOnDayIndex = toWeekStartsOnDayIndex(weekStartsOn)
 
   return [
     {
@@ -82,15 +86,15 @@ export function getOverviewDateFilterPresets(
     {
       label: "This week",
       values: createOverviewDateFilterValues(
-        startOfWeek(referenceDate),
-        endOfWeek(referenceDate)
+        startOfWeek(referenceDate, { weekStartsOn: weekStartsOnDayIndex }),
+        endOfWeek(referenceDate, { weekStartsOn: weekStartsOnDayIndex })
       ),
     },
     {
       label: "Last week",
       values: createOverviewDateFilterValues(
-        startOfWeek(previousWeek),
-        endOfWeek(previousWeek)
+        startOfWeek(previousWeek, { weekStartsOn: weekStartsOnDayIndex }),
+        endOfWeek(previousWeek, { weekStartsOn: weekStartsOnDayIndex })
       ),
     },
     {

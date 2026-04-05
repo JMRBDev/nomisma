@@ -31,10 +31,16 @@ export const recurringFrequencyValidator = v.union(
   v.literal("yearly")
 )
 
+export const weekStartsOnPreferenceValidator = v.union(
+  v.literal("sunday"),
+  v.literal("monday")
+)
+
 export default defineSchema({
   userSettings: defineTable({
     userId: v.string(),
     baseCurrency: v.string(),
+    weekStartsOn: v.optional(weekStartsOnPreferenceValidator),
     createdAt: v.number(),
     updatedAt: v.number(),
   }).index("by_userId", ["userId"]),

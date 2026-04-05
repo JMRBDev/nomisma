@@ -4,6 +4,7 @@ import { SettingsForm } from "@/components/dashboard/settings/settings-form"
 import { ThemePreferenceField } from "@/components/dashboard/settings/theme-preference-field"
 import { createSettingsFormValues } from "@/components/dashboard/settings/settings-shared"
 import { useSettingsPageData } from "@/hooks/use-money-dashboard"
+import { Separator } from "@/components/ui/separator"
 
 export function SettingsPage() {
   const { data } = useSettingsPageData()
@@ -15,17 +16,21 @@ export function SettingsPage() {
   const currentValues = createSettingsFormValues(data.settings)
 
   return (
-    <DashboardPageSection className="gap-8">
+    <DashboardPageSection>
       <div className="flex flex-col gap-3">
         <DashboardPageHeader title="Settings" />
       </div>
 
-      <ThemePreferenceField />
+      <div className="flex flex-col gap-4">
+        <ThemePreferenceField />
 
-      <SettingsForm
-        key={currentValues.baseCurrency}
-        initialValues={currentValues}
-      />
+        <Separator />
+
+        <SettingsForm
+          key={`${currentValues.baseCurrency}-${currentValues.weekStartsOn}`}
+          initialValues={currentValues}
+        />
+      </div>
     </DashboardPageSection>
   )
 }
