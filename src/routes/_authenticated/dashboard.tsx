@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 function DashboardLayout() {
   return (
     <AppShell>
-      <main className="flex-1 p-4 md:p-6">
+      <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-auto p-4 md:p-6">
         <Outlet />
       </main>
     </AppShell>

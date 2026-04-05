@@ -5,5 +5,13 @@ export function DashboardPageSection({
   className,
   ...props
 }: ComponentProps<"section">) {
-  return <section className={cn("space-y-6", className)} {...props} />
+  return (
+    <section
+      className={cn(
+        "flex min-h-0 min-w-0 flex-1 flex-col gap-6 *:min-w-0",
+        className
+      )}
+      {...props}
+    />
+  )
 }
