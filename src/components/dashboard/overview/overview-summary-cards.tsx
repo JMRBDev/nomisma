@@ -16,6 +16,7 @@ export function OverviewSummaryCards({
   hasAccounts,
   currentMonth,
   currency,
+  activityLabel,
 }: {
   currentMoney: number
   income: number
@@ -25,6 +26,7 @@ export function OverviewSummaryCards({
   hasAccounts: boolean
   currentMonth: string
   currency?: string | null
+  activityLabel: string
 }) {
   const monthLabel = formatMonthLabel(currentMonth)
   const netToneClassName = net < 0 ? "text-destructive" : "text-emerald-400"
@@ -58,21 +60,21 @@ export function OverviewSummaryCards({
       <OverviewMetricCard
         title="Income"
         value={formatCurrency(income, currency)}
-        description="Posted income in the current reporting period"
+        description={`Posted income in ${activityLabel}`}
         icon={<PiggyBankIcon className="size-4" />}
         valueClassName="text-emerald-400"
       />
       <OverviewMetricCard
         title="Expenses"
         value={formatCurrency(expenses, currency)}
-        description="Posted spending in the current reporting period"
+        description={`Posted spending in ${activityLabel}`}
         icon={<ReceiptTextIcon className="size-4" />}
         valueClassName="text-rose-300"
       />
       <OverviewMetricCard
         title="Net"
         value={formatCurrency(net, currency)}
-        description="Income minus expenses for the current reporting period"
+        description={`Income minus expenses in ${activityLabel}`}
         icon={<TargetIcon className="size-4" />}
         valueClassName={netToneClassName}
       />

@@ -23,7 +23,7 @@ import type { QueryCtx } from "../_generated/server"
 
 function buildTopSpendingCategories(
   transactions: ReturnType<typeof buildMappedTransactions>,
-  reportingPeriod: { start: string; end: string }
+  dateRange: { startDate: string; endDate: string }
 ) {
   const spendByCategory = new Map<
     string,
@@ -35,7 +35,7 @@ function buildTopSpendingCategories(
       transaction.status !== "posted" ||
       transaction.type !== "expense" ||
       !transaction.categoryId ||
-      !inRange(transaction.date, reportingPeriod.start, reportingPeriod.end)
+      !inRange(transaction.date, dateRange.startDate, dateRange.endDate)
     ) {
       continue
     }
@@ -57,6 +57,32 @@ function buildTopSpendingCategories(
   return [...spendByCategory.values()]
     .sort((a, b) => b.amount - a.amount)
     .slice(0, 5)
+}
+
+function resolveSelectedDateRange(args: {
+  startDate?: string
+  endDate?: string
+  reportingPeriod: { start: string; end: string }
+}) {
+  if (args.startDate && args.endDate) {
+    return args.startDate <= args.endDate
+      ? {
+          startDate: args.startDate,
+          endDate: args.endDate,
+          isFiltered: true,
+        }
+      : {
+          startDate: args.endDate,
+          endDate: args.startDate,
+          isFiltered: true,
+        }
+  }
+
+  return {
+    startDate: args.reportingPeriod.start,
+    endDate: args.reportingPeriod.end,
+    isFiltered: false,
+  }
 }
 
 function buildOverviewAlerts(args: {
@@ -130,14 +156,18 @@ function buildOverviewAlerts(args: {
     alerts.unshift({
       kind: "default" as const,
       title: "Choose your base currency",
-      description: "Set your currency and reporting month before you rely on totals.",
+      description:
+        "Set your currency and reporting month before you rely on totals.",
     })
   }
 
   return alerts
 }
 
-export async function getOverviewData(ctx: QueryCtx) {
+export async function getOverviewData(
+  ctx: QueryCtx,
+  args: { startDate?: string; endDate?: string }
+) {
   const user = await requireUser(ctx)
   const now = new Date()
   const today = toDayKey(now)
@@ -155,10 +185,15 @@ export async function getOverviewData(ctx: QueryCtx) {
     getTransactionsByUserId(ctx, user._id),
     getBudgetsByUserId(ctx, user._id),
     getRecurringRulesByUserId(ctx, user._id),
-  ]) 
+  ])
 
   const currentMonth = getCurrentCalendarMonth(now)
   const reportingPeriod = getReportingPeriod(now, settings?.monthStartsOn ?? 1)
+  const selectedDateRange = resolveSelectedDateRange({
+    startDate: args.startDate,
+    endDate: args.endDate,
+    reportingPeriod,
+  })
   const dashboardTransactions = buildMappedTransactions(
     accounts,
     categories,
@@ -185,7 +220,11 @@ export async function getOverviewData(ctx: QueryCtx) {
   const postedTransactionsInReportingPeriod = dashboardTransactions.filter(
     (transaction) =>
       transaction.status === "posted" &&
-      inRange(transaction.date, reportingPeriod.start, reportingPeriod.end)
+      inRange(
+        transaction.date,
+        selectedDateRange.startDate,
+        selectedDateRange.endDate
+      )
   )
 
   const income = postedTransactionsInReportingPeriod
@@ -220,7 +259,7 @@ export async function getOverviewData(ctx: QueryCtx) {
       budgetRemaining: budgetsView.budgetRemaining,
       topSpendingCategories: buildTopSpendingCategories(
         dashboardTransactions,
-        reportingPeriod
+        selectedDateRange
       ),
       alerts: buildOverviewAlerts({
         budgetStatuses: budgetsView.items,
@@ -231,7 +270,17 @@ export async function getOverviewData(ctx: QueryCtx) {
         hasSettings: Boolean(settingsDoc),
         today,
       }),
-      recentTransactions: dashboardTransactions.slice(0, 8),
+      recentTransactions: selectedDateRange.isFiltered
+        ? dashboardTransactions
+            .filter((transaction) =>
+              inRange(
+                transaction.date,
+                selectedDateRange.startDate,
+                selectedDateRange.endDate
+              )
+            )
+            .slice(0, 8)
+        : dashboardTransactions.slice(0, 8),
       upcomingRecurring: recurring.all.slice(0, 8),
     },
     onboarding: {
@@ -272,7 +321,8 @@ export async function getOverviewData(ctx: QueryCtx) {
         {
           id: "categories",
           title: "Create your categories",
-          description: "Add the income and expense categories you actually use.",
+          description:
+            "Add the income and expense categories you actually use.",
           completed: categories.length > 0,
           href: "/dashboard/settings",
         },

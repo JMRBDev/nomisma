@@ -1,11 +1,19 @@
-import { Link } from "@tanstack/react-router"
+import { useMemo } from "react"
+import { Link, getRouteApi } from "@tanstack/react-router"
 import {
   ArrowRightIcon,
   CheckCircle2Icon,
+  FunnelIcon,
   PiggyBankIcon,
   ReceiptTextIcon,
   RepeatIcon,
 } from "lucide-react"
+import {
+  getOverviewDateFilterLabel,
+  getOverviewDateFilterQuery,
+  hasOverviewDateFilter,
+  resolveOverviewDateFilterValues,
+} from "@/components/dashboard/overview/overview-date-filter"
 import { OverviewAlerts } from "@/components/dashboard/overview/overview-alerts"
 import { OverviewChecklist } from "@/components/dashboard/overview/overview-checklist"
 import { OverviewEmptyState } from "@/components/dashboard/overview/overview-empty-state"
@@ -19,8 +27,21 @@ import { OverviewUpcomingRecurringTable } from "@/components/dashboard/overview/
 import { Button } from "@/components/ui/button"
 import { useOverviewData } from "@/hooks/use-money-dashboard"
 
+const overviewRouteApi = getRouteApi("/_authenticated/dashboard/")
+
 export function OverviewPage() {
-  const { data } = useOverviewData()
+  const search = overviewRouteApi.useSearch()
+  const dateFilter = resolveOverviewDateFilterValues(search)
+  const hasDateFilter = hasOverviewDateFilter(dateFilter)
+  const filterLabel = getOverviewDateFilterLabel(dateFilter)
+  const activityLabel = hasDateFilter
+    ? filterLabel
+    : "the current reporting period"
+  const queryArgs = useMemo(
+    () => getOverviewDateFilterQuery(dateFilter),
+    [dateFilter.fromDate, dateFilter.toDate]
+  )
+  const { data } = useOverviewData(queryArgs)
 
   if (!data) {
     return <section className="min-h-[calc(100vh-12rem)]" />
@@ -41,12 +62,17 @@ export function OverviewPage() {
         hasAccounts={data.hasAccounts}
         currentMonth={data.currentMonth}
         currency={currency}
+        activityLabel={activityLabel}
       />
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
         <OverviewPanelCard
           title="Recent transactions"
-          description="Your latest income, expenses, and transfers."
+          description={
+            hasDateFilter
+              ? `Transactions recorded in ${filterLabel}.`
+              : "Your latest income, expenses, and transfers."
+          }
           action={
             <Button asChild size="sm" variant="outline">
               <Link to="/dashboard/transactions">
@@ -63,16 +89,26 @@ export function OverviewPage() {
             />
           ) : (
             <OverviewEmptyState
-              title="No transactions yet"
-              description="Add your first transaction to build a usable activity history."
-              icon={ReceiptTextIcon}
+              title={
+                hasDateFilter
+                  ? "No transactions in this date filter"
+                  : "No transactions yet"
+              }
+              description={
+                hasDateFilter
+                  ? "Pick another day or range from the header to inspect a different slice of activity."
+                  : "Add your first transaction to build a usable activity history."
+              }
+              icon={hasDateFilter ? FunnelIcon : ReceiptTextIcon}
               action={
-                <Button asChild>
-                  <Link to="/dashboard/transactions">
-                    Open transactions
-                    <ArrowRightIcon />
-                  </Link>
-                </Button>
+                hasDateFilter ? null : (
+                  <Button asChild>
+                    <Link to="/dashboard/transactions">
+                      Open transactions
+                      <ArrowRightIcon />
+                    </Link>
+                  </Button>
+                )
               }
             />
           )}
@@ -112,7 +148,11 @@ export function OverviewPage() {
       <div className="grid gap-4 xl:grid-cols-2">
         <OverviewPanelCard
           title="Top spending categories"
-          description="Where most of your posted expense money is going."
+          description={
+            hasDateFilter
+              ? `Where posted expense money went in ${filterLabel}.`
+              : "Where most of your posted expense money is going."
+          }
           action={
             <Button asChild size="sm" variant="outline">
               <Link to="/dashboard/transactions">
@@ -130,9 +170,17 @@ export function OverviewPage() {
             />
           ) : (
             <OverviewEmptyState
-              title="No expense activity yet"
-              description="Posted expense categories will start ranking here once you record spending."
-              icon={PiggyBankIcon}
+              title={
+                hasDateFilter
+                  ? "No expense activity in this date filter"
+                  : "No expense activity yet"
+              }
+              description={
+                hasDateFilter
+                  ? "Try a wider date range to see where spending is concentrated."
+                  : "Posted expense categories will start ranking here once you record spending."
+              }
+              icon={hasDateFilter ? FunnelIcon : PiggyBankIcon}
             />
           )}
         </OverviewPanelCard>

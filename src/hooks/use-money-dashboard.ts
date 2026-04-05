@@ -2,8 +2,11 @@ import { convexQuery } from "@convex-dev/react-query"
 import { useQuery } from "@tanstack/react-query"
 import { api } from "../../convex/_generated/api"
 
-export function useOverviewData() {
-  return useQuery(convexQuery(api.overview.getOverviewData, {}))
+export function useOverviewData(args?: {
+  startDate?: string
+  endDate?: string
+}) {
+  return useQuery(convexQuery(api.overview.getOverviewData, args ?? {}))
 }
 
 export function useAccountsPageData() {

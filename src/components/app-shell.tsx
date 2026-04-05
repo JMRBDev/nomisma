@@ -1,13 +1,13 @@
+import { DashboardHeaderControls } from "./dashboard/dashboard-header-controls"
+import { Breadcrumbs } from "./breadcrumbs"
+import { Separator } from "./ui/separator"
 import type { ReactNode } from "react"
-import { AppSidebar } from "@/components/app-sidebar"
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { Separator } from "./ui/separator"
-import { Breadcrumbs } from "./breadcrumbs"
-import { DashboardSearch } from "./dashboard/dashboard-search"
+import { AppSidebar } from "@/components/app-sidebar"
 
 type AppShellProps = {
   children: ReactNode
@@ -30,9 +30,7 @@ export function AppShell({ children }: AppShellProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 md:ml-auto">
-            <DashboardSearch />
-          </div>
+          <DashboardHeaderControls />
         </header>
 
         {children}
