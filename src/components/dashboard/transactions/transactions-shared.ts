@@ -6,12 +6,32 @@ import type {
 } from "@/lib/money"
 import { toAmountInput, todayInputValue } from "@/lib/money"
 
-export type TransactionsPageData = NonNullable<
+type TransactionsData = NonNullable<
   ReturnType<typeof useTransactionsPageData>["data"]
 >
-export type TransactionRecord = TransactionsPageData["transactions"][number]
-export type AccountOption = TransactionsPageData["accounts"]["active"][number]
-export type CategoryOption = TransactionsPageData["categories"]["all"][number]
+type TransactionOption = { _id: string }
+type TransactionEditorOptions = {
+  accountOptions: Array<AccountOption>
+  incomeCategoryOptions: Array<CategoryOption>
+  expenseCategoryOptions: Array<CategoryOption>
+}
+type TransactionMutationPayload = {
+  type: TransactionType
+  status: TransactionStatus
+  amount: number
+  date: string
+  accountId: Id<"accounts">
+  toAccountId?: Id<"accounts">
+  categoryId?: Id<"categories">
+  description: string
+  note?: string
+}
+
+const ALL_FILTER_VALUE = "all"
+
+export type TransactionRecord = TransactionsData["transactions"][number]
+export type AccountOption = TransactionsData["accounts"]["active"][number]
+export type CategoryOption = TransactionsData["categories"]["all"][number]
 export type TransactionType = (typeof transactionTypeOptions)[number]["value"]
 export type TransactionStatus =
   (typeof transactionStatusOptions)[number]["value"]
@@ -33,24 +53,12 @@ export type TransactionFieldErrors = Partial<
 >
 
 export type TransactionFilterValues = {
-  type: string
-  status: string
+  type: TransactionType | typeof ALL_FILTER_VALUE
+  status: TransactionStatus | typeof ALL_FILTER_VALUE
   accountId: string
   categoryId: string
   fromDate: string
   toDate: string
-}
-
-export type TransactionMutationPayload = {
-  type: TransactionType
-  status: TransactionStatus
-  amount: number
-  date: string
-  accountId: Id<"accounts">
-  toAccountId?: Id<"accounts">
-  categoryId?: Id<"categories">
-  description: string
-  note?: string
 }
 
 export type TransactionsPageActions = {
@@ -65,26 +73,30 @@ export type TransactionsPageActions = {
 }
 
 export const DEFAULT_FILTER_VALUES: TransactionFilterValues = {
-  type: "all",
-  status: "all",
-  accountId: "all",
-  categoryId: "all",
+  type: ALL_FILTER_VALUE,
+  status: ALL_FILTER_VALUE,
+  accountId: ALL_FILTER_VALUE,
+  categoryId: ALL_FILTER_VALUE,
   fromDate: "",
   toDate: "",
 }
 
+function getFirstOptionId(options: Array<TransactionOption>) {
+  return options[0]?._id ?? ""
+}
+
 export function createTransactionDefaults(
-  accountOptions: Array<{ _id: string }>,
-  expenseCategoryOptions: Array<{ _id: string }>
+  accountOptions: Array<AccountOption>,
+  expenseCategoryOptions: Array<CategoryOption>
 ): TransactionFormValues {
   return {
     type: "expense",
     status: "posted",
     amount: "0",
     date: todayInputValue(),
-    accountId: accountOptions[0]?._id ?? "",
+    accountId: getFirstOptionId(accountOptions),
     toAccountId: "",
-    categoryId: expenseCategoryOptions[0]?._id ?? "",
+    categoryId: getFirstOptionId(expenseCategoryOptions),
     description: "",
     note: "",
   }
@@ -110,7 +122,7 @@ export function getCategoryOptions(
   type: TransactionType,
   incomeCategoryOptions: Array<CategoryOption>,
   expenseCategoryOptions: Array<CategoryOption>
-) {
+): Array<CategoryOption> {
   if (type === "income") {
     return incomeCategoryOptions
   }
@@ -124,30 +136,36 @@ export function getCategoryOptions(
 
 export function resolveValidOption(
   value: string,
-  options: Array<{ _id: string }>
+  options: Array<TransactionOption>
 ): string {
   if (options.some((option) => option._id === value)) {
     return value
   }
 
-  return options[0]?._id ?? ""
+  return getFirstOptionId(options)
 }
 
 export function filterTransactions(
   transactions: Array<TransactionRecord>,
   filters: TransactionFilterValues
-) {
+): Array<TransactionRecord> {
   return transactions.filter((transaction) => {
-    if (filters.type !== "all" && transaction.type !== filters.type) {
-      return false
-    }
-
-    if (filters.status !== "all" && transaction.status !== filters.status) {
+    if (
+      filters.type !== ALL_FILTER_VALUE &&
+      transaction.type !== filters.type
+    ) {
       return false
     }
 
     if (
-      filters.accountId !== "all" &&
+      filters.status !== ALL_FILTER_VALUE &&
+      transaction.status !== filters.status
+    ) {
+      return false
+    }
+
+    if (
+      filters.accountId !== ALL_FILTER_VALUE &&
       transaction.accountId !== filters.accountId &&
       transaction.toAccountId !== filters.accountId
     ) {
@@ -155,7 +173,7 @@ export function filterTransactions(
     }
 
     if (
-      filters.categoryId !== "all" &&
+      filters.categoryId !== ALL_FILTER_VALUE &&
       transaction.categoryId !== filters.categoryId
     ) {
       return false
@@ -175,10 +193,10 @@ export function filterTransactions(
 
 export function countActiveFilters(filters: TransactionFilterValues) {
   return [
-    filters.type !== "all",
-    filters.status !== "all",
-    filters.accountId !== "all",
-    filters.categoryId !== "all",
+    filters.type !== ALL_FILTER_VALUE,
+    filters.status !== ALL_FILTER_VALUE,
+    filters.accountId !== ALL_FILTER_VALUE,
+    filters.categoryId !== ALL_FILTER_VALUE,
     Boolean(filters.fromDate),
     Boolean(filters.toDate),
   ].filter(Boolean).length
@@ -190,12 +208,8 @@ export function validateTransactionValues(
     accountOptions,
     incomeCategoryOptions,
     expenseCategoryOptions,
-  }: {
-    accountOptions: Array<AccountOption>
-    incomeCategoryOptions: Array<CategoryOption>
-    expenseCategoryOptions: Array<CategoryOption>
-  }
-) {
+  }: TransactionEditorOptions
+): TransactionFieldErrors {
   const errors: TransactionFieldErrors = {}
   const resolvedAccountId = resolveValidOption(values.accountId, accountOptions)
 
@@ -245,11 +259,7 @@ export function buildTransactionPayload(
     accountOptions,
     incomeCategoryOptions,
     expenseCategoryOptions,
-  }: {
-    accountOptions: Array<AccountOption>
-    incomeCategoryOptions: Array<CategoryOption>
-    expenseCategoryOptions: Array<CategoryOption>
-  }
+  }: TransactionEditorOptions
 ): TransactionMutationPayload {
   const accountId = resolveValidOption(values.accountId, accountOptions)
   const categoryOptions = getCategoryOptions(
