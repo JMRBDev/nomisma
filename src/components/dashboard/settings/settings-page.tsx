@@ -1,6 +1,7 @@
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
 import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
 import { SettingsForm } from "@/components/dashboard/settings/settings-form"
+import { ThemePreferenceField } from "@/components/dashboard/settings/theme-preference-field"
 import { createSettingsFormValues } from "@/components/dashboard/settings/settings-shared"
 import { useSettingsPageData } from "@/hooks/use-money-dashboard"
 
@@ -18,6 +19,8 @@ export function SettingsPage() {
       <div className="flex flex-col gap-3">
         <DashboardPageHeader title="Settings" />
       </div>
+
+      <ThemePreferenceField />
 
       <SettingsForm
         key={currentValues.baseCurrency}

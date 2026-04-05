@@ -13,6 +13,7 @@ import type { QueryClient } from "@tanstack/react-query"
 import { authClient } from "@/lib/auth-client"
 import { getToken } from "@/lib/auth-server"
 import { APP_NAME } from "@/lib/money"
+import { ThemeProvider } from "@/components/theme-provider"
 
 import appCss from "@/styles.css?url"
 
@@ -35,7 +36,13 @@ export const Route = createRootRouteWithContext<{
       },
       {
         name: "theme-color",
+        content: "#ffffff",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        name: "theme-color",
         content: "#0a0a0a",
+        media: "(prefers-color-scheme: dark)",
       },
       { title: APP_NAME },
       {
@@ -85,12 +92,12 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
-      <body className="bg-neutral-950 text-neutral-50">
-        {children}
+      <body className="bg-background text-foreground">
+        <ThemeProvider>{children}</ThemeProvider>
         <Scripts />
       </body>
     </html>
