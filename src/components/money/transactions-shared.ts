@@ -9,6 +9,7 @@ import { toAmountInput, todayInputValue } from "@/lib/money"
 export type TransactionsPageData = NonNullable<
   ReturnType<typeof useTransactionsPageData>["data"]
 >
+export type TransactionsFeatureData = TransactionsPageData
 export type TransactionRecord = TransactionsPageData["transactions"][number]
 export type AccountOption = TransactionsPageData["accounts"]["active"][number]
 export type CategoryOption = TransactionsPageData["categories"]["all"][number]
@@ -51,6 +52,19 @@ export type TransactionMutationPayload = {
   categoryId?: Id<"categories">
   description: string
   note?: string
+}
+
+export type TransactionsFeatureActions = {
+  onCreateTransaction: (
+    payload: TransactionMutationPayload
+  ) => Promise<unknown>
+  onUpdateTransaction: (
+    transactionId: TransactionRecord["_id"],
+    payload: TransactionMutationPayload
+  ) => Promise<unknown>
+  onDeleteTransaction: (
+    transactionId: TransactionRecord["_id"]
+  ) => Promise<unknown> | unknown
 }
 
 export const DEFAULT_FILTER_VALUES: TransactionFilterValues = {

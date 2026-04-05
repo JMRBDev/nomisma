@@ -1,6 +1,4 @@
 import { useState } from "react"
-import { useConvexMutation } from "@convex-dev/react-query"
-import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
 import type {
   AccountOption,
@@ -8,6 +6,7 @@ import type {
   TransactionFieldErrors,
   TransactionFormValues,
   TransactionRecord,
+  TransactionsFeatureActions,
 } from "@/components/money/transactions-shared"
 import {
   buildTransactionPayload,
@@ -22,21 +21,14 @@ export function useTransactionEditor({
   accountOptions,
   incomeCategoryOptions,
   expenseCategoryOptions,
+  onCreateTransaction,
+  onUpdateTransaction,
+  onDeleteTransaction,
 }: {
   accountOptions: Array<AccountOption>
   incomeCategoryOptions: Array<CategoryOption>
   expenseCategoryOptions: Array<CategoryOption>
-}) {
-  const createTransaction = useConvexMutation(
-    api.transactions.createTransaction
-  )
-  const updateTransaction = useConvexMutation(
-    api.transactions.updateTransaction
-  )
-  const deleteTransactionMutation = useConvexMutation(
-    api.transactions.deleteTransaction
-  )
-
+} & TransactionsFeatureActions) {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingTransactionId, setEditingTransactionId] =
     useState<Id<"transactions"> | null>(null)
@@ -146,12 +138,9 @@ export function useTransactionEditor({
       })
 
       if (editingTransactionId) {
-        await updateTransaction({
-          transactionId: editingTransactionId,
-          ...payload,
-        })
+        await onUpdateTransaction(editingTransactionId, payload)
       } else {
-        await createTransaction(payload)
+        await onCreateTransaction(payload)
       }
 
       setEditingTransactionId(null)
@@ -169,7 +158,7 @@ export function useTransactionEditor({
   }
 
   const deleteTransaction = (transactionId: TransactionRecord["_id"]) => {
-    void deleteTransactionMutation({ transactionId })
+    void onDeleteTransaction(transactionId)
   }
 
   return {

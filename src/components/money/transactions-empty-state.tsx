@@ -13,10 +13,16 @@ export function TransactionsEmptyState({
   hasFilters,
   onAddTransaction,
   onClearFilters,
+  title = "No transactions yet",
+  description = "Add your first income, expense, or transfer to start building a reliable activity history.",
+  actionLabel = "Add transaction",
 }: {
   hasFilters: boolean
   onAddTransaction: () => void
   onClearFilters: () => void
+  title?: string
+  description?: string
+  actionLabel?: string
 }) {
   if (hasFilters) {
     return (
@@ -40,12 +46,12 @@ export function TransactionsEmptyState({
 
   return (
     <GuidedEmptyState
-      title="No transactions yet"
-      description="Add your first income, expense, or transfer to start building a reliable activity history."
+      title={title}
+      description={description}
       icon={<ReceiptTextIcon className="size-5" />}
       action={
         <Button onClick={onAddTransaction}>
-          Add transaction
+          {actionLabel}
           <PlusIcon />
         </Button>
       }
