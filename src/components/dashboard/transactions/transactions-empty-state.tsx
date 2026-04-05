@@ -1,13 +1,7 @@
 import { PlusIcon, ReceiptTextIcon } from "lucide-react"
-import { GuidedEmptyState } from "@/components/money/money-ui"
+import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
+import { GuidedEmptyState } from "@/components/guided-empty-state"
 import { Button } from "@/components/ui/button"
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty"
 
 export function TransactionsEmptyState({
   hasFilters,
@@ -26,21 +20,16 @@ export function TransactionsEmptyState({
 }) {
   if (hasFilters) {
     return (
-      <Empty className="border border-dashed">
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <ReceiptTextIcon />
-          </EmptyMedia>
-          <EmptyTitle>No transactions match these filters</EmptyTitle>
-          <EmptyDescription>
-            Clear the current filters or adjust the date range to bring results
-            back.
-          </EmptyDescription>
-        </EmptyHeader>
-        <Button variant="outline" onClick={onClearFilters}>
-          Clear filters
-        </Button>
-      </Empty>
+      <FilteredResultsEmptyState
+        icon={ReceiptTextIcon}
+        title="No transactions match these filters"
+        description="Clear the current filters or adjust the date range to bring results back."
+        action={
+          <Button variant="outline" onClick={onClearFilters}>
+            Clear filters
+          </Button>
+        }
+      />
     )
   }
 

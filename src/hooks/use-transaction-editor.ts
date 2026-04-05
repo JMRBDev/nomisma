@@ -1,13 +1,13 @@
 import { useState } from "react"
-import type { Id } from "../../../convex/_generated/dataModel"
+import type { Id } from "../../convex/_generated/dataModel"
 import type {
   AccountOption,
   CategoryOption,
   TransactionFieldErrors,
   TransactionFormValues,
   TransactionRecord,
-  TransactionsFeatureActions,
-} from "@/components/money/transactions-shared"
+  TransactionsPageActions,
+} from "@/components/dashboard/transactions/transactions-shared"
 import {
   buildTransactionPayload,
   createTransactionDefaults,
@@ -15,7 +15,7 @@ import {
   getCategoryOptions,
   resolveValidOption,
   validateTransactionValues,
-} from "@/components/money/transactions-shared"
+} from "@/components/dashboard/transactions/transactions-shared"
 
 export function useTransactionEditor({
   accountOptions,
@@ -28,7 +28,7 @@ export function useTransactionEditor({
   accountOptions: Array<AccountOption>
   incomeCategoryOptions: Array<CategoryOption>
   expenseCategoryOptions: Array<CategoryOption>
-} & TransactionsFeatureActions) {
+} & TransactionsPageActions) {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingTransactionId, setEditingTransactionId] =
     useState<Id<"transactions"> | null>(null)

@@ -1,53 +1,63 @@
 import { useMemo, useState } from "react"
-import { FilterIcon, PlusIcon, ReceiptTextIcon } from "lucide-react"
-import type {
-  TransactionFilterValues,
-  TransactionsFeatureActions,
-  TransactionsFeatureData,
-} from "@/components/money/transactions-shared"
-import {
-  DashboardPageHeader,
-  GuidedEmptyState,
-} from "@/components/money/money-ui"
-import { TransactionFiltersSheet } from "@/components/money/transaction-filters-sheet"
-import { TransactionFormDialog } from "@/components/money/transaction-form-dialog"
-import { TransactionsEmptyState } from "@/components/money/transactions-empty-state"
+import { useConvexMutation } from "@convex-dev/react-query"
+import { PlusIcon, ReceiptTextIcon } from "lucide-react"
+import { api } from "../../../../convex/_generated/api"
+import type { TransactionFilterValues } from "@/components/dashboard/transactions/transactions-shared"
+import { DashboardFilterButton } from "@/components/dashboard/dashboard-filter-button"
+import { DashboardPageActions } from "@/components/dashboard/dashboard-page-actions"
+import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
+import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
+import { GuidedEmptyState } from "@/components/guided-empty-state"
+import { TransactionFiltersSheet } from "@/components/dashboard/transactions/transaction-filters-sheet"
+import { TransactionFormDialog } from "@/components/dashboard/transactions/transaction-form-dialog"
 import {
   DEFAULT_FILTER_VALUES,
   countActiveFilters,
   filterTransactions,
-} from "@/components/money/transactions-shared"
-import { TransactionsTable } from "@/components/money/transactions-table"
-import { useTransactionEditor } from "@/components/money/use-transaction-editor"
+} from "@/components/dashboard/transactions/transactions-shared"
+import { TransactionsEmptyState } from "@/components/dashboard/transactions/transactions-empty-state"
+import { TransactionsTable } from "@/components/dashboard/transactions/transactions-table"
+import { useTransactionEditor } from "@/hooks/use-transaction-editor"
 import { Button } from "@/components/ui/button"
+import { useTransactionsPageData } from "@/hooks/use-money-dashboard"
 
-export function TransactionsFeature({
-  data,
-  actions,
-}: {
-  data: TransactionsFeatureData
-  actions: TransactionsFeatureActions
-}) {
+export function TransactionsPage() {
+  const { data } = useTransactionsPageData()
+  const createTransaction = useConvexMutation(
+    api.transactions.createTransaction
+  )
+  const updateTransaction = useConvexMutation(
+    api.transactions.updateTransaction
+  )
+  const deleteTransaction = useConvexMutation(
+    api.transactions.deleteTransaction
+  )
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false)
   const [filters, setFilters] = useState<TransactionFilterValues>(
     DEFAULT_FILTER_VALUES
   )
-
-  const accountOptions = data.accounts.active
-  const allCategoryOptions = data.categories.all
-  const incomeCategoryOptions = data.categories.activeIncome
-  const expenseCategoryOptions = data.categories.activeExpense
+  const accountOptions = data?.accounts.active ?? []
+  const allCategoryOptions = data?.categories.all ?? []
+  const incomeCategoryOptions = data?.categories.activeIncome ?? []
+  const expenseCategoryOptions = data?.categories.activeExpense ?? []
 
   const transactionEditor = useTransactionEditor({
     accountOptions,
     incomeCategoryOptions,
     expenseCategoryOptions,
-    ...actions,
+    onCreateTransaction: (payload) => createTransaction(payload),
+    onUpdateTransaction: (transactionId, payload) =>
+      updateTransaction({
+        transactionId,
+        ...payload,
+      }),
+    onDeleteTransaction: (transactionId) =>
+      deleteTransaction({ transactionId }),
   })
 
   const filteredTransactions = useMemo(
-    () => filterTransactions(data.transactions, filters),
-    [data.transactions, filters]
+    () => filterTransactions(data?.transactions ?? [], filters),
+    [data?.transactions, filters]
   )
   const activeFilterCount = useMemo(
     () => countActiveFilters(filters),
@@ -64,20 +74,20 @@ export function TransactionsFeature({
     }))
   }
 
+  if (!data) {
+    return <section className="min-h-[calc(100vh-12rem)]" />
+  }
+
   return (
-    <section className="space-y-6">
+    <DashboardPageSection>
       <DashboardPageHeader
         title="Transactions"
         action={
-          <div className="flex items-center gap-2">
-            <Button
+          <DashboardPageActions>
+            <DashboardFilterButton
+              activeCount={activeFilterCount}
               onClick={() => setFiltersSheetOpen((open) => !open)}
-              variant={activeFilterCount > 0 ? "secondary" : "outline"}
-            >
-              {activeFilterCount || null}
-              <FilterIcon />
-            </Button>
-
+            />
             <Button
               onClick={transactionEditor.openCreateDialog}
               disabled={accountOptions.length === 0}
@@ -85,7 +95,7 @@ export function TransactionsFeature({
               Add transaction
               <PlusIcon />
             </Button>
-          </div>
+          </DashboardPageActions>
         }
       />
 
@@ -148,6 +158,6 @@ export function TransactionsFeature({
         onTypeChange={transactionEditor.handleTypeChange}
         onAccountChange={transactionEditor.handleAccountChange}
       />
-    </section>
+    </DashboardPageSection>
   )
 }

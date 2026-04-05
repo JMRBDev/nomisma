@@ -5,20 +5,21 @@ import type {
   TransactionFormValues,
   TransactionStatus,
   TransactionType,
-} from "@/components/money/transactions-shared"
+} from "@/components/dashboard/transactions/transactions-shared"
 import {
   Field,
   FieldGroup,
   FieldLabel,
   FieldTitle,
 } from "@/components/ui/field"
+import { FormErrorMessage } from "@/components/form-error-message"
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { Textarea } from "@/components/ui/textarea"
 import {
   getCategoryOptions,
   resolveValidOption,
-} from "@/components/money/transactions-shared"
+} from "@/components/dashboard/transactions/transactions-shared"
 import { transactionStatusOptions, transactionTypeOptions } from "@/lib/money"
 
 export function TransactionFormFields({
@@ -99,7 +100,7 @@ export function TransactionFormFields({
             value={values.amount}
             onChange={(event) => onValueChange("amount", event.target.value)}
           />
-          <FieldErrorMessage error={errors.amount} />
+          <FormErrorMessage error={errors.amount} />
         </Field>
 
         <Field>
@@ -112,7 +113,7 @@ export function TransactionFormFields({
             value={values.date}
             onChange={(event) => onValueChange("date", event.target.value)}
           />
-          <FieldErrorMessage error={errors.date} />
+          <FormErrorMessage error={errors.date} />
         </Field>
       </div>
 
@@ -133,7 +134,7 @@ export function TransactionFormFields({
             </NativeSelectOption>
           ))}
         </NativeSelect>
-        <FieldErrorMessage error={errors.accountId} />
+        <FormErrorMessage error={errors.accountId} />
       </Field>
 
       {values.type === "transfer" ? (
@@ -157,7 +158,7 @@ export function TransactionFormFields({
                 </NativeSelectOption>
               ))}
           </NativeSelect>
-          <FieldErrorMessage error={errors.toAccountId} />
+          <FormErrorMessage error={errors.toAccountId} />
         </Field>
       ) : (
         <Field>
@@ -183,7 +184,7 @@ export function TransactionFormFields({
               </NativeSelectOption>
             ))}
           </NativeSelect>
-          <FieldErrorMessage error={errors.categoryId} />
+          <FormErrorMessage error={errors.categoryId} />
         </Field>
       )}
 
@@ -214,12 +215,4 @@ export function TransactionFormFields({
       </Field>
     </FieldGroup>
   )
-}
-
-function FieldErrorMessage({ error }: { error?: string }) {
-  if (!error) {
-    return null
-  }
-
-  return <p className="text-sm text-destructive">{error}</p>
 }

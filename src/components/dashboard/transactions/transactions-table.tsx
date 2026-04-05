@@ -1,7 +1,8 @@
 import { PencilIcon, Trash2Icon } from "lucide-react"
-import type { TransactionRecord } from "@/components/money/transactions-shared"
+import type { TransactionRecord } from "@/components/dashboard/transactions/transactions-shared"
+import { DashboardIconButton } from "@/components/dashboard/dashboard-icon-button"
+import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
   Table,
   TableBody,
@@ -83,24 +84,20 @@ export function TransactionsTable({
               )}
             </TableCell>
             <TableCell>
-              <div className="flex justify-end gap-2">
-                <Button
-                  size="icon-sm"
-                  variant="outline"
+              <DashboardTableActions>
+                <DashboardIconButton
                   onClick={() => onEdit(transaction)}
                   aria-label="Edit transaction"
                 >
                   <PencilIcon />
-                </Button>
-                <Button
-                  size="icon-sm"
-                  variant="outline"
+                </DashboardIconButton>
+                <DashboardIconButton
                   onClick={() => onDelete(transaction._id)}
                   aria-label="Delete transaction"
                 >
                   <Trash2Icon />
-                </Button>
-              </div>
+                </DashboardIconButton>
+              </DashboardTableActions>
             </TableCell>
           </TableRow>
         ))}

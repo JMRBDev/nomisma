@@ -36,7 +36,7 @@ function contains(value: string, query: string) {
   return value.toLowerCase().includes(query)
 }
 
-export function GlobalDashboardSearch() {
+export function DashboardSearch() {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")
   const navigate = useNavigate()

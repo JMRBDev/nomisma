@@ -1,4 +1,4 @@
-import type { Id } from "../../../convex/_generated/dataModel"
+import type { Id } from "../../../../convex/_generated/dataModel"
 import type { useTransactionsPageData } from "@/hooks/use-money-dashboard"
 import type {
   transactionStatusOptions,
@@ -9,7 +9,6 @@ import { toAmountInput, todayInputValue } from "@/lib/money"
 export type TransactionsPageData = NonNullable<
   ReturnType<typeof useTransactionsPageData>["data"]
 >
-export type TransactionsFeatureData = TransactionsPageData
 export type TransactionRecord = TransactionsPageData["transactions"][number]
 export type AccountOption = TransactionsPageData["accounts"]["active"][number]
 export type CategoryOption = TransactionsPageData["categories"]["all"][number]
@@ -54,10 +53,8 @@ export type TransactionMutationPayload = {
   note?: string
 }
 
-export type TransactionsFeatureActions = {
-  onCreateTransaction: (
-    payload: TransactionMutationPayload
-  ) => Promise<unknown>
+export type TransactionsPageActions = {
+  onCreateTransaction: (payload: TransactionMutationPayload) => Promise<unknown>
   onUpdateTransaction: (
     transactionId: TransactionRecord["_id"],
     payload: TransactionMutationPayload
