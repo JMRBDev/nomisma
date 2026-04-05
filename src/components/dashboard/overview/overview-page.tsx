@@ -27,10 +27,10 @@ import { OverviewUpcomingRecurringTable } from "@/components/dashboard/overview/
 import { Button } from "@/components/ui/button"
 import { useOverviewData } from "@/hooks/use-money-dashboard"
 
-const overviewRouteApi = getRouteApi("/_authenticated/dashboard/")
+const dashboardRouteApi = getRouteApi("/_authenticated/dashboard")
 
 export function OverviewPage() {
-  const search = overviewRouteApi.useSearch()
+  const search = dashboardRouteApi.useSearch()
   const dateFilter = resolveOverviewDateFilterValues(search)
   const hasDateFilter = hasOverviewDateFilter(dateFilter)
   const filterLabel = getOverviewDateFilterLabel(dateFilter)
@@ -75,7 +75,7 @@ export function OverviewPage() {
           }
           action={
             <Button asChild size="sm" variant="outline">
-              <Link to="/dashboard/transactions">
+              <Link to="/dashboard/transactions" search={(previous) => previous}>
                 View all
                 <ArrowRightIcon />
               </Link>
@@ -103,7 +103,10 @@ export function OverviewPage() {
               action={
                 hasDateFilter ? null : (
                   <Button asChild>
-                    <Link to="/dashboard/transactions">
+                    <Link
+                      to="/dashboard/transactions"
+                      search={(previous) => previous}
+                    >
                       Open transactions
                       <ArrowRightIcon />
                     </Link>
@@ -155,7 +158,7 @@ export function OverviewPage() {
           }
           action={
             <Button asChild size="sm" variant="outline">
-              <Link to="/dashboard/transactions">
+              <Link to="/dashboard/transactions" search={(previous) => previous}>
                 View transactions
                 <ArrowRightIcon />
               </Link>
@@ -190,7 +193,7 @@ export function OverviewPage() {
           description="The next recurring items scheduled to hit your accounts."
           action={
             <Button asChild size="sm" variant="outline">
-              <Link to="/dashboard/recurring">
+              <Link to="/dashboard/recurring" search={(previous) => previous}>
                 View recurring
                 <ArrowRightIcon />
               </Link>

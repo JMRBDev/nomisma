@@ -1,4 +1,4 @@
-import { CalendarRangeIcon } from "lucide-react"
+import { FunnelIcon } from "lucide-react"
 import type {
   AccountOption,
   CategoryOption,
@@ -8,9 +8,7 @@ import { DashboardFilterSelectField } from "@/components/dashboard/dashboard-fil
 import { DashboardFilterSheet } from "@/components/dashboard/dashboard-filter-sheet"
 import { DashboardFilterSummary } from "@/components/dashboard/dashboard-filter-summary"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { NativeSelectOption } from "@/components/ui/native-select"
-import { Field, FieldLabel, FieldTitle } from "@/components/ui/field"
 import { transactionStatusOptions, transactionTypeOptions } from "@/lib/money"
 
 export function TransactionFiltersSheet({
@@ -41,7 +39,7 @@ export function TransactionFiltersSheet({
       description="Refine the transaction list without leaving the dashboard."
       footer={
         <DashboardFilterSummary
-          icon={CalendarRangeIcon}
+          icon={FunnelIcon}
           action={
             activeFilterCount > 0 ? (
               <Button size="sm" variant="ghost" onClick={onReset}>
@@ -110,32 +108,6 @@ export function TransactionFiltersSheet({
             </NativeSelectOption>
           ))}
         </DashboardFilterSelectField>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field>
-            <FieldLabel htmlFor="mobile-filter-from-date">
-              <FieldTitle>From</FieldTitle>
-            </FieldLabel>
-            <Input
-              id="mobile-filter-from-date"
-              type="date"
-              value={values.fromDate}
-              onChange={(event) => onChange("fromDate", event.target.value)}
-            />
-          </Field>
-
-          <Field>
-            <FieldLabel htmlFor="mobile-filter-to-date">
-              <FieldTitle>To</FieldTitle>
-            </FieldLabel>
-            <Input
-              id="mobile-filter-to-date"
-              type="date"
-              value={values.toDate}
-              onChange={(event) => onChange("toDate", event.target.value)}
-            />
-          </Field>
-        </div>
       </div>
     </DashboardFilterSheet>
   )

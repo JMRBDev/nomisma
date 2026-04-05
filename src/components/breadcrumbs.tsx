@@ -97,7 +97,9 @@ export function Breadcrumbs() {
                   <BreadcrumbPage>{item.label}</BreadcrumbPage>
                 ) : (
                   <BreadcrumbLink asChild>
-                    <Link to={item.pathname}>{item.label}</Link>
+                    <Link to={item.pathname} search={(previous) => previous}>
+                      {item.label}
+                    </Link>
                   </BreadcrumbLink>
                 )}
               </BreadcrumbItem>

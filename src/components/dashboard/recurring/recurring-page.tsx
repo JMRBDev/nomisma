@@ -1,19 +1,31 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
-import { PlusIcon, ShapesIcon, WalletCardsIcon } from "lucide-react"
+import { getRouteApi, useNavigate } from "@tanstack/react-router"
+import {
+  FunnelIcon,
+  PlusIcon,
+  ShapesIcon,
+  WalletCardsIcon,
+} from "lucide-react"
 import { api } from "../../../../convex/_generated/api"
-import { DashboardPageActions } from "@/components/dashboard/dashboard-page-actions"
-import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
-import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
-import { RecurringEmptyState } from "@/components/dashboard/recurring/recurring-empty-state"
-import { RecurringFormDialog } from "@/components/dashboard/recurring/recurring-form-dialog"
-import { RecurringTable } from "@/components/dashboard/recurring/recurring-table"
 import type {
   RecurringFieldErrors,
   RecurringFormValues,
   RecurringRecord,
   RecurringType,
 } from "@/components/dashboard/recurring/recurring-shared"
+import { DashboardPageActions } from "@/components/dashboard/dashboard-page-actions"
+import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
+import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
+import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
+import {
+  getOverviewDateFilterLabel,
+  getOverviewDateFilterQuery,
+  hasOverviewDateFilter,
+  resolveOverviewDateFilterValues,
+} from "@/components/dashboard/overview/overview-date-filter"
+import { RecurringEmptyState } from "@/components/dashboard/recurring/recurring-empty-state"
+import { RecurringFormDialog } from "@/components/dashboard/recurring/recurring-form-dialog"
 import {
   buildRecurringPayload,
   canConfirmRecurringItem,
@@ -22,6 +34,7 @@ import {
   resolveValidOption,
   validateRecurringValues,
 } from "@/components/dashboard/recurring/recurring-shared"
+import { RecurringTable } from "@/components/dashboard/recurring/recurring-table"
 import { GuidedEmptyState } from "@/components/guided-empty-state"
 import { Button } from "@/components/ui/button"
 import {
@@ -35,7 +48,18 @@ import { useRecurringPageData } from "@/hooks/use-money-dashboard"
 import { formatDateLabel, todayInputValue } from "@/lib/money"
 import { cn } from "@/lib/utils"
 
+const dashboardRouteApi = getRouteApi("/_authenticated/dashboard")
+
 export function RecurringPage() {
+  const navigate = useNavigate()
+  const search = dashboardRouteApi.useSearch()
+  const dateFilter = resolveOverviewDateFilterValues(search)
+  const hasDateFilter = hasOverviewDateFilter(dateFilter)
+  const filterLabel = getOverviewDateFilterLabel(dateFilter)
+  const dateRange = useMemo(
+    () => getOverviewDateFilterQuery(dateFilter),
+    [dateFilter.fromDate, dateFilter.toDate]
+  )
   const { data } = useRecurringPageData()
   const createRecurringRule = useConvexMutation(
     api.recurring.createRecurringRule
@@ -62,6 +86,17 @@ export function RecurringPage() {
   const incomeCategoryOptions = data.categories.activeIncome
   const expenseCategoryOptions = data.categories.activeExpense
   const recurringItems = data.recurring.all
+  const visibleRecurringItems = recurringItems.filter((item) => {
+    if (dateRange.startDate && item.nextDueDate < dateRange.startDate) {
+      return false
+    }
+
+    if (dateRange.endDate && item.nextDueDate > dateRange.endDate) {
+      return false
+    }
+
+    return true
+  })
   const currency = data.settings?.baseCurrency
   const today = todayInputValue()
   const hasRecurringItems = recurringItems.length > 0
@@ -76,6 +111,16 @@ export function RecurringPage() {
     canConfirmRecurringItem(item, today)
   ).length
   const nextItem = recurringItems[0] ?? null
+  const handleClearDateFilter = () => {
+    void navigate({
+      to: ".",
+      search: (previous) => ({
+        ...previous,
+        from: undefined,
+        to: undefined,
+      }),
+    })
+  }
 
   const resetDialogState = () => {
     setErrors({})
@@ -221,26 +266,33 @@ export function RecurringPage() {
             />
             <RecurringSummaryCard
               title="Next scheduled"
-              value={
-                nextItem ? formatDateLabel(nextItem.nextDueDate) : "Nothing due"
-              }
-              description={
-                nextItem
-                  ? `${nextItem.description} • ${nextItem.frequency}`
-                  : "No active recurring items"
-              }
+              value={formatDateLabel(nextItem.nextDueDate)}
+              description={`${nextItem.description} • ${nextItem.frequency}`}
             />
           </div>
 
           <Card>
             <CardContent>
-              <RecurringTable
-                recurringItems={recurringItems}
-                currency={currency}
-                pendingRuleId={pendingRuleId}
-                today={today}
-                onConfirm={handleConfirm}
-              />
+              {visibleRecurringItems.length > 0 ? (
+                <RecurringTable
+                  recurringItems={visibleRecurringItems}
+                  currency={currency}
+                  pendingRuleId={pendingRuleId}
+                  today={today}
+                  onConfirm={handleConfirm}
+                />
+              ) : hasDateFilter ? (
+                <FilteredResultsEmptyState
+                  icon={FunnelIcon}
+                  title="No recurring items in this date range"
+                  description={`Pick another day or range in the header to inspect recurring items due during ${filterLabel}.`}
+                  action={
+                    <Button variant="outline" onClick={handleClearDateFilter}>
+                      Clear date filter
+                    </Button>
+                  }
+                />
+              ) : null}
             </CardContent>
           </Card>
         </>

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { getRouteApi, useMatchRoute, useNavigate } from "@tanstack/react-router"
+import { getRouteApi, useNavigate } from "@tanstack/react-router"
 import { CalendarRangeIcon } from "lucide-react"
 import type { OverviewDateFilterValues } from "@/components/dashboard/overview/overview-date-filter"
 import {
@@ -14,11 +14,11 @@ import { OverviewDateFilterSheet } from "@/components/dashboard/overview/overvie
 import { DashboardSearch } from "@/components/dashboard/dashboard-search"
 import { Button } from "@/components/ui/button"
 
-const overviewRouteApi = getRouteApi("/_authenticated/dashboard/")
+const dashboardRouteApi = getRouteApi("/_authenticated/dashboard")
 
 function OverviewDateFilterControl() {
   const navigate = useNavigate()
-  const appliedSearch = overviewRouteApi.useSearch()
+  const appliedSearch = dashboardRouteApi.useSearch()
   const appliedValues = resolveOverviewDateFilterValues(appliedSearch)
   const appliedActive = hasOverviewDateFilter(appliedValues)
   const filterLabel = getOverviewDateFilterLabel(appliedValues)
@@ -36,10 +36,15 @@ function OverviewDateFilterControl() {
 
   const handleApply = () => {
     const normalized = normalizeOverviewDateFilterValues(draft)
+    const nextSearch = createOverviewDateFilterSearch(normalized)
 
     void navigate({
-      to: "/dashboard",
-      search: createOverviewDateFilterSearch(normalized),
+      to: ".",
+      search: (previous) => ({
+        ...previous,
+        from: nextSearch.from,
+        to: nextSearch.to,
+      }),
     })
 
     setOpen(false)
@@ -49,8 +54,12 @@ function OverviewDateFilterControl() {
     setDraft(DEFAULT_OVERVIEW_DATE_FILTER_VALUES)
 
     void navigate({
-      to: "/dashboard",
-      search: {},
+      to: ".",
+      search: (previous) => ({
+        ...previous,
+        from: undefined,
+        to: undefined,
+      }),
     })
 
     setOpen(false)
@@ -83,12 +92,9 @@ function OverviewDateFilterControl() {
 }
 
 export function DashboardHeaderControls() {
-  const matchRoute = useMatchRoute()
-  const isOverviewRoute = Boolean(matchRoute({ to: "/dashboard" }))
-
   return (
     <div className="flex items-center gap-2 md:ml-auto">
-      {isOverviewRoute ? <OverviewDateFilterControl /> : null}
+      <OverviewDateFilterControl />
       <DashboardSearch />
     </div>
   )

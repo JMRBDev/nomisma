@@ -93,6 +93,7 @@ export function AppSidebar() {
             <SidebarMenuButton size="lg" asChild>
               <Link
                 to="/dashboard"
+                search={(previous) => previous}
                 preload="intent"
                 onClick={closeSidebarOnMobile}
               >
@@ -125,6 +126,7 @@ export function AppSidebar() {
                   >
                     <Link
                       to={item.to}
+                      search={(previous) => previous}
                       preload="intent"
                       onClick={closeSidebarOnMobile}
                     >
@@ -149,6 +151,7 @@ export function AppSidebar() {
                   >
                     <Link
                       to={item.to}
+                      search={(previous) => previous}
                       preload="intent"
                       onClick={closeSidebarOnMobile}
                     >

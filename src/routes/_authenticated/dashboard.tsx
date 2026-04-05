@@ -1,10 +1,12 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router"
+import { parseOverviewDateFilterSearch } from "@/components/dashboard/overview/overview-date-filter"
 import { AppShell } from "@/components/app-shell"
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   staticData: {
     breadcrumb: "Overview",
   },
+  validateSearch: parseOverviewDateFilterSearch,
   component: DashboardLayout,
 })
 

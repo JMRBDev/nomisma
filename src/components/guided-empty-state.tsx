@@ -37,7 +37,7 @@ export function GuidedEmptyState({
         {action ??
           (ctaLabel && ctaTo ? (
             <Button asChild>
-              <Link to={ctaTo}>
+              <Link to={ctaTo} search={(previous) => previous}>
                 {ctaLabel}
                 <ArrowRightIcon />
               </Link>

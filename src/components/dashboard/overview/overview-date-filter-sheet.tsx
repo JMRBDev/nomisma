@@ -32,7 +32,7 @@ export function OverviewDateFilterSheet({
       open={open}
       onOpenChange={onOpenChange}
       title="Date filter"
-      description="Filter overview activity by a single day or a custom date range."
+      description="Filter dashboard activity by a single day or a custom date range."
     >
       <div className="flex flex-col gap-4">
         <div className="overflow-hidden rounded-4xl border border-border/60 bg-background/60">

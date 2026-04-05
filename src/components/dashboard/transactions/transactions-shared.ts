@@ -57,8 +57,6 @@ export type TransactionFilterValues = {
   status: TransactionStatus | typeof ALL_FILTER_VALUE
   accountId: string
   categoryId: string
-  fromDate: string
-  toDate: string
 }
 
 export type TransactionsPageActions = {
@@ -77,8 +75,6 @@ export const DEFAULT_FILTER_VALUES: TransactionFilterValues = {
   status: ALL_FILTER_VALUE,
   accountId: ALL_FILTER_VALUE,
   categoryId: ALL_FILTER_VALUE,
-  fromDate: "",
-  toDate: "",
 }
 
 function getFirstOptionId(options: Array<TransactionOption>) {
@@ -179,14 +175,6 @@ export function filterTransactions(
       return false
     }
 
-    if (filters.fromDate && transaction.date < filters.fromDate) {
-      return false
-    }
-
-    if (filters.toDate && transaction.date > filters.toDate) {
-      return false
-    }
-
     return true
   })
 }
@@ -197,8 +185,6 @@ export function countActiveFilters(filters: TransactionFilterValues) {
     filters.status !== ALL_FILTER_VALUE,
     filters.accountId !== ALL_FILTER_VALUE,
     filters.categoryId !== ALL_FILTER_VALUE,
-    Boolean(filters.fromDate),
-    Boolean(filters.toDate),
   ].filter(Boolean).length
 }
 

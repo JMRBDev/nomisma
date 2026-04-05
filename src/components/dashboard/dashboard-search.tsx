@@ -65,7 +65,10 @@ export function DashboardSearch() {
           icon: LayoutDashboardIcon,
           id: "page-overview",
           onSelect: () => {
-            void navigate({ to: "/dashboard" })
+            void navigate({
+              to: "/dashboard",
+              search: (previous) => previous,
+            })
           },
           title: "Overview",
           value: "overview dashboard",
@@ -75,7 +78,10 @@ export function DashboardSearch() {
           icon: PiggyBankIcon,
           id: "page-accounts",
           onSelect: () => {
-            void navigate({ to: "/dashboard/accounts" })
+            void navigate({
+              to: "/dashboard/accounts",
+              search: (previous) => previous,
+            })
           },
           title: "Accounts",
           value: "accounts balances money places",
@@ -85,7 +91,10 @@ export function DashboardSearch() {
           icon: ReceiptTextIcon,
           id: "page-transactions",
           onSelect: () => {
-            void navigate({ to: "/dashboard/transactions" })
+            void navigate({
+              to: "/dashboard/transactions",
+              search: (previous) => previous,
+            })
           },
           title: "Transactions",
           value: "transactions expenses income transfers ledger",
@@ -95,7 +104,10 @@ export function DashboardSearch() {
           icon: TargetIcon,
           id: "page-budgets",
           onSelect: () => {
-            void navigate({ to: "/dashboard/budgets" })
+            void navigate({
+              to: "/dashboard/budgets",
+              search: (previous) => previous,
+            })
           },
           title: "Budgets",
           value: "budgets spending limits",
@@ -105,7 +117,10 @@ export function DashboardSearch() {
           icon: RepeatIcon,
           id: "page-recurring",
           onSelect: () => {
-            void navigate({ to: "/dashboard/recurring" })
+            void navigate({
+              to: "/dashboard/recurring",
+              search: (previous) => previous,
+            })
           },
           title: "Recurring",
           value: "recurring bills reminders income",
@@ -115,7 +130,10 @@ export function DashboardSearch() {
           icon: SettingsIcon,
           id: "page-settings",
           onSelect: () => {
-            void navigate({ to: "/dashboard/settings" })
+            void navigate({
+              to: "/dashboard/settings",
+              search: (previous) => previous,
+            })
           },
           title: "Settings",
           value: "settings currency categories archived accounts",

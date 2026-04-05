@@ -164,5 +164,5 @@ export function getOverviewDateFilterLabel(values: OverviewDateFilterValues) {
     return `${formatDateLabel(values.fromDate)} - ${formatDateLabel(values.toDate)}`
   }
 
-  return "Always"
+  return "All dates"
 }
