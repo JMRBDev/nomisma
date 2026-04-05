@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
+import { RecurringPage } from "@/components/dashboard/recurring/recurring-page"
 
 export const Route = createFileRoute("/_authenticated/dashboard/recurring")({
   staticData: {
@@ -6,7 +7,3 @@ export const Route = createFileRoute("/_authenticated/dashboard/recurring")({
   },
   component: RecurringPage,
 })
-
-function RecurringPage() {
-  return null
-}
