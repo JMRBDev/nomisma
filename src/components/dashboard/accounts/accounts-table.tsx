@@ -13,6 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { formatCurrency, formatDateLabel } from "@/lib/money"
+import { cn } from "@/lib/utils"
 
 export function AccountsTable({
   accounts,
@@ -52,7 +53,9 @@ export function AccountsTable({
               <TableCell>
                 <div className="flex items-start gap-3">
                   <span
-                    className="mt-1 size-2.5 shrink-0 rounded-full"
+                    className={
+                      cn("mt-1 size-2.5 shrink-0 rounded-full", account.color)
+                    }
                     style={{
                       backgroundColor:
                         account.color && account.color.trim()

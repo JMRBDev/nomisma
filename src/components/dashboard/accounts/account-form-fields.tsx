@@ -11,6 +11,7 @@ import {
   FieldLabel,
   FieldTitle,
 } from "@/components/ui/field"
+import { ColorSwatchPicker } from "@/components/dashboard/accounts/color-swatch-picker"
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { Switch } from "@/components/ui/switch"
@@ -83,21 +84,11 @@ export function AccountFormFields({
         </Field>
 
         <Field>
-          <FieldLabel htmlFor="account-color">
-            <FieldTitle>Color</FieldTitle>
-          </FieldLabel>
-          <div className="flex items-center gap-3">
-            <Input
-              id="account-color"
-              type="color"
-              value={values.color || "#1d4ed8"}
-              onChange={(event) => onValueChange("color", event.target.value)}
-              className="h-10 w-16 rounded-3xl p-1"
-            />
-            <p className="text-sm text-muted-foreground">
-              Optional accent for faster scanning.
-            </p>
-          </div>
+          <FieldTitle>Color</FieldTitle>
+          <ColorSwatchPicker
+            value={values.color}
+            onChange={(value) => onValueChange("color", value)}
+          />
         </Field>
       </div>
 
