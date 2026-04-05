@@ -92,7 +92,7 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="bg-sidebar" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
