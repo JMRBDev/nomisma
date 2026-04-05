@@ -6,6 +6,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 
 export function DashboardFormDialog({
@@ -23,6 +31,31 @@ export function DashboardFormDialog({
   children: ReactNode
   contentClassName?: string
 }) {
+  const isMobile = useIsMobile()
+
+  if (isMobile) {
+    return (
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent
+          side="bottom"
+          className={cn(
+            "max-h-[85dvh] overflow-y-auto rounded-t-4xl",
+            contentClassName
+          )}
+        >
+          <SheetHeader>
+            <SheetTitle>{title}</SheetTitle>
+            <SheetDescription>{description}</SheetDescription>
+          </SheetHeader>
+
+          <div className="p-6 pt-0">
+            {children}
+          </div>
+        </SheetContent>
+      </Sheet>
+    )
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={cn("sm:max-w-2xl", contentClassName)}>
