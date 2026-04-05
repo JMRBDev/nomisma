@@ -351,7 +351,8 @@ function RecurringSummaryCard({
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
-      <CardContent>
+
+      <CardContent className="flex-1 flex items-end">
         <p
           className={cn(
             "font-heading text-2xl leading-none font-medium",

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -23,16 +24,18 @@ export function OverviewMetricCard({
 }) {
   return (
     <Card size="sm">
-      <CardHeader className="grid-cols-[1fr_auto] items-start">
-        <div className="space-y-1">
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
-        </div>
-        <div className="flex size-9 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
-          {icon}
-        </div>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
+
+        <CardAction>
+          <div className="flex size-9 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+            {icon}
+          </div>
+        </CardAction>
       </CardHeader>
-      <CardContent>
+
+      <CardContent className="flex-1 flex items-end">
         <p
           className={cn(
             "font-heading text-2xl leading-none font-medium",
