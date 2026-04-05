@@ -94,6 +94,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="bg-sidebar" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('money-app-color-theme');if(t&&t!=='red')document.documentElement.setAttribute('data-color-theme',t)}catch(e){}})()`,
+          }}
+        />
         <HeadContent />
       </head>
       <body className="bg-background text-foreground">

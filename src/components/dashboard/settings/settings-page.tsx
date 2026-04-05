@@ -1,5 +1,6 @@
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
 import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
+import { ColorThemeField } from "@/components/dashboard/settings/color-theme-field"
 import { SettingsForm } from "@/components/dashboard/settings/settings-form"
 import { ThemePreferenceField } from "@/components/dashboard/settings/theme-preference-field"
 import { createSettingsFormValues } from "@/components/dashboard/settings/settings-shared"
@@ -23,6 +24,8 @@ export function SettingsPage() {
 
       <div className="flex flex-col gap-4">
         <ThemePreferenceField />
+
+        <ColorThemeField />
 
         <Separator />
 
