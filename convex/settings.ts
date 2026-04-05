@@ -10,7 +10,6 @@ export const getSettingsPageData = query({
 export const upsertSettings = mutation({
   args: {
     baseCurrency: v.string(),
-    monthStartsOn: v.number(),
   },
   handler: (ctx, args) => Settings.upsertSettings(ctx, args),
 })

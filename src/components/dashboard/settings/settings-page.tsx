@@ -20,7 +20,7 @@ export function SettingsPage() {
       </div>
 
       <SettingsForm
-        key={`${currentValues.baseCurrency}-${currentValues.monthStartsOn}`}
+        key={currentValues.baseCurrency}
         initialValues={currentValues}
       />
     </DashboardPageSection>

@@ -10,8 +10,8 @@ import {
   getBudgetsByUserId,
   getCategoriesByUserId,
   getCurrentCalendarMonth,
+  getCurrentCalendarMonthRange,
   getRecurringRulesByUserId,
-  getReportingPeriod,
   getResolvedSettings,
   getTransactionsByUserId,
   inRange,
@@ -62,7 +62,7 @@ function buildTopSpendingCategories(
 function resolveSelectedDateRange(args: {
   startDate?: string
   endDate?: string
-  reportingPeriod: { start: string; end: string }
+  defaultDateRange: { start: string; end: string }
 }) {
   if (args.startDate && args.endDate) {
     return args.startDate <= args.endDate
@@ -79,8 +79,8 @@ function resolveSelectedDateRange(args: {
   }
 
   return {
-    startDate: args.reportingPeriod.start,
-    endDate: args.reportingPeriod.end,
+    startDate: args.defaultDateRange.start,
+    endDate: args.defaultDateRange.end,
     isFiltered: false,
   }
 }
@@ -156,8 +156,7 @@ function buildOverviewAlerts(args: {
     alerts.unshift({
       kind: "default" as const,
       title: "Choose your base currency",
-      description:
-        "Set your currency and reporting month before you rely on totals.",
+      description: "Set your currency before you rely on totals.",
     })
   }
 
@@ -188,11 +187,11 @@ export async function getOverviewData(
   ])
 
   const currentMonth = getCurrentCalendarMonth(now)
-  const reportingPeriod = getReportingPeriod(now, settings?.monthStartsOn ?? 1)
+  const defaultDateRange = getCurrentCalendarMonthRange(now)
   const selectedDateRange = resolveSelectedDateRange({
     startDate: args.startDate,
     endDate: args.endDate,
-    reportingPeriod,
+    defaultDateRange,
   })
   const dashboardTransactions = buildMappedTransactions(
     accounts,

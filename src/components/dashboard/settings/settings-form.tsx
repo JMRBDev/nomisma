@@ -19,9 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
-import {
-  defaultCurrencyOptions,
-} from "@/components/dashboard/settings/settings-shared"
+import { defaultCurrencyOptions } from "@/components/dashboard/settings/settings-shared"
 
 export function SettingsForm({
   initialValues,
@@ -46,9 +44,7 @@ export function SettingsForm({
       ...defaultCurrencyOptions,
     ]
 
-  const isDirty =
-    values.baseCurrency !== savedValues.baseCurrency ||
-    values.monthStartsOn !== savedValues.monthStartsOn
+  const isDirty = values.baseCurrency !== savedValues.baseCurrency
 
   const handleValueChange = (name: keyof SettingsFormValues, value: string) => {
     setValues((current) => ({
@@ -71,7 +67,6 @@ export function SettingsForm({
     try {
       await upsertSettings({
         baseCurrency: values.baseCurrency,
-        monthStartsOn: Number(values.monthStartsOn),
       })
       setSavedValues(values)
     } catch (error) {

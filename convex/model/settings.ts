@@ -31,17 +31,13 @@ export async function upsertSettings(
   ctx: MutationCtx,
   args: {
     baseCurrency: string
-    monthStartsOn: number
   }
 ) {
   const user = await requireUser(ctx)
+  const baseCurrency = args.baseCurrency.trim()
 
-  if (!args.baseCurrency.trim()) {
+  if (!baseCurrency) {
     throw new ConvexError("Currency is required.")
-  }
-
-  if (args.monthStartsOn < 1 || args.monthStartsOn > 28) {
-    throw new ConvexError("Month start must be between 1 and 28.")
   }
 
   const { settingsDoc: existingSettings } = await getResolvedSettings(
@@ -50,9 +46,10 @@ export async function upsertSettings(
   )
 
   if (existingSettings) {
-    await ctx.db.patch(existingSettings._id, {
-      baseCurrency: args.baseCurrency.trim(),
-      monthStartsOn: args.monthStartsOn,
+    await ctx.db.replace(existingSettings._id, {
+      userId: existingSettings.userId,
+      baseCurrency,
+      createdAt: existingSettings.createdAt,
       updatedAt: Date.now(),
     })
     return existingSettings._id
@@ -60,8 +57,7 @@ export async function upsertSettings(
 
   return ctx.db.insert("userSettings", {
     userId: user._id,
-    baseCurrency: args.baseCurrency.trim(),
-    monthStartsOn: args.monthStartsOn,
+    baseCurrency,
     createdAt: Date.now(),
     updatedAt: Date.now(),
   })

@@ -1,6 +1,5 @@
 export type SettingsFormValues = {
   baseCurrency: string
-  monthStartsOn: string
 }
 
 export const defaultCurrencyOptions = [
@@ -15,11 +14,9 @@ export const defaultCurrencyOptions = [
 export function createSettingsFormValues(
   settings?: {
     baseCurrency?: string | null
-    monthStartsOn?: number | null
   } | null
 ): SettingsFormValues {
   return {
     baseCurrency: settings?.baseCurrency ?? "USD",
-    monthStartsOn: String(settings?.monthStartsOn ?? 1),
   }
 }

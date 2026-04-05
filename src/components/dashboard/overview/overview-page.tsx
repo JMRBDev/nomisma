@@ -36,7 +36,7 @@ export function OverviewPage() {
   const filterLabel = getOverviewDateFilterLabel(dateFilter)
   const activityLabel = hasDateFilter
     ? filterLabel
-    : "the current reporting period"
+    : "the current month"
   const queryArgs = useMemo(
     () => getOverviewDateFilterQuery(dateFilter),
     [dateFilter.fromDate, dateFilter.toDate]

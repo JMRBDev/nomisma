@@ -49,19 +49,11 @@ export function getCurrentCalendarMonth(now: Date) {
   return now.toISOString().slice(0, 7)
 }
 
-export function getReportingPeriod(now: Date, monthStartsOn: number) {
+export function getCurrentCalendarMonthRange(now: Date) {
   const year = now.getUTCFullYear()
   const month = now.getUTCMonth()
-  const day = now.getUTCDate()
-
-  const start =
-    day >= monthStartsOn
-      ? new Date(Date.UTC(year, month, monthStartsOn))
-      : new Date(Date.UTC(year, month - 1, monthStartsOn))
-
-  const end = new Date(start)
-  end.setUTCMonth(end.getUTCMonth() + 1)
-  end.setUTCDate(end.getUTCDate() - 1)
+  const start = new Date(Date.UTC(year, month, 1))
+  const end = new Date(Date.UTC(year, month + 1, 0))
 
   return {
     start: toDayKey(start),

@@ -35,7 +35,6 @@ export default defineSchema({
   userSettings: defineTable({
     userId: v.string(),
     baseCurrency: v.string(),
-    monthStartsOn: v.number(),
     createdAt: v.number(),
     updatedAt: v.number(),
   }).index("by_userId", ["userId"]),
