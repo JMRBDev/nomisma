@@ -1,0 +1,168 @@
+import { Link } from "@tanstack/react-router"
+import {
+  ArrowRightIcon,
+  CheckCircle2Icon,
+  PiggyBankIcon,
+  ReceiptTextIcon,
+  RepeatIcon,
+} from "lucide-react"
+import { OverviewAlerts } from "@/components/dashboard/overview/overview-alerts"
+import { OverviewChecklist } from "@/components/dashboard/overview/overview-checklist"
+import { OverviewEmptyState } from "@/components/dashboard/overview/overview-empty-state"
+import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
+import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
+import { OverviewPanelCard } from "@/components/dashboard/overview/overview-panel-card"
+import { OverviewRecentTransactionsTable } from "@/components/dashboard/overview/overview-recent-transactions-table"
+import { OverviewSummaryCards } from "@/components/dashboard/overview/overview-summary-cards"
+import { OverviewTopSpendingCategoriesList } from "@/components/dashboard/overview/overview-top-spending-categories-list"
+import { OverviewUpcomingRecurringTable } from "@/components/dashboard/overview/overview-upcoming-recurring-table"
+import { Button } from "@/components/ui/button"
+import { useOverviewData } from "@/hooks/use-money-dashboard"
+
+export function OverviewPage() {
+  const { data } = useOverviewData()
+
+  if (!data) {
+    return <section className="min-h-[calc(100vh-12rem)]" />
+  }
+
+  const currency = data.settings?.baseCurrency
+
+  return (
+    <DashboardPageSection>
+      <DashboardPageHeader title="Overview" />
+
+      <OverviewSummaryCards
+        currentMoney={data.overview.currentMoney}
+        income={data.overview.income}
+        expenses={data.overview.expenses}
+        net={data.overview.net}
+        budgetRemaining={data.overview.budgetRemaining}
+        hasAccounts={data.hasAccounts}
+        currentMonth={data.currentMonth}
+        currency={currency}
+      />
+
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+        <OverviewPanelCard
+          title="Recent transactions"
+          description="Your latest income, expenses, and transfers."
+          action={
+            <Button asChild size="sm" variant="outline">
+              <Link to="/dashboard/transactions">
+                View all
+                <ArrowRightIcon />
+              </Link>
+            </Button>
+          }
+        >
+          {data.overview.recentTransactions.length > 0 ? (
+            <OverviewRecentTransactionsTable
+              transactions={data.overview.recentTransactions}
+              currency={currency}
+            />
+          ) : (
+            <OverviewEmptyState
+              title="No transactions yet"
+              description="Add your first transaction to build a usable activity history."
+              icon={ReceiptTextIcon}
+              action={
+                <Button asChild>
+                  <Link to="/dashboard/transactions">
+                    Open transactions
+                    <ArrowRightIcon />
+                  </Link>
+                </Button>
+              }
+            />
+          )}
+        </OverviewPanelCard>
+
+        <div className="grid gap-4">
+          <OverviewPanelCard
+            title="Alerts"
+            description="Things that need attention or are worth checking."
+          >
+            {data.overview.alerts.length > 0 ? (
+              <OverviewAlerts alerts={data.overview.alerts} />
+            ) : (
+              <OverviewEmptyState
+                title="No alerts right now"
+                description="Your dashboard is clear. New budget or recurring issues will show up here."
+                icon={CheckCircle2Icon}
+              />
+            )}
+          </OverviewPanelCard>
+
+          {data.onboarding.completedCount < data.onboarding.totalCount ? (
+            <OverviewPanelCard
+              title="Setup checklist"
+              description={`${data.onboarding.completedCount} of ${data.onboarding.totalCount} setup steps completed.`}
+            >
+              <OverviewChecklist
+                completedCount={data.onboarding.completedCount}
+                totalCount={data.onboarding.totalCount}
+                steps={data.onboarding.steps}
+              />
+            </OverviewPanelCard>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-2">
+        <OverviewPanelCard
+          title="Top spending categories"
+          description="Where most of your posted expense money is going."
+          action={
+            <Button asChild size="sm" variant="outline">
+              <Link to="/dashboard/transactions">
+                View transactions
+                <ArrowRightIcon />
+              </Link>
+            </Button>
+          }
+        >
+          {data.overview.topSpendingCategories.length > 0 ? (
+            <OverviewTopSpendingCategoriesList
+              categories={data.overview.topSpendingCategories}
+              totalExpenses={data.overview.expenses}
+              currency={currency}
+            />
+          ) : (
+            <OverviewEmptyState
+              title="No expense activity yet"
+              description="Posted expense categories will start ranking here once you record spending."
+              icon={PiggyBankIcon}
+            />
+          )}
+        </OverviewPanelCard>
+
+        <OverviewPanelCard
+          title="Upcoming recurring"
+          description="The next recurring items scheduled to hit your accounts."
+          action={
+            <Button asChild size="sm" variant="outline">
+              <Link to="/dashboard/recurring">
+                View recurring
+                <ArrowRightIcon />
+              </Link>
+            </Button>
+          }
+        >
+          {data.overview.upcomingRecurring.length > 0 ? (
+            <OverviewUpcomingRecurringTable
+              recurringItems={data.overview.upcomingRecurring}
+              currency={currency}
+            />
+          ) : (
+            <OverviewEmptyState
+              title="No recurring items yet"
+              description="Add recurring income or bills so future cash movement is visible here."
+              icon={RepeatIcon}
+            />
+          )}
+        </OverviewPanelCard>
+      </div>
+    </DashboardPageSection>
+  )
+}

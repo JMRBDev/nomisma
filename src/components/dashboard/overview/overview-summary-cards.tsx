@@ -1,0 +1,88 @@
+import {
+  PiggyBankIcon,
+  ReceiptTextIcon,
+  TargetIcon,
+  WalletCardsIcon,
+} from "lucide-react"
+import { OverviewMetricCard } from "@/components/dashboard/overview/overview-metric-card"
+import { formatCurrency, formatMonthLabel, getBudgetTone } from "@/lib/money"
+
+export function OverviewSummaryCards({
+  currentMoney,
+  income,
+  expenses,
+  net,
+  budgetRemaining,
+  hasAccounts,
+  currentMonth,
+  currency,
+}: {
+  currentMoney: number
+  income: number
+  expenses: number
+  net: number
+  budgetRemaining: number | null
+  hasAccounts: boolean
+  currentMonth: string
+  currency?: string | null
+}) {
+  const monthLabel = formatMonthLabel(currentMonth)
+  const netToneClassName = net < 0 ? "text-destructive" : "text-emerald-400"
+  const budgetRemainingLabel =
+    budgetRemaining === null
+      ? "No limit set"
+      : formatCurrency(budgetRemaining, currency)
+  const budgetRemainingToneClassName =
+    budgetRemaining === null
+      ? undefined
+      : getBudgetTone(
+          budgetRemaining < 0
+            ? "over"
+            : budgetRemaining === 0
+              ? "near"
+              : "healthy"
+        )
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+      <OverviewMetricCard
+        title="Current money"
+        value={formatCurrency(currentMoney, currency)}
+        description={
+          hasAccounts
+            ? "Included balances across active accounts"
+            : "Add your first account to start tracking balances"
+        }
+        icon={<WalletCardsIcon className="size-4" />}
+      />
+      <OverviewMetricCard
+        title="Income"
+        value={formatCurrency(income, currency)}
+        description="Posted income in the current reporting period"
+        icon={<PiggyBankIcon className="size-4" />}
+        valueClassName="text-emerald-400"
+      />
+      <OverviewMetricCard
+        title="Expenses"
+        value={formatCurrency(expenses, currency)}
+        description="Posted spending in the current reporting period"
+        icon={<ReceiptTextIcon className="size-4" />}
+        valueClassName="text-rose-300"
+      />
+      <OverviewMetricCard
+        title="Net"
+        value={formatCurrency(net, currency)}
+        description="Income minus expenses for the current reporting period"
+        icon={<TargetIcon className="size-4" />}
+        valueClassName={netToneClassName}
+      />
+      <OverviewMetricCard
+        title="Budget remaining"
+        value={budgetRemainingLabel}
+        description={`Available budget space for ${monthLabel}`}
+        icon={<TargetIcon className="size-4" />}
+        valueClassName={budgetRemainingToneClassName}
+      />
+    </div>
+  )
+}
