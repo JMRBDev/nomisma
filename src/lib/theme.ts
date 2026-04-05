@@ -23,17 +23,47 @@ export const colorThemeOptions = [
   {
     value: "zinc",
     label: "Zinc & Rose",
-    className: "bg-rose-600",
+    colors: {
+      primary: {
+        className: "bg-rose-600",
+      },
+      secondary: {
+        className: "bg-rose-200",
+      },
+      tertiary: {
+        className: "bg-zinc-600",
+      },
+    },
   },
   {
     value: "olive",
     label: "Pure Olive",
-    className: "bg-olive-600",
+    colors: {
+      primary: {
+        className: "bg-olive-800",
+      },
+      secondary: {
+        className: "bg-olive-200",
+      },
+      tertiary: {
+        className: "bg-olive-600",
+      },
+    },
   },
   {
     value: "mist",
     label: "Mist & Emerald",
-    className: "bg-emerald-600",
+    colors: {
+      primary: {
+        className: "bg-emerald-600",
+      },
+      secondary: {
+        className: "bg-emerald-200",
+      },
+      tertiary: {
+        className: "bg-mist-600",
+      },
+    },
   },
 ] as const
 

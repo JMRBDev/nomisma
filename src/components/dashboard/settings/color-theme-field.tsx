@@ -1,9 +1,6 @@
-"use client"
-
 import { useState } from "react"
 
 import type { ColorTheme } from "@/lib/theme"
-import { useIsClient } from "@/hooks/use-is-client"
 import { colorThemeOptions, getColorTheme, setColorTheme } from "@/lib/theme"
 import {
   Field,
@@ -11,18 +8,9 @@ import {
   FieldDescription,
   FieldTitle,
 } from "@/components/ui/field"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 
 export function ColorThemeField() {
-  const isClient = useIsClient()
   const [colorTheme, setColorThemeState] = useState<ColorTheme>(getColorTheme)
 
   function handleChange(value: string) {
@@ -40,30 +28,24 @@ export function ColorThemeField() {
         </FieldDescription>
       </FieldContent>
 
-      <Select
-        value={colorTheme}
-        onValueChange={handleChange}
-        disabled={!isClient}
-      >
-        <SelectTrigger className="w-full sm:w-56">
-          <SelectValue placeholder="Choose a color" />
-        </SelectTrigger>
+      <div className="flex gap-2 items-center">
+        {colorThemeOptions.map((option) => (
+          <button
+            key={option.value}
+            onClick={() => handleChange(option.value)}
+            className={cn("flex items-stretch size-16 aspect-square rounded-2xl border border-border overflow-hidden divide-x divide-border", {
+              "ring-2 ring-ring ring-offset-0.5": option.value === colorTheme
+            })}
+          >
+            <div className={cn("flex-1", option.colors.primary.className)} />
+            <div className="flex flex-col flex-1 divide-y divide-border">
+              <div className={cn("flex-1", option.colors.secondary.className)} />
 
-        <SelectContent>
-          <SelectGroup>
-            {colorThemeOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                <span className="flex items-center gap-2">
-                  <span
-                    className={cn("inline-block size-3 shrink-0 rounded-full", option.className)}
-                  />
-                  {option.label}
-                </span>
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+              <div className={cn("flex-1", option.colors.tertiary.className)} />
+            </div>
+          </button>
+        ))}
+      </div>
     </Field>
   )
 }
