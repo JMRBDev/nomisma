@@ -1,6 +1,9 @@
 import { ArchiveIcon, ArchiveRestoreIcon } from "lucide-react"
 import type { AccountRecord } from "@/components/dashboard/accounts/accounts-shared"
-import { getAccountTypeLabel } from "@/components/dashboard/accounts/accounts-shared"
+import {
+  ACCOUNT_ICON_MAP,
+  getAccountTypeLabel,
+} from "@/components/dashboard/accounts/accounts-shared"
 import { DashboardIconButton } from "@/components/dashboard/dashboard-icon-button"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { Badge } from "@/components/ui/badge"
@@ -12,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { getContrastColor } from "@/lib/colors"
 import { formatCurrency, formatDateLabel } from "@/lib/money"
 import { cn } from "@/lib/utils"
 
@@ -47,27 +51,34 @@ export function AccountsTable({
       <TableBody>
         {accounts.map((account) => {
           const recentTransactions = account.recentTransactions ?? []
+          const resolvedColor = account.color?.trim()
+          const isHex = resolvedColor?.startsWith("#")
+          const iconColor = isHex ? getContrastColor(resolvedColor) : "#ffffff"
 
           return (
             <TableRow key={account._id}>
               <TableCell>
                 <div className="flex items-start gap-3">
                   <span
-                    className={
-                      cn("mt-1 size-2.5 shrink-0 rounded-full", account.color)
-                    }
-                    style={{
-                      backgroundColor:
-                        account.color && account.color.trim()
-                          ? account.color
-                          : "var(--color-border)",
-                    }}
-                  />
+                    className={cn("flex size-8 shrink-0 items-center justify-center rounded-full bg-border border", { [account.color || ""]: account.color && account.color.trim() })}
+                  >
+                    {(() => {
+                      const IconComponent = account.icon
+                        ? ACCOUNT_ICON_MAP[account.icon]
+                        : null
+                      return IconComponent ? (
+                        <IconComponent size={14} className="opacity-80" style={{ color: iconColor }} />
+                      ) : (
+                        null
+                      )
+                    })()}
+                  </span>
+
                   <div className="space-y-1">
                     <p className="font-medium">{account.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      In {formatCurrency(account.income ?? 0, currency)}.
-                      Out {formatCurrency(account.expense ?? 0, currency)}.
+                      In {formatCurrency(account.income ?? 0, currency)}. Out{" "}
+                      {formatCurrency(account.expense ?? 0, currency)}.
                     </p>
                   </div>
                 </div>

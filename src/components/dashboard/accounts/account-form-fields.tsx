@@ -3,7 +3,9 @@ import type {
   AccountFormValues,
   AccountType,
 } from "@/components/dashboard/accounts/accounts-shared"
+import { ACCOUNT_ICON_OPTIONS } from "@/components/dashboard/accounts/accounts-shared"
 import { FormErrorMessage } from "@/components/form-error-message"
+import { IconPicker } from "@/components/icon-picker"
 import {
   Field,
   FieldDescription,
@@ -91,6 +93,15 @@ export function AccountFormFields({
           />
         </Field>
       </div>
+
+      <Field>
+        <FieldTitle>Icon</FieldTitle>
+        <IconPicker
+          value={values.icon}
+          onChange={(value) => onValueChange("icon", value)}
+          icons={ACCOUNT_ICON_OPTIONS}
+        />
+      </Field>
 
       <Field orientation="responsive">
         <div className="space-y-1">
