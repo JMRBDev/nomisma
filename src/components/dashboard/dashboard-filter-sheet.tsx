@@ -34,7 +34,7 @@ export function DashboardFilterSheet({
         className={cn("w-full sm:max-w-md", contentClassName)}
       >
         <SheetHeader>
-          <SheetTitle>{title}</SheetTitle>
+          <SheetTitle className="text-2xl">{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
         <div className={cn("space-y-5 px-6 pb-6", bodyClassName)}>

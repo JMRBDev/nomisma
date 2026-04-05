@@ -44,7 +44,7 @@ export function DashboardFormDialog({
           )}
         >
           <SheetHeader>
-            <SheetTitle>{title}</SheetTitle>
+            <SheetTitle className="text-2xl">{title}</SheetTitle>
             <SheetDescription>{description}</SheetDescription>
           </SheetHeader>
 
@@ -60,7 +60,7 @@ export function DashboardFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={cn("sm:max-w-2xl", contentClassName)}>
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          <DialogTitle className="text-2xl">{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         {children}

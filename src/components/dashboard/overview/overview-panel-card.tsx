@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -20,13 +21,17 @@ export function OverviewPanelCard({
 }) {
   return (
     <Card>
-      <CardHeader className="gap-3 md:grid-cols-[1fr_auto] md:items-start">
-        <div className="space-y-1">
-          <CardTitle>{title}</CardTitle>
+      <CardHeader>
+        <div>
+          <CardTitle className="text-2xl">{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </div>
-        {action ? <div className="shrink-0">{action}</div> : null}
+
+        <CardAction>
+          {action ?? null}
+        </CardAction>
       </CardHeader>
+
       <CardContent>{children}</CardContent>
     </Card>
   )

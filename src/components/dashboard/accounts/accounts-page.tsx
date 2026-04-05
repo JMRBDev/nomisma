@@ -119,7 +119,7 @@ export function AccountsPage() {
           {activeAccounts.length > 0 ? (
             <Card>
               <CardHeader>
-                <CardTitle>Active accounts</CardTitle>
+                <CardTitle className="text-2xl">Active accounts</CardTitle>
               </CardHeader>
 
               <CardContent>
@@ -142,7 +142,7 @@ export function AccountsPage() {
           {archivedAccounts.length > 0 ? (
             <Card>
               <CardHeader>
-                <CardTitle>Archived accounts</CardTitle>
+                <CardTitle className="text-2xl">Archived accounts</CardTitle>
               </CardHeader>
 
               <CardContent>
@@ -162,7 +162,8 @@ export function AccountsPage() {
           hasArchivedAccounts={false}
           onAddAccount={accountCreator.openDialog}
         />
-      )}
+      )
+      }
 
       <AccountFormDialog
         open={accountCreator.dialogOpen}
@@ -175,7 +176,7 @@ export function AccountsPage() {
         onValueChange={accountCreator.handleValueChange}
         onIncludeInTotalsChange={accountCreator.handleIncludeInTotalsChange}
       />
-    </DashboardPageSection>
+    </DashboardPageSection >
   )
 }
 
@@ -191,7 +192,7 @@ function AccountSummaryCard({
   return (
     <Card size="sm">
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle className="text-2xl">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 flex items-end">

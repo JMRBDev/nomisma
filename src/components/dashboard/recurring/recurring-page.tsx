@@ -348,7 +348,7 @@ function RecurringSummaryCard({
   return (
     <Card size="sm">
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle className="text-2xl">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
 
