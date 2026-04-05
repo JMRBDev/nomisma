@@ -15,7 +15,7 @@ import { getToken } from "@/lib/auth-server"
 import { APP_NAME } from "@/lib/money"
 import { ThemeProvider } from "@/components/theme-provider"
 
-import appCss from "@/styles.css?url"
+import appCss from "@/styles/globals.css?url"
 
 const getAuth = createServerFn({ method: "GET" }).handler(async () => {
   return await getToken()
@@ -96,7 +96,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('money-app-color-theme');if(t&&t!=='red')document.documentElement.setAttribute('data-color-theme',t)}catch(e){}})()`,
+            __html: `(function(){try{document.documentElement.setAttribute('data-color-theme',localStorage.getItem('money-app-color-theme')||'zinc')}catch(e){}})()`,
           }}
         />
         <HeadContent />

@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { cn } from "@/lib/utils"
 
 export function ColorThemeField() {
   const isClient = useIsClient()
@@ -54,8 +55,7 @@ export function ColorThemeField() {
               <SelectItem key={option.value} value={option.value}>
                 <span className="flex items-center gap-2">
                   <span
-                    className="inline-block size-3 shrink-0 rounded-full"
-                    style={{ backgroundColor: option.swatch }}
+                    className={cn("inline-block size-3 shrink-0 rounded-full", option.className)}
                   />
                   {option.label}
                 </span>
