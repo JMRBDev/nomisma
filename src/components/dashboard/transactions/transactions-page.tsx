@@ -32,6 +32,7 @@ import { TransactionsEmptyState } from "@/components/dashboard/transactions/tran
 import { TransactionsTable } from "@/components/dashboard/transactions/transactions-table"
 import { useTransactionEditor } from "@/hooks/use-transaction-editor"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useTransactionsPageData } from "@/hooks/use-money-dashboard"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CategoriesTable } from "@/components/dashboard/transactions/categories-table"
@@ -178,9 +179,7 @@ export function TransactionsPage() {
     })
   }
 
-  if (!data) {
-    return <section className="min-h-[calc(100vh-12rem)]" />
-  }
+  const isLoading = !data
 
   return (
     <DashboardPageSection>
@@ -194,7 +193,7 @@ export function TransactionsPage() {
             />
             <Button
               onClick={transactionEditor.openCreateDialog}
-              disabled={accountOptions.length === 0}
+              disabled={isLoading || accountOptions.length === 0}
             >
               Add transaction
               <PlusIcon />
@@ -203,7 +202,19 @@ export function TransactionsPage() {
         }
       />
 
-      {accountOptions.length === 0 ? (
+      {isLoading ? (
+        <Card>
+          <CardContent>
+            <div className="space-y-3">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-3/4" />
+            </div>
+          </CardContent>
+        </Card>
+      ) : accountOptions.length === 0 ? (
         <GuidedEmptyState
           title="Add an account before recording transactions"
           description="Transactions need an account because every movement starts from somewhere real."
@@ -264,6 +275,7 @@ export function TransactionsPage() {
               size="sm"
               variant="outline"
               onClick={categoryDialog.openCreateDialog}
+              disabled={isLoading}
             >
               Add category
               <PlusIcon />
@@ -271,7 +283,13 @@ export function TransactionsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {categoryRows.length === 0 ? (
+          {isLoading ? (
+            <div className="space-y-3">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          ) : categoryRows.length === 0 ? (
             <GuidedEmptyState
               title="Add your first category"
               description="Create income and expense categories to organize your transactions and budgets."

@@ -19,6 +19,7 @@ import { DashboardPageSection } from "@/components/dashboard/dashboard-page-sect
 import { DashboardSummaryCard } from "@/components/dashboard/dashboard-summary-card"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useFormDialog } from "@/hooks/use-form-dialog"
 import { useBudgetsPageData } from "@/hooks/use-money-dashboard"
 import { formatCurrency, formatMonthLabel } from "@/lib/money"
@@ -49,14 +50,11 @@ export function BudgetsPage() {
     },
   })
 
-  if (!data) {
-    return <section className="min-h-[calc(100vh-12rem)]" />
-  }
-
-  const categoryOptions = data.categories.activeExpense
-  const budgets = data.budgets.items
-  const currency = data.settings?.baseCurrency
-  const monthLabel = formatMonthLabel(data.budgets.currentMonth)
+  const isLoading = !data
+  const categoryOptions = data?.categories.activeExpense ?? []
+  const budgets = data?.budgets.items ?? []
+  const currency = data?.settings?.baseCurrency
+  const monthLabel = data ? formatMonthLabel(data.budgets.currentMonth) : ""
   const overBudgetCount = budgets.filter(
     (budget) => budget.status === "over"
   ).length
@@ -95,7 +93,7 @@ export function BudgetsPage() {
         title="Budgets"
         action={
           <DashboardPageActions>
-            <Button onClick={dialog.openCreateDialog}>
+            <Button onClick={dialog.openCreateDialog} disabled={isLoading}>
               Add budget
               <PlusIcon />
             </Button>
@@ -103,46 +101,76 @@ export function BudgetsPage() {
         }
       />
 
-      {budgets.length > 0 ? (
+      {isLoading || budgets.length > 0 ? (
         <>
           <div className="grid gap-4 md:grid-cols-3">
             <DashboardSummaryCard
+              loading={isLoading}
               title="Planned this month"
-              value={formatCurrency(data.budgets.totalPlanned, currency)}
-              description={`${budgets.length} budget${budgets.length === 1 ? "" : "s"} in ${monthLabel}`}
+              value={
+                data ? formatCurrency(data.budgets.totalPlanned, currency) : ""
+              }
+              description={
+                data
+                  ? `${budgets.length} budget${budgets.length === 1 ? "" : "s"} in ${monthLabel}`
+                  : ""
+              }
             />
             <DashboardSummaryCard
+              loading={isLoading}
               title="Posted spending"
-              value={formatCurrency(data.budgets.totalSpent, currency)}
-              description={`Tracked posted expenses for ${monthLabel}`}
+              value={
+                data ? formatCurrency(data.budgets.totalSpent, currency) : ""
+              }
+              description={
+                data ? `Tracked posted expenses for ${monthLabel}` : ""
+              }
             />
             <DashboardSummaryCard
+              loading={isLoading}
               title="Remaining"
               value={
-                data.budgets.budgetRemaining === null
-                  ? "No limit set"
-                  : formatCurrency(data.budgets.budgetRemaining, currency)
+                data
+                  ? data.budgets.budgetRemaining === null
+                    ? "No limit set"
+                    : formatCurrency(data.budgets.budgetRemaining, currency)
+                  : ""
               }
-              description={`${overBudgetCount} over budget, ${nearBudgetCount} close to the limit`}
+              description={
+                data
+                  ? `${overBudgetCount} over budget, ${nearBudgetCount} close to the limit`
+                  : ""
+              }
               toneClassName={
-                data.budgets.budgetRemaining === null
-                  ? undefined
-                  : data.budgets.budgetRemaining < 0
-                    ? "text-destructive"
-                    : "text-emerald-400"
+                data
+                  ? data.budgets.budgetRemaining === null
+                    ? undefined
+                    : data.budgets.budgetRemaining < 0
+                      ? "text-destructive"
+                      : "text-emerald-400"
+                  : undefined
               }
             />
           </div>
 
           <Card>
             <CardContent>
-              <BudgetsTable
-                budgets={budgets}
-                currency={currency}
-                pendingBudgetId={pendingBudgetId}
-                onEdit={dialog.openEditDialog}
-                onDelete={handleDeleteRequest}
-              />
+              {isLoading ? (
+                <div className="space-y-3">
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-3/4" />
+                </div>
+              ) : (
+                <BudgetsTable
+                  budgets={budgets}
+                  currency={currency}
+                  pendingBudgetId={pendingBudgetId}
+                  onEdit={dialog.openEditDialog}
+                  onDelete={handleDeleteRequest}
+                />
+              )}
             </CardContent>
           </Card>
         </>

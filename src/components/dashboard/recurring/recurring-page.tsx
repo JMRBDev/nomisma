@@ -34,6 +34,7 @@ import { RecurringTable } from "@/components/dashboard/recurring/recurring-table
 import { GuidedEmptyState } from "@/components/guided-empty-state"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useFormDialog } from "@/hooks/use-form-dialog"
 import { useRecurringPageData } from "@/hooks/use-money-dashboard"
 import { formatDateLabel, todayInputValue } from "@/lib/money"
@@ -99,14 +100,11 @@ export function RecurringPage() {
     },
   })
 
-  if (!data) {
-    return <section className="min-h-[calc(100vh-12rem)]" />
-  }
-
-  const accountOptions = data.accounts.active
-  const incomeCategoryOptions = data.categories.activeIncome
-  const expenseCategoryOptions = data.categories.activeExpense
-  const recurringItems = data.recurring.all
+  const isLoading = !data
+  const accountOptions = data?.accounts.active ?? []
+  const incomeCategoryOptions = data?.categories.activeIncome ?? []
+  const expenseCategoryOptions = data?.categories.activeExpense ?? []
+  const recurringItems = data?.recurring.all ?? []
   const visibleRecurringItems = recurringItems.filter((item) => {
     if (dateRange.startDate && item.nextDueDate < dateRange.startDate) {
       return false
@@ -118,12 +116,13 @@ export function RecurringPage() {
 
     return true
   })
-  const currency = data.settings?.baseCurrency
+  const currency = data?.settings?.baseCurrency
   const today = todayInputValue()
-  const hasRecurringItems = recurringItems.length > 0
+  const hasRecurringItems = !isLoading && recurringItems.length > 0
   const hasCategoryOptions =
     incomeCategoryOptions.length > 0 || expenseCategoryOptions.length > 0
-  const createDisabled = accountOptions.length === 0 || !hasCategoryOptions
+  const createDisabled =
+    isLoading || accountOptions.length === 0 || !hasCategoryOptions
   const activeIncomeCount = recurringItems.filter(
     (item) => item.type === "income"
   ).length
@@ -199,30 +198,48 @@ export function RecurringPage() {
         }
       />
 
-      {hasRecurringItems ? (
+      {isLoading || hasRecurringItems ? (
         <>
           <div className="grid gap-4 md:grid-cols-3">
             <DashboardSummaryCard
+              loading={isLoading}
               title="Active schedules"
               value={recurringItems.length.toString()}
               description={`${activeExpenseCount} expense item${activeExpenseCount === 1 ? "" : "s"}, ${activeIncomeCount} income item${activeIncomeCount === 1 ? "" : "s"}`}
             />
             <DashboardSummaryCard
+              loading={isLoading}
               title="Due now"
               value={dueNowCount.toString()}
-              description={`${data.recurring.overdue.length} overdue, ${data.recurring.dueSoon.length} due within 7 days`}
+              description={
+                data
+                  ? `${data.recurring.overdue.length} overdue, ${data.recurring.dueSoon.length} due within 7 days`
+                  : ""
+              }
               toneClassName={dueNowCount > 0 ? "text-destructive" : undefined}
             />
             <DashboardSummaryCard
+              loading={isLoading}
               title="Next scheduled"
-              value={formatDateLabel(nextItem.nextDueDate)}
-              description={`${nextItem.description} • ${nextItem.frequency}`}
+              value={nextItem ? formatDateLabel(nextItem.nextDueDate) : ""}
+              description={
+                nextItem
+                  ? `${nextItem.description} • ${nextItem.frequency}`
+                  : ""
+              }
             />
           </div>
 
           <Card>
             <CardContent>
-              {visibleRecurringItems.length > 0 ? (
+              {isLoading ? (
+                <div className="space-y-3">
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-3/4" />
+                </div>
+              ) : visibleRecurringItems.length > 0 ? (
                 <RecurringTable
                   recurringItems={visibleRecurringItems}
                   currency={currency}

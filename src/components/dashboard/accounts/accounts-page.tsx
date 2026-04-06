@@ -13,6 +13,7 @@ import { DashboardPageSection } from "@/components/dashboard/dashboard-page-sect
 import { DashboardSummaryCard } from "@/components/dashboard/dashboard-summary-card"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useAccountsPageData } from "@/hooks/use-money-dashboard"
 import { useAccountCreator } from "@/hooks/use-account-creator"
 import { formatCurrency } from "@/lib/money"
@@ -91,9 +92,7 @@ export function AccountsPage() {
     }
   }
 
-  if (!data) {
-    return <section className="min-h-[calc(100vh-12rem)]" />
-  }
+  const isLoading = !data
 
   return (
     <DashboardPageSection>
@@ -101,7 +100,7 @@ export function AccountsPage() {
         title="Accounts"
         action={
           <DashboardPageActions>
-            <Button onClick={accountCreator.openDialog}>
+            <Button onClick={accountCreator.openDialog} disabled={isLoading}>
               Add account
               <PlusIcon />
             </Button>
@@ -109,27 +108,44 @@ export function AccountsPage() {
         }
       />
 
-      {hasAnyAccounts ? (
+      {isLoading || hasAnyAccounts ? (
         <>
           <div className="grid gap-4 md:grid-cols-3">
             <DashboardSummaryCard
+              loading={isLoading}
               title="Active balance"
               value={formatCurrency(totalBalance, currency)}
               description={`${activeAccounts.length} active account${activeAccounts.length === 1 ? "" : "s"}`}
             />
             <DashboardSummaryCard
+              loading={isLoading}
               title="Included in totals"
               value={formatCurrency(includedBalance, currency)}
               description="Balances that count toward dashboard totals"
             />
             <DashboardSummaryCard
+              loading={isLoading}
               title="Excluded from totals"
               value={formatCurrency(excludedBalance, currency)}
               description={`${excludedAccountsCount} active account${excludedAccountsCount === 1 ? "" : "s"} kept out of totals`}
             />
           </div>
 
-          {activeAccounts.length > 0 ? (
+          {isLoading ? (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-2xl">Active accounts</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-3/4" />
+                </div>
+              </CardContent>
+            </Card>
+          ) : activeAccounts.length > 0 ? (
             <Card>
               <CardHeader>
                 <CardTitle className="text-2xl">Active accounts</CardTitle>
@@ -152,7 +168,7 @@ export function AccountsPage() {
             />
           )}
 
-          {archivedAccounts.length > 0 ? (
+          {!isLoading && archivedAccounts.length > 0 ? (
             <Card>
               <CardHeader>
                 <CardTitle className="text-2xl">Archived accounts</CardTitle>

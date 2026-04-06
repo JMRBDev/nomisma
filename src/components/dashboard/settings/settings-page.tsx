@@ -4,17 +4,34 @@ import { ColorThemeField } from "@/components/dashboard/settings/color-theme-fie
 import { SettingsForm } from "@/components/dashboard/settings/settings-form"
 import { ThemePreferenceField } from "@/components/dashboard/settings/theme-preference-field"
 import { createSettingsFormValues } from "@/components/dashboard/settings/settings-shared"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useSettingsPageData } from "@/hooks/use-money-dashboard"
 import { Separator } from "@/components/ui/separator"
+
+function SettingsFormSkeleton() {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="space-y-3">
+        <Skeleton className="h-5 w-24" />
+        <Skeleton className="h-10 w-full max-w-56" />
+      </div>
+      <div className="space-y-3">
+        <Skeleton className="h-5 w-28" />
+        <Skeleton className="h-10 w-full max-w-56" />
+      </div>
+      <Separator />
+      <Skeleton className="h-10 w-24" />
+    </div>
+  )
+}
 
 export function SettingsPage() {
   const { data } = useSettingsPageData()
 
-  if (!data) {
-    return <section className="min-h-[calc(100vh-12rem)]" />
-  }
-
-  const currentValues = createSettingsFormValues(data.settings)
+  const isLoading = !data
+  const currentValues = data
+    ? createSettingsFormValues(data.settings)
+    : undefined
 
   return (
     <DashboardPageSection>
@@ -29,10 +46,14 @@ export function SettingsPage() {
 
         <Separator />
 
-        <SettingsForm
-          key={`${currentValues.baseCurrency}-${currentValues.weekStartsOn}`}
-          initialValues={currentValues}
-        />
+        {isLoading ? (
+          <SettingsFormSkeleton />
+        ) : (
+          <SettingsForm
+            key={`${currentValues!.baseCurrency}-${currentValues!.weekStartsOn}`}
+            initialValues={currentValues!}
+          />
+        )}
       </div>
     </DashboardPageSection>
   )

@@ -44,11 +44,9 @@ export function OverviewPage() {
   )
   const { data } = useOverviewData(queryArgs)
 
-  if (!data) {
-    return <section className="min-h-[calc(100vh-12rem)]" />
-  }
+  const isLoading = !data
 
-  const currency = data.settings?.baseCurrency
+  const currency = data?.settings?.baseCurrency
   const isSingleMonth =
     !hasDateFilter ||
     dateFilter.fromDate.slice(0, 7) === dateFilter.toDate.slice(0, 7)
@@ -58,19 +56,21 @@ export function OverviewPage() {
       <DashboardPageHeader title="Overview" />
 
       <OverviewSummaryCards
-        currentMoney={data.overview.currentMoney}
-        income={data.overview.income}
-        expenses={data.overview.expenses}
-        net={data.overview.net}
-        budgetRemaining={data.overview.budgetRemaining}
-        hasAccounts={data.hasAccounts}
-        currentMonth={data.currentMonth}
+        loading={isLoading}
+        currentMoney={data?.overview.currentMoney}
+        income={data?.overview.income}
+        expenses={data?.overview.expenses}
+        net={data?.overview.net}
+        budgetRemaining={data?.overview.budgetRemaining}
+        hasAccounts={data?.hasAccounts}
+        currentMonth={data?.currentMonth}
         currency={currency}
         activityLabel={activityLabel}
       />
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
         <OverviewPanelCard
+          loading={isLoading}
           title="Recent transactions"
           description={
             hasDateFilter
@@ -89,58 +89,62 @@ export function OverviewPage() {
             </Button>
           }
         >
-          {data.overview.recentTransactions.length > 0 ? (
-            <OverviewRecentTransactionsTable
-              transactions={data.overview.recentTransactions}
-              currency={currency}
-            />
-          ) : (
-            <FilteredResultsEmptyState
-              title={
-                hasDateFilter
-                  ? "No transactions in this date filter"
-                  : "No transactions yet"
-              }
-              description={
-                hasDateFilter
-                  ? "Pick another day or range from the header to inspect a different slice of activity."
-                  : "Add your first transaction to build a usable activity history."
-              }
-              icon={hasDateFilter ? FunnelIcon : ReceiptTextIcon}
-              action={
-                hasDateFilter ? null : (
-                  <Button asChild>
-                    <Link
-                      to="/dashboard/transactions"
-                      search={(previous) => previous}
-                    >
-                      Open transactions
-                      <ArrowRightIcon />
-                    </Link>
-                  </Button>
-                )
-              }
-            />
-          )}
+          {!isLoading &&
+            (data.overview.recentTransactions.length > 0 ? (
+              <OverviewRecentTransactionsTable
+                transactions={data.overview.recentTransactions}
+                currency={currency}
+              />
+            ) : (
+              <FilteredResultsEmptyState
+                title={
+                  hasDateFilter
+                    ? "No transactions in this date filter"
+                    : "No transactions yet"
+                }
+                description={
+                  hasDateFilter
+                    ? "Pick another day or range from the header to inspect a different slice of activity."
+                    : "Add your first transaction to build a usable activity history."
+                }
+                icon={hasDateFilter ? FunnelIcon : ReceiptTextIcon}
+                action={
+                  hasDateFilter ? null : (
+                    <Button asChild>
+                      <Link
+                        to="/dashboard/transactions"
+                        search={(previous) => previous}
+                      >
+                        Open transactions
+                        <ArrowRightIcon />
+                      </Link>
+                    </Button>
+                  )
+                }
+              />
+            ))}
         </OverviewPanelCard>
 
         <div className="grid gap-4">
           <OverviewPanelCard
+            loading={isLoading}
             title="Alerts"
             description="Things that need attention or are worth checking."
           >
-            {data.overview.alerts.length > 0 ? (
-              <OverviewAlerts alerts={data.overview.alerts} />
-            ) : (
-              <FilteredResultsEmptyState
-                title="No alerts right now"
-                description="Your dashboard is clear. New budget or recurring issues will show up here."
-                icon={CheckCircle2Icon}
-              />
-            )}
+            {!isLoading &&
+              (data.overview.alerts.length > 0 ? (
+                <OverviewAlerts alerts={data.overview.alerts} />
+              ) : (
+                <FilteredResultsEmptyState
+                  title="No alerts right now"
+                  description="Your dashboard is clear. New budget or recurring issues will show up here."
+                  icon={CheckCircle2Icon}
+                />
+              ))}
           </OverviewPanelCard>
 
-          {data.onboarding.completedCount < data.onboarding.totalCount ? (
+          {!isLoading &&
+          data.onboarding.completedCount < data.onboarding.totalCount ? (
             <OverviewPanelCard
               title="Setup checklist"
               description={`${data.onboarding.completedCount} of ${data.onboarding.totalCount} setup steps completed.`}
@@ -157,6 +161,7 @@ export function OverviewPage() {
 
       <div className="grid gap-4 xl:grid-cols-2">
         <OverviewPanelCard
+          loading={isLoading}
           title="Top spending categories"
           description={
             hasDateFilter
@@ -175,30 +180,32 @@ export function OverviewPage() {
             </Button>
           }
         >
-          {data.overview.topSpendingCategories.length > 0 ? (
-            <OverviewTopSpendingCategoriesList
-              categories={data.overview.topSpendingCategories}
-              totalExpenses={data.overview.expenses}
-              currency={currency}
-            />
-          ) : (
-            <FilteredResultsEmptyState
-              title={
-                hasDateFilter
-                  ? "No expense activity in this date filter"
-                  : "No expense activity yet"
-              }
-              description={
-                hasDateFilter
-                  ? "Try a wider date range to see where spending is concentrated."
-                  : "Posted expense categories will start ranking here once you record spending."
-              }
-              icon={hasDateFilter ? FunnelIcon : PiggyBankIcon}
-            />
-          )}
+          {!isLoading &&
+            (data.overview.topSpendingCategories.length > 0 ? (
+              <OverviewTopSpendingCategoriesList
+                categories={data.overview.topSpendingCategories}
+                totalExpenses={data.overview.expenses}
+                currency={currency}
+              />
+            ) : (
+              <FilteredResultsEmptyState
+                title={
+                  hasDateFilter
+                    ? "No expense activity in this date filter"
+                    : "No expense activity yet"
+                }
+                description={
+                  hasDateFilter
+                    ? "Try a wider date range to see where spending is concentrated."
+                    : "Posted expense categories will start ranking here once you record spending."
+                }
+                icon={hasDateFilter ? FunnelIcon : PiggyBankIcon}
+              />
+            ))}
         </OverviewPanelCard>
 
         <OverviewPanelCard
+          loading={isLoading}
           title="Upcoming recurring"
           description="The next recurring items scheduled to hit your accounts."
           action={
@@ -210,23 +217,25 @@ export function OverviewPage() {
             </Button>
           }
         >
-          {data.overview.upcomingRecurring.length > 0 ? (
-            <OverviewUpcomingRecurringTable
-              recurringItems={data.overview.upcomingRecurring}
-              currency={currency}
-            />
-          ) : (
-            <FilteredResultsEmptyState
-              title="No recurring items yet"
-              description="Add recurring income or bills so future cash movement is visible here."
-              icon={RepeatIcon}
-            />
-          )}
+          {!isLoading &&
+            (data.overview.upcomingRecurring.length > 0 ? (
+              <OverviewUpcomingRecurringTable
+                recurringItems={data.overview.upcomingRecurring}
+                currency={currency}
+              />
+            ) : (
+              <FilteredResultsEmptyState
+                title="No recurring items yet"
+                description="Add recurring income or bills so future cash movement is visible here."
+                icon={RepeatIcon}
+              />
+            ))}
         </OverviewPanelCard>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
         <OverviewPanelCard
+          loading={isLoading}
           title="Spending over time"
           description={
             hasDateFilter
@@ -234,13 +243,16 @@ export function OverviewPage() {
               : "Daily expense totals for the current month."
           }
         >
-          <OverviewSpendingChart
-            data={data.overview.dailySpending}
-            currency={currency}
-          />
+          {!isLoading && (
+            <OverviewSpendingChart
+              data={data.overview.dailySpending}
+              currency={currency}
+            />
+          )}
         </OverviewPanelCard>
 
         <OverviewPanelCard
+          loading={isLoading}
           title="Income vs expenses"
           description={
             isSingleMonth
@@ -248,21 +260,26 @@ export function OverviewPage() {
               : "Monthly income and expense comparison."
           }
         >
-          <OverviewIncomeVsExpensesChart
-            data={data.overview.incomeExpensesComparison}
-            currency={currency}
-            isSingleMonth={isSingleMonth}
-          />
+          {!isLoading && (
+            <OverviewIncomeVsExpensesChart
+              data={data.overview.incomeExpensesComparison}
+              currency={currency}
+              isSingleMonth={isSingleMonth}
+            />
+          )}
         </OverviewPanelCard>
 
         <OverviewPanelCard
+          loading={isLoading}
           title="Expense breakdown"
           description="How your posted expenses are distributed by category."
         >
-          <OverviewCategoryBreakdownChart
-            data={data.overview.categoryBreakdown}
-            currency={currency}
-          />
+          {!isLoading && (
+            <OverviewCategoryBreakdownChart
+              data={data.overview.categoryBreakdown}
+              currency={currency}
+            />
+          )}
         </OverviewPanelCard>
       </div>
     </DashboardPageSection>

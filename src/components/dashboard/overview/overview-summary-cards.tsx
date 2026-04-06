@@ -8,26 +8,38 @@ import { OverviewMetricCard } from "@/components/dashboard/overview/overview-met
 import { formatCurrency, formatMonthLabel, getBudgetTone } from "@/lib/money"
 
 export function OverviewSummaryCards({
-  currentMoney,
-  income,
-  expenses,
-  net,
-  budgetRemaining,
-  hasAccounts,
-  currentMonth,
+  currentMoney = 0,
+  income = 0,
+  expenses = 0,
+  net = 0,
+  budgetRemaining = null,
+  hasAccounts = false,
+  currentMonth = "",
   currency,
-  activityLabel,
+  activityLabel = "the current month",
+  loading,
 }: {
-  currentMoney: number
-  income: number
-  expenses: number
-  net: number
-  budgetRemaining: number | null
-  hasAccounts: boolean
-  currentMonth: string
+  currentMoney?: number
+  income?: number
+  expenses?: number
+  net?: number
+  budgetRemaining?: number | null
+  hasAccounts?: boolean
+  currentMonth?: string
   currency?: string | null
-  activityLabel: string
+  activityLabel?: string
+  loading?: boolean
 }) {
+  if (loading) {
+    return (
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <OverviewMetricCard key={i} title="" loading />
+        ))}
+      </div>
+    )
+  }
+
   const monthLabel = formatMonthLabel(currentMonth)
   const netToneClassName = net < 0 ? "text-destructive" : "text-emerald-400"
   const budgetRemainingLabel =
