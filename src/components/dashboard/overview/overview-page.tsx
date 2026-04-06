@@ -1,5 +1,4 @@
-import { useMemo } from "react"
-import { Link, getRouteApi } from "@tanstack/react-router"
+import { Link } from "@tanstack/react-router"
 import {
   ArrowRightIcon,
   CheckCircle2Icon,
@@ -8,12 +7,6 @@ import {
   ReceiptTextIcon,
   RepeatIcon,
 } from "lucide-react"
-import {
-  getOverviewDateFilterLabel,
-  getOverviewDateFilterQuery,
-  hasOverviewDateFilter,
-  resolveOverviewDateFilterValues,
-} from "@/components/dashboard/overview/overview-date-filter"
 import { OverviewAlerts } from "@/components/dashboard/overview/overview-alerts"
 import { OverviewChecklist } from "@/components/dashboard/overview/overview-checklist"
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
@@ -29,20 +22,12 @@ import { OverviewIncomeVsExpensesChart } from "@/components/dashboard/overview/o
 import { OverviewCategoryBreakdownChart } from "@/components/dashboard/overview/overview-category-breakdown-chart"
 import { Button } from "@/components/ui/button"
 import { useOverviewData } from "@/hooks/use-money-dashboard"
-
-const dashboardRouteApi = getRouteApi("/_authenticated/dashboard")
+import { useDateFilter } from "@/hooks/use-date-filter"
 
 export function OverviewPage() {
-  const search = dashboardRouteApi.useSearch()
-  const dateFilter = resolveOverviewDateFilterValues(search)
-  const hasDateFilter = hasOverviewDateFilter(dateFilter)
-  const filterLabel = getOverviewDateFilterLabel(dateFilter)
+  const { hasDateFilter, filterLabel, dateRange, dateFilter } = useDateFilter()
   const activityLabel = hasDateFilter ? filterLabel : "the current month"
-  const queryArgs = useMemo(
-    () => getOverviewDateFilterQuery(dateFilter),
-    [dateFilter.fromDate, dateFilter.toDate]
-  )
-  const { data } = useOverviewData(queryArgs)
+  const { data } = useOverviewData(dateRange)
 
   const isLoading = !data
 

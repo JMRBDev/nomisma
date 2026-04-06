@@ -34,7 +34,9 @@ export function AccountsPage() {
   } | null>(null)
 
   const accountCreator = useAccountCreator({
-    onCreateAccount: (payload) => createAccount(payload),
+    onCreateAccount: async (payload) => {
+      await createAccount(payload)
+    },
   })
 
   const activeAccounts = data?.accounts.active ?? []

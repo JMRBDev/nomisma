@@ -33,3 +33,18 @@ export function getCategoryOptions<
 
   return []
 }
+
+export function resolveCategoryOnTypeChange(
+  currentCategoryId: string,
+  newType: "income" | "expense" | "transfer",
+  incomeCategoryOptions: Array<HasId>,
+  expenseCategoryOptions: Array<HasId>
+): string {
+  if (newType === "transfer") return ""
+  const options = getCategoryOptions(
+    newType,
+    incomeCategoryOptions,
+    expenseCategoryOptions
+  )
+  return resolveValidOption(currentCategoryId, options)
+}

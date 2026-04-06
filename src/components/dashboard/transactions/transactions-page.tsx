@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
-import { getRouteApi, useNavigate } from "@tanstack/react-router"
+import { useNavigate } from "@tanstack/react-router"
 import { PlusIcon, ReceiptTextIcon, TagIcon } from "lucide-react"
-import { toast } from "sonner"
 import { api } from "../../../../convex/_generated/api"
 import type {
   TransactionFilterValues,
@@ -17,12 +16,6 @@ import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-s
 import { GuidedEmptyState } from "@/components/guided-empty-state"
 import { TransactionFiltersSheet } from "@/components/dashboard/transactions/transaction-filters-sheet"
 import { TransactionFormDialog } from "@/components/dashboard/transactions/transaction-form-dialog"
-import {
-  getOverviewDateFilterLabel,
-  getOverviewDateFilterQuery,
-  hasOverviewDateFilter,
-  resolveOverviewDateFilterValues,
-} from "@/components/dashboard/overview/overview-date-filter"
 import {
   DEFAULT_FILTER_VALUES,
   countActiveFilters,
@@ -39,19 +32,12 @@ import { CategoriesTable } from "@/components/dashboard/transactions/categories-
 import { CategoryFormDialog } from "@/components/dashboard/transactions/category-form-dialog"
 import { useCategoryManager } from "@/hooks/use-category-manager"
 import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog"
-
-const dashboardRouteApi = getRouteApi("/_authenticated/dashboard")
+import { useDateFilter } from "@/hooks/use-date-filter"
+import { useDeleteConfirmation } from "@/hooks/use-delete-confirmation"
 
 export function TransactionsPage() {
   const navigate = useNavigate()
-  const search = dashboardRouteApi.useSearch()
-  const dateFilter = resolveOverviewDateFilterValues(search)
-  const hasDateFilter = hasOverviewDateFilter(dateFilter)
-  const filterLabel = getOverviewDateFilterLabel(dateFilter)
-  const dateRange = useMemo(
-    () => getOverviewDateFilterQuery(dateFilter),
-    [dateFilter.fromDate, dateFilter.toDate]
-  )
+  const { hasDateFilter, filterLabel, dateRange } = useDateFilter()
   const { data } = useTransactionsPageData()
   const createTransaction = useConvexMutation(
     api.transactions.createTransaction
@@ -66,9 +52,6 @@ export function TransactionsPage() {
   const [filters, setFilters] = useState<TransactionFilterValues>(
     DEFAULT_FILTER_VALUES
   )
-  const [pendingDeleteId, setPendingDeleteId] = useState<
-    TransactionRecord["_id"] | null
-  >(null)
   const accountOptions = data?.accounts.active ?? []
   const allCategoryOptions = data?.categories.all ?? []
   const incomeCategoryOptions = data?.categories.activeIncome ?? []
@@ -88,25 +71,10 @@ export function TransactionsPage() {
       deleteTransaction({ transactionId }),
   })
 
-  const handleDeleteRequest = (transactionId: TransactionRecord["_id"]) => {
-    setPendingDeleteId(transactionId)
-  }
-
-  const handleDeleteConfirm = async () => {
-    if (!pendingDeleteId) return
-
-    try {
-      await deleteTransaction({ transactionId: pendingDeleteId })
-      setPendingDeleteId(null)
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Unable to delete the transaction."
-      )
-      setPendingDeleteId(null)
-    }
-  }
+  const deleteConfirmation = useDeleteConfirmation<TransactionRecord["_id"]>({
+    onConfirm: (id) => deleteTransaction({ transactionId: id }),
+    errorMessage: "Unable to delete the transaction.",
+  })
 
   const { dialog: categoryDialog, toggleCategoryArchived } =
     useCategoryManager()
@@ -260,7 +228,7 @@ export function TransactionsPage() {
                 transactions={filteredTransactions}
                 currency={data.settings?.baseCurrency}
                 onEdit={transactionEditor.openEditDialog}
-                onDelete={handleDeleteRequest}
+                onDelete={deleteConfirmation.requestDelete}
               />
             )}
           </CardContent>
@@ -356,14 +324,9 @@ export function TransactionsPage() {
       />
 
       <DeleteConfirmDialog
-        open={pendingDeleteId !== null}
-        onOpenChange={(open) => {
-          if (!open) setPendingDeleteId(null)
-        }}
+        {...deleteConfirmation.dialogProps}
         title="Delete this transaction?"
         description="This action cannot be undone. The transaction will be permanently removed."
-        onConfirm={handleDeleteConfirm}
-        pending={transactionEditor.pending}
       />
     </DashboardPageSection>
   )

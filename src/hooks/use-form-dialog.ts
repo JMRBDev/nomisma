@@ -5,6 +5,17 @@ type FormDialogOptions<TValues, TFieldErrors, TEntity> = {
   createFormValues?: (entity: TEntity) => TValues
   validate: (values: TValues) => TFieldErrors
   onSubmit: (values: TValues) => Promise<unknown>
+  onValueChange?: (
+    name: keyof TValues,
+    value: string,
+    helpers: {
+      setValues: React.Dispatch<React.SetStateAction<TValues>>
+      setErrors: React.Dispatch<React.SetStateAction<TFieldErrors>>
+      setFormError: React.Dispatch<React.SetStateAction<string>>
+      currentValues: TValues
+    }
+  ) => void
+  onDelete?: (entity: TEntity) => Promise<unknown>
 }
 
 export function useFormDialog<TValues, TFieldErrors, TEntity = never>({
@@ -12,6 +23,8 @@ export function useFormDialog<TValues, TFieldErrors, TEntity = never>({
   createFormValues,
   validate,
   onSubmit,
+  onValueChange,
+  onDelete,
 }: FormDialogOptions<TValues, TFieldErrors, TEntity>) {
   const createDefaultsRef = useRef(createDefaults)
   createDefaultsRef.current = createDefaults
@@ -24,6 +37,12 @@ export function useFormDialog<TValues, TFieldErrors, TEntity = never>({
 
   const onSubmitRef = useRef(onSubmit)
   onSubmitRef.current = onSubmit
+
+  const onValueChangeRef = useRef(onValueChange)
+  onValueChangeRef.current = onValueChange
+
+  const onDeleteRef = useRef(onDelete)
+  onDeleteRef.current = onDelete
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingEntity, setEditingEntity] = useState<TEntity | null>(null)
@@ -63,9 +82,18 @@ export function useFormDialog<TValues, TFieldErrors, TEntity = never>({
   }
 
   const handleValueChange = (name: keyof TValues, value: string) => {
-    setValues((current) => ({ ...current, [name]: value }))
-    setErrors((current) => ({ ...current, [name]: undefined }))
-    setFormError("")
+    if (onValueChangeRef.current) {
+      onValueChangeRef.current(name, value, {
+        setValues,
+        setErrors,
+        setFormError,
+        currentValues: values,
+      })
+    } else {
+      setValues((current) => ({ ...current, [name]: value }))
+      setErrors((current) => ({ ...current, [name]: undefined }))
+      setFormError("")
+    }
   }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -97,12 +125,33 @@ export function useFormDialog<TValues, TFieldErrors, TEntity = never>({
     }
   }
 
+  const handleDelete = async () => {
+    if (!editingEntity || !onDeleteRef.current) return
+
+    setPending(true)
+    setFormError("")
+
+    try {
+      await onDeleteRef.current(editingEntity)
+    } catch (error) {
+      setFormError(
+        error instanceof Error
+          ? error.message
+          : "Could not delete. Please try again."
+      )
+    } finally {
+      setPending(false)
+    }
+  }
+
   return {
     dialogOpen,
     values,
     setValues,
     errors,
+    setErrors,
     formError,
+    setFormError,
     pending,
     isEditing: editingEntity !== null,
     editingEntity,
@@ -111,5 +160,6 @@ export function useFormDialog<TValues, TFieldErrors, TEntity = never>({
     handleDialogOpenChange,
     handleValueChange,
     handleSubmit,
+    handleDelete,
   }
 }

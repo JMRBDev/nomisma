@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useRef } from "react"
 import type { Id } from "../../convex/_generated/dataModel"
 import type {
   AccountOption,
@@ -12,10 +12,16 @@ import {
   buildTransactionPayload,
   createTransactionDefaults,
   createTransactionFormValues,
-  getCategoryOptions,
-  resolveValidOption,
   validateTransactionValues,
 } from "@/components/dashboard/transactions/transactions-shared"
+import { resolveCategoryOnTypeChange } from "@/lib/form-helpers"
+import { useFormDialog } from "@/hooks/use-form-dialog"
+
+type TransactionEditorOptions = {
+  accountOptions: Array<AccountOption>
+  incomeCategoryOptions: Array<CategoryOption>
+  expenseCategoryOptions: Array<CategoryOption>
+} & TransactionsPageActions
 
 export function useTransactionEditor({
   accountOptions,
@@ -24,169 +30,103 @@ export function useTransactionEditor({
   onCreateTransaction,
   onUpdateTransaction,
   onDeleteTransaction,
-}: {
-  accountOptions: Array<AccountOption>
-  incomeCategoryOptions: Array<CategoryOption>
-  expenseCategoryOptions: Array<CategoryOption>
-} & TransactionsPageActions) {
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [editingTransactionId, setEditingTransactionId] =
-    useState<Id<"transactions"> | null>(null)
-  const [values, setValues] = useState(() =>
-    createTransactionDefaults(accountOptions, expenseCategoryOptions)
-  )
-  const [errors, setErrors] = useState<TransactionFieldErrors>({})
-  const [formError, setFormError] = useState("")
-  const [pending, setPending] = useState(false)
+}: TransactionEditorOptions) {
+  const editingTransactionIdRef = useRef<Id<"transactions"> | null>(null)
 
-  const resetState = () => {
-    setValues(createTransactionDefaults(accountOptions, expenseCategoryOptions))
-    setErrors({})
-    setFormError("")
+  const optionsRef = useRef({
+    accountOptions,
+    incomeCategoryOptions,
+    expenseCategoryOptions,
+  })
+  optionsRef.current = {
+    accountOptions,
+    incomeCategoryOptions,
+    expenseCategoryOptions,
   }
 
-  const openCreateDialog = () => {
-    setEditingTransactionId(null)
-    resetState()
-    setDialogOpen(true)
-  }
+  const dialog = useFormDialog<
+    TransactionFormValues,
+    TransactionFieldErrors,
+    TransactionRecord
+  >({
+    createDefaults: () =>
+      createTransactionDefaults(
+        optionsRef.current.accountOptions,
+        optionsRef.current.expenseCategoryOptions
+      ),
+    createFormValues: createTransactionFormValues,
+    validate: (values) => validateTransactionValues(values, optionsRef.current),
+    onSubmit: async (values) => {
+      const payload = buildTransactionPayload(values, optionsRef.current)
+      const editingId = editingTransactionIdRef.current
+      if (editingId) {
+        await onUpdateTransaction(editingId, payload)
+      } else {
+        await onCreateTransaction(payload)
+      }
+    },
+    onValueChange: (name, value, { setValues, setErrors, setFormError }) => {
+      if (name === "accountId") {
+        setValues((current) => ({
+          ...current,
+          accountId: value,
+          toAccountId: current.toAccountId === value ? "" : current.toAccountId,
+        }))
+        setErrors({})
+        setFormError("")
+        return
+      }
 
-  const openEditDialog = (transaction: TransactionRecord) => {
-    setEditingTransactionId(transaction._id)
-    setValues(createTransactionFormValues(transaction))
-    setErrors({})
-    setFormError("")
-    setDialogOpen(true)
-  }
-
-  const handleDialogOpenChange = (open: boolean) => {
-    setDialogOpen(open)
-
-    if (!open) {
-      setEditingTransactionId(null)
-      resetState()
-    }
-  }
-
-  const handleValueChange = (
-    name: keyof TransactionFormValues,
-    value: string
-  ) => {
-    setValues((current) => ({
-      ...current,
-      [name]: value,
-    }))
-    setErrors({})
-    setFormError("")
-  }
+      setValues((current) => ({ ...current, [name]: value }))
+      setErrors({})
+      setFormError("")
+    },
+    onDelete: async (entity) => {
+      await onDeleteTransaction(entity._id)
+    },
+  })
 
   const handleTypeChange = (type: TransactionFormValues["type"]) => {
-    setValues((current) => {
-      const nextCategoryOptions = getCategoryOptions(
+    dialog.setValues((current) => ({
+      ...current,
+      type,
+      toAccountId: "",
+      categoryId: resolveCategoryOnTypeChange(
+        current.categoryId,
         type,
         incomeCategoryOptions,
         expenseCategoryOptions
-      )
-
-      return {
-        ...current,
-        type,
-        toAccountId: "",
-        categoryId:
-          type === "transfer"
-            ? ""
-            : resolveValidOption(current.categoryId, nextCategoryOptions),
-      }
-    })
-    setErrors({})
-    setFormError("")
+      ),
+    }))
+    dialog.setErrors({})
+    dialog.setFormError("")
   }
 
   const handleAccountChange = (accountId: string) => {
-    setValues((current) => ({
+    dialog.setValues((current) => ({
       ...current,
       accountId,
       toAccountId: current.toAccountId === accountId ? "" : current.toAccountId,
     }))
-    setErrors({})
-    setFormError("")
+    dialog.setErrors({})
+    dialog.setFormError("")
   }
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
-    const nextErrors = validateTransactionValues(values, {
-      accountOptions,
-      incomeCategoryOptions,
-      expenseCategoryOptions,
-    })
-
-    setErrors(nextErrors)
-    setFormError("")
-
-    if (Object.keys(nextErrors).length > 0) {
-      return
-    }
-
-    setPending(true)
-
-    try {
-      const payload = buildTransactionPayload(values, {
-        accountOptions,
-        incomeCategoryOptions,
-        expenseCategoryOptions,
-      })
-
-      if (editingTransactionId) {
-        await onUpdateTransaction(editingTransactionId, payload)
-      } else {
-        await onCreateTransaction(payload)
-      }
-
-      setEditingTransactionId(null)
-      setDialogOpen(false)
-      resetState()
-    } catch (mutationError) {
-      setFormError(
-        mutationError instanceof Error
-          ? mutationError.message
-          : "Unable to save the transaction."
-      )
-    } finally {
-      setPending(false)
-    }
+  const openEditDialog = (transaction: TransactionRecord) => {
+    editingTransactionIdRef.current = transaction._id
+    dialog.openEditDialog(transaction)
   }
 
-  const deleteTransaction = async (transactionId: TransactionRecord["_id"]) => {
-    setPending(true)
-
-    try {
-      await onDeleteTransaction(transactionId)
-    } catch (mutationError) {
-      setFormError(
-        mutationError instanceof Error
-          ? mutationError.message
-          : "Unable to delete the transaction."
-      )
-    } finally {
-      setPending(false)
-    }
+  const handleDialogClose = (open: boolean) => {
+    dialog.handleDialogOpenChange(open)
+    if (!open) editingTransactionIdRef.current = null
   }
 
   return {
-    dialogOpen,
-    values,
-    errors,
-    formError,
-    pending,
-    isEditing: editingTransactionId !== null,
-    openCreateDialog,
+    ...dialog,
     openEditDialog,
-    handleDialogOpenChange,
-    handleValueChange,
+    handleDialogOpenChange: handleDialogClose,
     handleTypeChange,
     handleAccountChange,
-    handleSubmit,
-    deleteTransaction,
   }
 }

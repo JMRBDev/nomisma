@@ -1,6 +1,6 @@
-import { useMemo, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
-import { getRouteApi, useNavigate } from "@tanstack/react-router"
+import { useNavigate } from "@tanstack/react-router"
 import { FunnelIcon, PlusIcon, ShapesIcon, WalletCardsIcon } from "lucide-react"
 import { api } from "../../../../convex/_generated/api"
 import type { Id } from "../../../../convex/_generated/dataModel"
@@ -13,12 +13,6 @@ import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-heade
 import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
 import { DashboardSummaryCard } from "@/components/dashboard/dashboard-summary-card"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
-import {
-  getOverviewDateFilterLabel,
-  getOverviewDateFilterQuery,
-  hasOverviewDateFilter,
-  resolveOverviewDateFilterValues,
-} from "@/components/dashboard/overview/overview-date-filter"
 import { RecurringEmptyState } from "@/components/dashboard/recurring/recurring-empty-state"
 import { RecurringFormDialog } from "@/components/dashboard/recurring/recurring-form-dialog"
 import {
@@ -26,8 +20,6 @@ import {
   canConfirmRecurringItem,
   createRecurringDefaults,
   createRecurringFormValues,
-  getCategoryOptions,
-  resolveValidOption,
   validateRecurringValues,
 } from "@/components/dashboard/recurring/recurring-shared"
 import { RecurringTable } from "@/components/dashboard/recurring/recurring-table"
@@ -38,19 +30,12 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useFormDialog } from "@/hooks/use-form-dialog"
 import { useRecurringPageData } from "@/hooks/use-money-dashboard"
 import { formatDateLabel, todayInputValue } from "@/lib/money"
-
-const dashboardRouteApi = getRouteApi("/_authenticated/dashboard")
+import { useDateFilter } from "@/hooks/use-date-filter"
+import { resolveCategoryOnTypeChange } from "@/lib/form-helpers"
 
 export function RecurringPage() {
   const navigate = useNavigate()
-  const search = dashboardRouteApi.useSearch()
-  const dateFilter = resolveOverviewDateFilterValues(search)
-  const hasDateFilter = hasOverviewDateFilter(dateFilter)
-  const filterLabel = getOverviewDateFilterLabel(dateFilter)
-  const dateRange = useMemo(
-    () => getOverviewDateFilterQuery(dateFilter),
-    [dateFilter.fromDate, dateFilter.toDate]
-  )
+  const { hasDateFilter, filterLabel, dateRange } = useDateFilter()
   const { data } = useRecurringPageData()
   const createRecurringRule = useConvexMutation(
     api.recurring.createRecurringRule
@@ -144,16 +129,15 @@ export function RecurringPage() {
   }
 
   const handleTypeChange = (value: RecurringType) => {
-    const nextCategoryOptions = getCategoryOptions(
-      value,
-      incomeCategoryOptions,
-      expenseCategoryOptions
-    )
-
     dialog.setValues((current) => ({
       ...current,
       type: value,
-      categoryId: resolveValidOption(current.categoryId, nextCategoryOptions),
+      categoryId: resolveCategoryOnTypeChange(
+        current.categoryId,
+        value,
+        incomeCategoryOptions,
+        expenseCategoryOptions
+      ),
     }))
   }
 
