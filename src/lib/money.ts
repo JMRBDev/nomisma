@@ -1,7 +1,9 @@
 import { format } from "date-fns"
 import { getCurrencyLocale } from "@/lib/currency"
 
-export const APP_NAME = "Clear Money"
+export const APP_NAME = "Nomisma"
+
+export const APP_TAGLINE = "Your money, clarified"
 
 export const accountTypeOptions = [
   { label: "Checking", value: "checking" },

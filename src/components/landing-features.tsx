@@ -3,21 +3,21 @@ import { CalendarDays, PieChart, Wallet } from "lucide-react"
 const features = [
   {
     icon: Wallet,
-    title: "All your accounts, one view",
+    title: "All accounts, one number",
     description:
-      "Checking, savings, cash, and digital wallets. See your total balance at a glance.",
+      "Checking, savings, cash, wallets — your total balance, always in view.",
   },
   {
     icon: PieChart,
-    title: "Budgets that keep you honest",
+    title: "Budgets that work",
     description:
-      "Set monthly limits by category and know where you stand before the month ends.",
+      "Set limits that fit your life. See how you're doing before the month runs out.",
   },
   {
     icon: CalendarDays,
-    title: "Never miss a recurring bill",
+    title: "Bills on your radar",
     description:
-      "Track subscriptions and upcoming bills so nothing surprises you at the end of the month.",
+      "Recurring charges and upcoming payments tracked automatically. No surprises.",
   },
 ]
 
@@ -29,7 +29,7 @@ export function LandingFeatures() {
           className="text-center font-heading text-3xl tracking-tight"
           style={{ animation: "fadeUp 0.7s ease-out 300ms both" }}
         >
-          Everything you need to stay on top of your money
+          Clarity for every corner of your finances
         </h2>
         <div className="mt-16 grid gap-8 sm:grid-cols-2 md:grid-cols-3">
           {features.map((feature, i) => (

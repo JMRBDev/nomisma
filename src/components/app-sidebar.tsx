@@ -1,5 +1,4 @@
 import { Link, useMatchRoute } from "@tanstack/react-router"
-import { LandmarkIcon } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -44,15 +43,12 @@ export function AppSidebar() {
                 preload="intent"
                 onClick={closeSidebarOnMobile}
               >
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <LandmarkIcon className="size-4" />
+                <div className="flex aspect-square size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                  <span className="font-heading text-base">N</span>
                 </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{APP_NAME}</span>
-                  <span className="truncate text-xs text-sidebar-foreground/60">
-                    Simple money control
-                  </span>
-                </div>
+                <span className="font-heading text-base tracking-tight">
+                  {APP_NAME}
+                </span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { APP_NAME } from "@/lib/money"
+import { APP_NAME, APP_TAGLINE } from "@/lib/money"
 import { HomePage } from "@/components/home-page"
 
 export const Route = createFileRoute("/")({
@@ -8,11 +8,11 @@ export const Route = createFileRoute("/")({
   }),
   head: () => ({
     meta: [
-      { title: `${APP_NAME} — Simple Money Control` },
+      { title: `${APP_NAME} — ${APP_TAGLINE}` },
       {
         name: "description",
         content:
-          "Track accounts, transactions, and budgets in one clean place. Know where every dollar goes.",
+          "Track every account, stay on top of budgets, and never miss a bill. One place, zero chaos.",
       },
     ],
   }),

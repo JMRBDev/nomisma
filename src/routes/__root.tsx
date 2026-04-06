@@ -49,7 +49,7 @@ export const Route = createRootRouteWithContext<{
       {
         name: "description",
         content:
-          "Personal money control with accounts, transactions, budgets, and recurring reminders.",
+          "Personal finance tracker with accounts, transactions, budgets, and recurring reminders.",
       },
     ],
     links: [
@@ -97,12 +97,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{document.documentElement.setAttribute('data-color-theme',localStorage.getItem('money-app-color-theme')||'zinc')}catch(e){}})()`,
+            __html: `(function(){try{document.documentElement.setAttribute('data-color-theme',localStorage.getItem('nomisma-color-theme')||'zinc')}catch(e){}})()`,
           }}
         />
         <HeadContent />
       </head>
-      <body className="bg-background text-foreground">
+      <body className="bg-background text-foreground antialiased">
         <ThemeProvider>{children}</ThemeProvider>
         <Toaster />
         <Scripts />

@@ -52,14 +52,14 @@ export function HomePage({
             className="font-heading text-4xl leading-tight tracking-tight sm:text-5xl md:text-6xl"
             style={{ animation: "fadeUp 0.7s ease-out 0ms both" }}
           >
-            Know where every dollar goes.
+            Your money, finally clear.
           </h1>
           <p
             className="mx-auto mt-6 max-w-md text-lg text-muted-foreground"
             style={{ animation: "fadeUp 0.7s ease-out 100ms both" }}
           >
-            Track accounts, transactions, and budgets in one clean place. No
-            complexity, just clarity.
+            Track every account, stay on top of budgets, and never miss a bill.
+            One place, zero chaos.
           </p>
           <div
             className="mt-10 flex flex-col items-center gap-3"
@@ -94,7 +94,7 @@ export function HomePage({
           className="font-heading text-3xl tracking-tight"
           style={{ animation: "fadeUp 0.7s ease-out 700ms both" }}
         >
-          Start taking control of your money today.
+          Start seeing your money clearly.
         </h2>
         <div
           className="mt-8"

@@ -1,4 +1,4 @@
-export const THEME_STORAGE_KEY = "money-app-theme"
+export const THEME_STORAGE_KEY = "nomisma-theme"
 
 export const themeOptions = [
   {
@@ -17,7 +17,7 @@ export const themeOptions = [
 
 export type ThemePreference = (typeof themeOptions)[number]["value"]
 
-export const COLOR_THEME_STORAGE_KEY = "money-app-color-theme"
+export const COLOR_THEME_STORAGE_KEY = "nomisma-color-theme"
 
 export const colorThemeOptions = [
   {
