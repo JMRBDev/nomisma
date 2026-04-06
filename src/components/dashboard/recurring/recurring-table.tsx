@@ -1,5 +1,7 @@
 import { useMemo } from "react"
+import { PencilIcon, PowerIcon, PowerOffIcon } from "lucide-react"
 import type { RecurringRecord } from "@/components/dashboard/recurring/recurring-shared"
+import { DashboardIconButton } from "@/components/dashboard/dashboard-icon-button"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import {
   canConfirmRecurringItem,
@@ -50,12 +52,16 @@ export function RecurringTable({
   pendingRuleId,
   today,
   onConfirm,
+  onEdit,
+  onToggle,
 }: {
   recurringItems: Array<RecurringRecord>
   currency?: string | null
   pendingRuleId: RecurringRecord["_id"] | null
   today: string
   onConfirm: (ruleId: RecurringRecord["_id"]) => void
+  onEdit: (rule: RecurringRecord) => void
+  onToggle: (ruleId: RecurringRecord["_id"], active: boolean) => void
 }) {
   const table = useDataTable({
     data: recurringItems,
@@ -183,6 +189,22 @@ export function RecurringTable({
                 </TableCell>
                 <TableCell>
                   <DashboardTableActions>
+                    <DashboardIconButton
+                      onClick={() => onEdit(item)}
+                      aria-label="Edit recurring item"
+                    >
+                      <PencilIcon />
+                    </DashboardIconButton>
+                    <DashboardIconButton
+                      onClick={() => onToggle(item._id, !item.active)}
+                      aria-label={
+                        item.active
+                          ? "Deactivate recurring item"
+                          : "Activate recurring item"
+                      }
+                    >
+                      {item.active ? <PowerOffIcon /> : <PowerIcon />}
+                    </DashboardIconButton>
                     {canConfirm ? (
                       <Button
                         size="sm"

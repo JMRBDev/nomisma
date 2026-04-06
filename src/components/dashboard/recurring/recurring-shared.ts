@@ -5,7 +5,7 @@ import {
   getFirstOptionId,
   resolveValidOption as resolveValidOptionGeneric,
 } from "@/lib/form-helpers"
-import { todayInputValue } from "@/lib/money"
+import { toAmountInput, todayInputValue } from "@/lib/money"
 
 type RecurringData = NonNullable<
   ReturnType<typeof useRecurringPageData>["data"]
@@ -99,6 +99,22 @@ export function createRecurringDefaults(
     startDate: today,
     nextDueDate: today,
     endDate: "",
+  }
+}
+
+export function createRecurringFormValues(
+  rule: RecurringRecord
+): RecurringFormValues {
+  return {
+    type: rule.type,
+    amount: toAmountInput(rule.amount),
+    accountId: rule.accountId,
+    categoryId: rule.categoryId,
+    frequency: rule.frequency,
+    description: rule.description,
+    startDate: rule.startDate,
+    nextDueDate: rule.nextDueDate,
+    endDate: rule.endDate ?? "",
   }
 }
 

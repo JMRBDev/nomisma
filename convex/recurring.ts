@@ -23,6 +23,22 @@ export const createRecurringRule = mutation({
   handler: (ctx, args) => Recurring.createRecurringRule(ctx, args),
 })
 
+export const updateRecurringRule = mutation({
+  args: {
+    ruleId: v.id("recurringRules"),
+    type: v.optional(categoryKindValidator),
+    amount: v.optional(v.number()),
+    accountId: v.optional(v.id("accounts")),
+    categoryId: v.optional(v.id("categories")),
+    description: v.optional(v.string()),
+    frequency: v.optional(recurringFrequencyValidator),
+    startDate: v.optional(v.string()),
+    nextDueDate: v.optional(v.string()),
+    endDate: v.optional(v.string()),
+  },
+  handler: (ctx, args) => Recurring.updateRecurringRule(ctx, args),
+})
+
 export const toggleRecurringRule = mutation({
   args: {
     ruleId: v.id("recurringRules"),

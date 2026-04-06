@@ -100,6 +100,73 @@ export async function createRecurringRule(
   })
 }
 
+export async function updateRecurringRule(
+  ctx: MutationCtx,
+  args: {
+    ruleId: Parameters<typeof getOwnedRecurringRule>[2]
+    type?: "income" | "expense"
+    amount?: number
+    accountId?: Parameters<typeof getOwnedAccount>[2]
+    categoryId?: Parameters<typeof getOwnedCategory>[2]
+    description?: string
+    frequency?: RecurringRuleDoc["frequency"]
+    startDate?: string
+    nextDueDate?: string
+    endDate?: string
+  }
+) {
+  const user = await requireUser(ctx)
+  const rule = await getOwnedRecurringRule(ctx, user._id, args.ruleId)
+  const patch: Record<string, unknown> = { updatedAt: Date.now() }
+
+  if (args.amount !== undefined) {
+    if (args.amount <= 0) {
+      throw new ConvexError("Amount must be greater than zero.")
+    }
+    patch.amount = args.amount
+  }
+
+  if (args.type !== undefined) {
+    patch.type = args.type
+  }
+
+  if (args.accountId !== undefined) {
+    await getOwnedAccount(ctx, user._id, args.accountId)
+    patch.accountId = args.accountId
+  }
+
+  if (args.categoryId !== undefined) {
+    const category = await getOwnedCategory(ctx, user._id, args.categoryId)
+    const ruleType = args.type ?? rule.type
+    if (category.kind !== ruleType) {
+      throw new ConvexError("The category must match the recurring item type.")
+    }
+    patch.categoryId = args.categoryId
+  }
+
+  if (args.description !== undefined) {
+    patch.description = args.description.trim() || "Recurring item"
+  }
+
+  if (args.frequency !== undefined) {
+    patch.frequency = args.frequency
+  }
+
+  if (args.startDate !== undefined) {
+    patch.startDate = args.startDate
+  }
+
+  if (args.nextDueDate !== undefined) {
+    patch.nextDueDate = args.nextDueDate
+  }
+
+  if (args.endDate !== undefined) {
+    patch.endDate = args.endDate.trim() || undefined
+  }
+
+  await ctx.db.patch(rule._id, patch)
+}
+
 export async function toggleRecurringRule(
   ctx: MutationCtx,
   args: {

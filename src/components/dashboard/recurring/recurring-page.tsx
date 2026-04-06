@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { getRouteApi, useNavigate } from "@tanstack/react-router"
 import { FunnelIcon, PlusIcon, ShapesIcon, WalletCardsIcon } from "lucide-react"
 import { api } from "../../../../convex/_generated/api"
+import type { Id } from "../../../../convex/_generated/dataModel"
 import type {
   RecurringRecord,
   RecurringType,
@@ -24,6 +25,7 @@ import {
   buildRecurringPayload,
   canConfirmRecurringItem,
   createRecurringDefaults,
+  createRecurringFormValues,
   getCategoryOptions,
   resolveValidOption,
   validateRecurringValues,
@@ -52,12 +54,25 @@ export function RecurringPage() {
   const createRecurringRule = useConvexMutation(
     api.recurring.createRecurringRule
   )
+  const updateRecurringRule = useConvexMutation(
+    api.recurring.updateRecurringRule
+  )
+  const toggleRecurringRule = useConvexMutation(
+    api.recurring.toggleRecurringRule
+  )
   const confirmRecurringRule = useConvexMutation(
     api.recurring.confirmRecurringRule
   )
+  const editingRuleIdRef = useRef<Id<"recurringRules"> | null>(null)
   const [pendingRuleId, setPendingRuleId] = useState<
     RecurringRecord["_id"] | null
   >(null)
+
+  const getEditorOptions = () => ({
+    accountOptions: data?.accounts.active ?? [],
+    incomeCategoryOptions: data?.categories.activeIncome ?? [],
+    expenseCategoryOptions: data?.categories.activeExpense ?? [],
+  })
 
   const dialog = useFormDialog({
     createDefaults: () =>
@@ -66,21 +81,21 @@ export function RecurringPage() {
         data?.categories.activeIncome ?? [],
         data?.categories.activeExpense ?? []
       ),
-    validate: (values) =>
-      validateRecurringValues(values, {
-        accountOptions: data?.accounts.active ?? [],
-        incomeCategoryOptions: data?.categories.activeIncome ?? [],
-        expenseCategoryOptions: data?.categories.activeExpense ?? [],
-      }),
+    createFormValues: createRecurringFormValues,
+    validate: (values) => validateRecurringValues(values, getEditorOptions()),
     onSubmit: async (values) => {
       if (!data) return
-      await createRecurringRule(
-        buildRecurringPayload(values, {
-          accountOptions: data.accounts.active,
-          incomeCategoryOptions: data.categories.activeIncome,
-          expenseCategoryOptions: data.categories.activeExpense,
-        })
-      )
+      const payload = buildRecurringPayload(values, {
+        accountOptions: data.accounts.active,
+        incomeCategoryOptions: data.categories.activeIncome,
+        expenseCategoryOptions: data.categories.activeExpense,
+      })
+      const editingId = editingRuleIdRef.current
+      if (editingId) {
+        await updateRecurringRule({ ruleId: editingId, ...payload })
+      } else {
+        await createRecurringRule(payload)
+      }
     },
   })
 
@@ -153,6 +168,23 @@ export function RecurringPage() {
     }
   }
 
+  const handleEdit = (rule: RecurringRecord) => {
+    editingRuleIdRef.current = rule._id
+    dialog.openEditDialog(rule)
+  }
+
+  const handleToggle = async (
+    ruleId: RecurringRecord["_id"],
+    active: boolean
+  ) => {
+    await toggleRecurringRule({ ruleId, active })
+  }
+
+  const handleDialogClose = (open: boolean) => {
+    dialog.handleDialogOpenChange(open)
+    if (!open) editingRuleIdRef.current = null
+  }
+
   return (
     <DashboardPageSection>
       <DashboardPageHeader
@@ -197,6 +229,8 @@ export function RecurringPage() {
                   pendingRuleId={pendingRuleId}
                   today={today}
                   onConfirm={handleConfirm}
+                  onEdit={handleEdit}
+                  onToggle={handleToggle}
                 />
               ) : hasDateFilter ? (
                 <FilteredResultsEmptyState
@@ -235,12 +269,13 @@ export function RecurringPage() {
 
       <RecurringFormDialog
         open={dialog.dialogOpen}
-        onOpenChange={dialog.handleDialogOpenChange}
+        onOpenChange={handleDialogClose}
         onSubmit={dialog.handleSubmit}
         values={dialog.values}
         errors={dialog.errors}
         formError={dialog.formError}
         pending={dialog.pending}
+        editing={dialog.isEditing}
         accountOptions={accountOptions}
         incomeCategoryOptions={incomeCategoryOptions}
         expenseCategoryOptions={expenseCategoryOptions}

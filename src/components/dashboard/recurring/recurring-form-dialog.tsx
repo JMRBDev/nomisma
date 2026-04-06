@@ -18,6 +18,7 @@ export function RecurringFormDialog({
   errors,
   formError,
   pending,
+  editing = false,
   accountOptions,
   incomeCategoryOptions,
   expenseCategoryOptions,
@@ -31,6 +32,7 @@ export function RecurringFormDialog({
   errors: RecurringFieldErrors
   formError: string
   pending: boolean
+  editing?: boolean
   accountOptions: Array<RecurringAccountOption>
   incomeCategoryOptions: Array<RecurringCategoryOption>
   expenseCategoryOptions: Array<RecurringCategoryOption>
@@ -49,7 +51,7 @@ export function RecurringFormDialog({
     <DashboardFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Add recurring item"
+      title={editing ? "Edit recurring item" : "Add recurring item"}
       description="Schedule future income or expenses so due dates stay visible before you need to record the actual transaction."
     >
       <form className="space-y-4" onSubmit={onSubmit}>
@@ -74,7 +76,9 @@ export function RecurringFormDialog({
           pending={pending}
           formError={formError}
           disabled={submitDisabled}
-          submitLabel="Save recurring item"
+          submitLabel={
+            editing ? "Update recurring item" : "Save recurring item"
+          }
         />
       </form>
     </DashboardFormDialog>
