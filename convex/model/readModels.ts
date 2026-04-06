@@ -106,7 +106,7 @@ export function groupCategories(categories: Array<CategoryDoc>) {
   const all = [...categories].sort((a, b) => {
     if (a.kind !== b.kind) return a.kind.localeCompare(b.kind)
     if (a.archived !== b.archived) return a.archived ? 1 : -1
-    return a.sortOrder - b.sortOrder
+    return a.name.localeCompare(b.name)
   })
 
   return {

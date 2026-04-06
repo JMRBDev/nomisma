@@ -19,14 +19,6 @@ export const updateCategory = mutation({
   handler: (ctx, args) => Categories.updateCategory(ctx, args),
 })
 
-export const moveCategory = mutation({
-  args: {
-    categoryId: v.id("categories"),
-    direction: v.union(v.literal("up"), v.literal("down")),
-  },
-  handler: (ctx, args) => Categories.moveCategory(ctx, args),
-})
-
 export const toggleCategoryArchived = mutation({
   args: {
     categoryId: v.id("categories"),

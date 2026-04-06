@@ -213,7 +213,7 @@ export function validateTransactionValues(
   )
 
   if (!resolveValidOption(values.categoryId, categoryOptions)) {
-    errors.categoryId = `Create at least one ${values.type} category in Settings before saving this transaction.`
+    errors.categoryId = `Create at least one ${values.type} category in Transactions before saving this transaction.`
   }
 
   return errors

@@ -323,7 +323,7 @@ export async function getOverviewData(
           description:
             "Add the income and expense categories you actually use.",
           completed: categories.length > 0,
-          href: "/dashboard/settings",
+          href: "/dashboard/transactions",
         },
         {
           id: "budget",

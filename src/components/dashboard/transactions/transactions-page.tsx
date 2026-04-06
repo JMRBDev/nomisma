@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { getRouteApi, useNavigate } from "@tanstack/react-router"
-import { PlusIcon, ReceiptTextIcon } from "lucide-react"
+import { PlusIcon, ReceiptTextIcon, TagIcon } from "lucide-react"
 import { api } from "../../../../convex/_generated/api"
 import type { TransactionFilterValues } from "@/components/dashboard/transactions/transactions-shared"
+import type { CategoryTableRow } from "@/components/dashboard/transactions/categories-table"
 import { DashboardFilterButton } from "@/components/dashboard/dashboard-filter-button"
 import { DashboardPageActions } from "@/components/dashboard/dashboard-page-actions"
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
@@ -28,7 +29,10 @@ import { TransactionsTable } from "@/components/dashboard/transactions/transacti
 import { useTransactionEditor } from "@/hooks/use-transaction-editor"
 import { Button } from "@/components/ui/button"
 import { useTransactionsPageData } from "@/hooks/use-money-dashboard"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { CategoriesTable } from "@/components/dashboard/transactions/categories-table"
+import { CategoryFormDialog } from "@/components/dashboard/transactions/category-form-dialog"
+import { useCategoryManager } from "@/hooks/use-category-manager"
 
 const dashboardRouteApi = getRouteApi("/_authenticated/dashboard")
 
@@ -74,6 +78,26 @@ export function TransactionsPage() {
     onDeleteTransaction: (transactionId) =>
       deleteTransaction({ transactionId }),
   })
+
+  const { dialog: categoryDialog, toggleCategoryArchived } =
+    useCategoryManager()
+
+  const categoryRows = useMemo<Array<CategoryTableRow>>(() => {
+    if (!data) return []
+    const txCounts = new Map<string, number>()
+    for (const tx of data.transactions) {
+      if (tx.categoryId) {
+        txCounts.set(tx.categoryId, (txCounts.get(tx.categoryId) ?? 0) + 1)
+      }
+    }
+    return data.categories.all.map((cat) => ({
+      _id: cat._id,
+      name: cat.name,
+      kind: cat.kind,
+      archived: cat.archived,
+      transactionCount: txCounts.get(cat._id) ?? 0,
+    }))
+  }, [data])
 
   const filteredTransactions = useMemo(
     () =>
@@ -204,6 +228,45 @@ export function TransactionsPage() {
         </Card>
       )}
 
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between text-2xl">
+            Categories
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={categoryDialog.openCreateDialog}
+            >
+              Add category
+              <PlusIcon />
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {categoryRows.length === 0 ? (
+            <GuidedEmptyState
+              title="Add your first category"
+              description="Create income and expense categories to organize your transactions and budgets."
+              icon={<TagIcon className="size-5" />}
+              action={
+                <Button onClick={categoryDialog.openCreateDialog}>
+                  Add category
+                  <PlusIcon />
+                </Button>
+              }
+            />
+          ) : (
+            <CategoriesTable
+              categories={categoryRows}
+              onEdit={categoryDialog.openEditDialog}
+              onToggleArchived={(categoryId, archived) =>
+                toggleCategoryArchived({ categoryId, archived })
+              }
+            />
+          )}
+        </CardContent>
+      </Card>
+
       <TransactionFiltersSheet
         open={filtersSheetOpen}
         onOpenChange={setFiltersSheetOpen}
@@ -232,6 +295,18 @@ export function TransactionsPage() {
         onValueChange={transactionEditor.handleValueChange}
         onTypeChange={transactionEditor.handleTypeChange}
         onAccountChange={transactionEditor.handleAccountChange}
+      />
+
+      <CategoryFormDialog
+        open={categoryDialog.dialogOpen}
+        onOpenChange={categoryDialog.handleDialogOpenChange}
+        onSubmit={categoryDialog.handleSubmit}
+        values={categoryDialog.values}
+        errors={categoryDialog.errors}
+        formError={categoryDialog.formError}
+        pending={categoryDialog.pending}
+        isEditing={categoryDialog.isEditing}
+        onValueChange={categoryDialog.handleValueChange}
       />
     </DashboardPageSection>
   )

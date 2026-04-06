@@ -65,13 +65,11 @@ export default defineSchema({
     kind: categoryKindValidator,
     name: v.string(),
     archived: v.boolean(),
-    sortOrder: v.number(),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_userId", ["userId"])
-    .index("by_userId_kind", ["userId", "kind"])
-    .index("by_userId_kind_sortOrder", ["userId", "kind", "sortOrder"]),
+    .index("by_userId_kind", ["userId", "kind"]),
 
   transactions: defineTable({
     userId: v.string(),
