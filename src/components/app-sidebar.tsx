@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { authClient } from "@/lib/auth-client"
-import { handleSignOut } from "@/lib/auth"
+import { useSignOut } from "@/lib/auth"
 import { APP_NAME } from "@/lib/money"
 
 const navItems = [
@@ -79,6 +79,7 @@ export function AppSidebar() {
   const isMobile = useIsMobile()
   const { setOpenMobile } = useSidebar()
   const matchRoute = useMatchRoute()
+  const handleSignOut = useSignOut()
 
   const closeSidebarOnMobile = () => {
     if (!isMobile) return

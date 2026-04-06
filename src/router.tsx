@@ -3,6 +3,8 @@ import { QueryClient, notifyManager } from "@tanstack/react-query"
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query"
 import { ConvexQueryClient } from "@convex-dev/react-query"
 import { routeTree } from "./routeTree.gen"
+import { ErrorPage } from "@/components/error-page"
+import { NotFoundPage } from "@/components/not-found-page"
 
 export function getRouter() {
   if (typeof document !== "undefined") {
@@ -39,8 +41,8 @@ export function getRouter() {
     defaultPendingMinMs: 250,
     context: { queryClient, convexQueryClient },
     scrollRestoration: true,
-    defaultErrorComponent: (err) => <p>{err.error.stack}</p>,
-    defaultNotFoundComponent: () => <p>not found</p>,
+    defaultErrorComponent: ErrorPage,
+    defaultNotFoundComponent: NotFoundPage,
   })
 
   setupRouterSsrQueryIntegration({
