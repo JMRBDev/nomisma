@@ -203,9 +203,7 @@ export function BudgetsTable({
                   "text-right font-medium",
                   aggregates.totalRemaining < 0
                     ? "text-destructive"
-                    : aggregates.totalRemaining >= 0
-                      ? "text-emerald-400"
-                      : ""
+                    : "text-emerald-400"
                 )}
               >
                 {formatCurrency(aggregates.totalRemaining, currency)}
