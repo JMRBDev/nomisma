@@ -56,6 +56,8 @@ export function ThemePreferenceField() {
   )
 }
 
-function isThemePreference(value: string | undefined): value is ThemePreference {
+function isThemePreference(
+  value: string | undefined
+): value is ThemePreference {
   return themeOptions.some((option) => option.value === value)
 }

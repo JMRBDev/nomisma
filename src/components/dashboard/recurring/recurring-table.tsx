@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import type {RecurringRecord} from "@/components/dashboard/recurring/recurring-shared";
+import type { RecurringRecord } from "@/components/dashboard/recurring/recurring-shared"
 import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { IncomeExpenseNetFooter } from "@/components/dashboard/income-expense-net-footer"
 import { RecurringTableRow } from "@/components/dashboard/recurring/recurring-table-row"

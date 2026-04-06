@@ -1,9 +1,8 @@
 import { PencilIcon, PowerIcon, PowerOffIcon } from "lucide-react"
-import type {RecurringRecord} from "@/components/dashboard/recurring/recurring-shared";
+import type { RecurringRecord } from "@/components/dashboard/recurring/recurring-shared"
 import {
-  
   canConfirmRecurringItem,
-  getRecurringStatusLabel
+  getRecurringStatusLabel,
 } from "@/components/dashboard/recurring/recurring-shared"
 import { DashboardIconButton } from "@/components/dashboard/dashboard-icon-button"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"

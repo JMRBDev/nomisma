@@ -5,5 +5,9 @@ function subscribe() {
 }
 
 export function useIsClient() {
-  return useSyncExternalStore(subscribe, () => true, () => false)
+  return useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false
+  )
 }

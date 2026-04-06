@@ -48,9 +48,7 @@ export function DashboardFormDialog({
             <SheetDescription>{description}</SheetDescription>
           </SheetHeader>
 
-          <div className="p-6 pt-0">
-            {children}
-          </div>
+          <div className="p-6 pt-0">{children}</div>
         </SheetContent>
       </Sheet>
     )

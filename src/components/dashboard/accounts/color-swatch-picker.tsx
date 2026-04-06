@@ -19,8 +19,8 @@ export function ColorSwatchPicker({
   value: string
   onChange: (value: string) => void
 }) {
-  const [isCustomColor, setIsCustomColor] = useState<boolean>(false);
-  const [customColorValue, setCustomColorValue] = useState<string>("#ffffff");
+  const [isCustomColor, setIsCustomColor] = useState<boolean>(false)
+  const [customColorValue, setCustomColorValue] = useState<string>("#ffffff")
 
   return (
     <div className="flex items-center gap-2">
@@ -29,15 +29,16 @@ export function ColorSwatchPicker({
           key={color.name}
           type="button"
           onClick={() => {
-            setIsCustomColor(false);
-            onChange(color.className);
+            setIsCustomColor(false)
+            onChange(color.className)
           }}
           className={cn(
-            "size-8 aspect-square rounded-full border",
+            "aspect-square size-8 rounded-full border",
             color.className,
             {
-              "ring-2 ring-ring ring-offset-0.5": value === color.className && !isCustomColor
-            },
+              "ring-offset-0.5 ring-2 ring-ring":
+                value === color.className && !isCustomColor,
+            }
           )}
           aria-label={`Select ${color.name}`}
         />
@@ -47,14 +48,13 @@ export function ColorSwatchPicker({
 
       <CustomColorPicker
         onChange={(color) => {
-          setIsCustomColor(true);
-          setCustomColorValue(color);
-          onChange(color);
+          setIsCustomColor(true)
+          setCustomColorValue(color)
+          onChange(color)
         }}
         value={customColorValue}
         isCustom={isCustomColor}
       />
-
     </div>
   )
 }

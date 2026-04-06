@@ -28,18 +28,23 @@ export function ColorThemeField() {
         </FieldDescription>
       </FieldContent>
 
-      <div className="flex gap-2 items-center">
+      <div className="flex items-center gap-2">
         {colorThemeOptions.map((option) => (
           <button
             key={option.value}
             onClick={() => handleChange(option.value)}
-            className={cn("flex items-stretch size-16 aspect-square rounded-2xl border border-border overflow-hidden divide-x divide-border", {
-              "ring-2 ring-ring ring-offset-0.5": option.value === colorTheme
-            })}
+            className={cn(
+              "flex aspect-square size-16 items-stretch divide-x divide-border overflow-hidden rounded-2xl border border-border",
+              {
+                "ring-offset-0.5 ring-2 ring-ring": option.value === colorTheme,
+              }
+            )}
           >
             <div className={cn("flex-1", option.colors.primary.className)} />
-            <div className="flex flex-col flex-1 divide-y divide-border">
-              <div className={cn("flex-1", option.colors.secondary.className)} />
+            <div className="flex flex-1 flex-col divide-y divide-border">
+              <div
+                className={cn("flex-1", option.colors.secondary.className)}
+              />
 
               <div className={cn("flex-1", option.colors.tertiary.className)} />
             </div>
