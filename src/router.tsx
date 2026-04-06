@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { createRouter } from "@tanstack/react-router"
 import { QueryClient, notifyManager } from "@tanstack/react-query"
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query"
@@ -11,7 +12,7 @@ export function getRouter() {
     notifyManager.setScheduler(window.requestAnimationFrame)
   }
 
-  const convexUrl = (import.meta as any).env.VITE_CONVEX_URL!
+  const convexUrl = import.meta.env.VITE_CONVEX_URL!
   if (!convexUrl) {
     throw new Error("VITE_CONVEX_URL is not set")
   }
