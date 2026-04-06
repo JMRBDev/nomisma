@@ -1,5 +1,5 @@
 import { ConvexError } from "convex/values"
-import { getOwnedCategory, requireUser } from "./shared"
+import { getOwnedCategory, requireUser } from "./queries"
 import type { MutationCtx } from "../_generated/server"
 
 export async function createCategory(

@@ -1,5 +1,6 @@
 import { AlertTriangleIcon, RefreshCwIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
+import type { ErrorComponentProps } from "@tanstack/react-router"
 import { Button } from "@/components/ui/button"
 import {
   Empty,
@@ -9,7 +10,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
-import type { ErrorComponentProps } from "@tanstack/react-router"
 
 export function ErrorPage({ error, reset }: ErrorComponentProps) {
   return (

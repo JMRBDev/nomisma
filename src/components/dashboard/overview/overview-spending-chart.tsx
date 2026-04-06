@@ -1,13 +1,13 @@
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { TrendingUpIcon } from "lucide-react"
+import { spendingChartConfig } from "./overview-chart-config"
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { spendingChartConfig } from "./overview-chart-config"
 import { formatCurrency } from "@/lib/money"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
-import { TrendingUpIcon } from "lucide-react"
 
 export function OverviewSpendingChart({
   data,

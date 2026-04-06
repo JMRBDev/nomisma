@@ -1,15 +1,15 @@
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { BarChart3Icon } from "lucide-react"
+import { incomeExpensesChartConfig } from "./overview-chart-config"
 import {
   ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
 } from "@/components/ui/chart"
-import { incomeExpensesChartConfig } from "./overview-chart-config"
 import { formatCurrency } from "@/lib/money"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
-import { BarChart3Icon } from "lucide-react"
 
 function formatPeriodLabel(period: string, isSingleMonth: boolean): string {
   if (isSingleMonth) {

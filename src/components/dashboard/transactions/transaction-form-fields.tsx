@@ -16,11 +16,9 @@ import { FormErrorMessage } from "@/components/form-error-message"
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { Textarea } from "@/components/ui/textarea"
-import {
-  getCategoryOptions,
-  resolveValidOption,
-} from "@/components/dashboard/transactions/transactions-shared"
+import { getCategoryOptions } from "@/components/dashboard/transactions/transactions-shared"
 import { transactionStatusOptions, transactionTypeOptions } from "@/lib/money"
+import { TransactionSelectFields } from "@/components/dashboard/transactions/transaction-select-fields"
 
 export function TransactionFormFields({
   values,
@@ -46,7 +44,6 @@ export function TransactionFormFields({
     incomeCategoryOptions,
     expenseCategoryOptions
   )
-
   return (
     <FieldGroup>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -68,7 +65,6 @@ export function TransactionFormFields({
             ))}
           </NativeSelect>
         </Field>
-
         <Field>
           <FieldLabel htmlFor="transaction-status">
             <FieldTitle>Status</FieldTitle>
@@ -87,7 +83,6 @@ export function TransactionFormFields({
             ))}
           </NativeSelect>
         </Field>
-
         <Field>
           <FieldLabel htmlFor="transaction-amount">
             <FieldTitle>Amount</FieldTitle>
@@ -102,7 +97,6 @@ export function TransactionFormFields({
           />
           <FormErrorMessage error={errors.amount} />
         </Field>
-
         <Field>
           <FieldLabel htmlFor="transaction-date">
             <FieldTitle>Date</FieldTitle>
@@ -116,78 +110,14 @@ export function TransactionFormFields({
           <FormErrorMessage error={errors.date} />
         </Field>
       </div>
-
-      <Field>
-        <FieldLabel htmlFor="transaction-account">
-          <FieldTitle>
-            {values.type === "transfer" ? "From account" : "Account"}
-          </FieldTitle>
-        </FieldLabel>
-        <NativeSelect
-          id="transaction-account"
-          value={resolveValidOption(values.accountId, accountOptions)}
-          onChange={(event) => onAccountChange(event.target.value)}
-        >
-          {accountOptions.map((account) => (
-            <NativeSelectOption key={account._id} value={account._id}>
-              {account.name}
-            </NativeSelectOption>
-          ))}
-        </NativeSelect>
-        <FormErrorMessage error={errors.accountId} />
-      </Field>
-
-      {values.type === "transfer" ? (
-        <Field>
-          <FieldLabel htmlFor="transaction-to-account">
-            <FieldTitle>Destination account</FieldTitle>
-          </FieldLabel>
-          <NativeSelect
-            id="transaction-to-account"
-            value={values.toAccountId}
-            onChange={(event) =>
-              onValueChange("toAccountId", event.target.value)
-            }
-          >
-            <NativeSelectOption value="">Choose account</NativeSelectOption>
-            {accountOptions
-              .filter((account) => account._id !== values.accountId)
-              .map((account) => (
-                <NativeSelectOption key={account._id} value={account._id}>
-                  {account.name}
-                </NativeSelectOption>
-              ))}
-          </NativeSelect>
-          <FormErrorMessage error={errors.toAccountId} />
-        </Field>
-      ) : (
-        <Field>
-          <FieldLabel htmlFor="transaction-category">
-            <FieldTitle>Category</FieldTitle>
-          </FieldLabel>
-          <NativeSelect
-            id="transaction-category"
-            value={resolveValidOption(values.categoryId, categoryOptions)}
-            onChange={(event) =>
-              onValueChange("categoryId", event.target.value)
-            }
-            disabled={categoryOptions.length === 0}
-          >
-            {categoryOptions.length === 0 ? (
-              <NativeSelectOption value="">
-                Create a category first
-              </NativeSelectOption>
-            ) : null}
-            {categoryOptions.map((category) => (
-              <NativeSelectOption key={category._id} value={category._id}>
-                {category.name}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-          <FormErrorMessage error={errors.categoryId} />
-        </Field>
-      )}
-
+      <TransactionSelectFields
+        values={values}
+        errors={errors}
+        accountOptions={accountOptions}
+        categoryOptions={categoryOptions}
+        onValueChange={onValueChange}
+        onAccountChange={onAccountChange}
+      />
       <Field>
         <FieldLabel htmlFor="transaction-description">
           <FieldTitle>Description</FieldTitle>
@@ -201,7 +131,6 @@ export function TransactionFormFields({
           }
         />
       </Field>
-
       <Field>
         <FieldLabel htmlFor="transaction-note">
           <FieldTitle>Note</FieldTitle>

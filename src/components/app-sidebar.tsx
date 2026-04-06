@@ -1,24 +1,5 @@
 import { Link, useMatchRoute } from "@tanstack/react-router"
-import {
-  ChevronsUpDownIcon,
-  LandmarkIcon,
-  LayoutDashboardIcon,
-  LogOutIcon,
-  PiggyBankIcon,
-  ReceiptTextIcon,
-  RepeatIcon,
-  SettingsIcon,
-  TargetIcon,
-} from "lucide-react"
-import { UserInfoPreview } from "@/components/user-info-preview"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { LandmarkIcon } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -35,43 +16,8 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { authClient } from "@/lib/auth-client"
 import { useSignOut } from "@/lib/auth"
 import { APP_NAME } from "@/lib/money"
-
-const navItems = [
-  {
-    exact: true,
-    icon: LayoutDashboardIcon,
-    label: "Overview",
-    to: "/dashboard" as const,
-  },
-  {
-    icon: PiggyBankIcon,
-    label: "Accounts",
-    to: "/dashboard/accounts" as const,
-  },
-  {
-    icon: ReceiptTextIcon,
-    label: "Transactions",
-    to: "/dashboard/transactions" as const,
-  },
-  {
-    icon: TargetIcon,
-    label: "Budgets",
-    to: "/dashboard/budgets" as const,
-  },
-  {
-    icon: RepeatIcon,
-    label: "Recurring",
-    to: "/dashboard/recurring" as const,
-  },
-]
-
-const secondaryNavItems = [
-  {
-    icon: SettingsIcon,
-    label: "Settings",
-    to: "/dashboard/settings" as const,
-  },
-]
+import { mainNavItems, secondaryNavItems } from "@/lib/dashboard-nav"
+import { SidebarUserMenu } from "@/components/sidebar-user-menu"
 
 export function AppSidebar() {
   const session = authClient.useSession()
@@ -117,7 +63,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
-              {navItems.map((item) => (
+              {mainNavItems.map((item) => (
                 <SidebarMenuItem key={item.to}>
                   <SidebarMenuButton
                     asChild
@@ -168,40 +114,11 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton
-                  size="lg"
-                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                >
-                  <UserInfoPreview user={user} />
-                  <ChevronsUpDownIcon className="ml-auto size-4" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-                side={isMobile ? "bottom" : "right"}
-                align="end"
-                sideOffset={4}
-              >
-                <DropdownMenuLabel className="p-0 font-normal text-sidebar-foreground">
-                  <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    <UserInfoPreview user={user} />
-                  </div>
-                </DropdownMenuLabel>
-
-                <DropdownMenuSeparator />
-
-                <DropdownMenuItem onClick={handleSignOut}>
-                  <LogOutIcon />
-                  Sign out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <SidebarUserMenu
+          user={user}
+          isMobile={isMobile}
+          onSignOut={handleSignOut}
+        />
       </SidebarFooter>
     </Sidebar>
   )

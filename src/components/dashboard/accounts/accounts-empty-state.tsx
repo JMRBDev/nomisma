@@ -1,7 +1,7 @@
+import { WalletCardsIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
 import { GuidedEmptyState } from "@/components/guided-empty-state"
-import { WalletCardsIcon } from "lucide-react"
 
 export function AccountsEmptyState({
   hasArchivedAccounts,

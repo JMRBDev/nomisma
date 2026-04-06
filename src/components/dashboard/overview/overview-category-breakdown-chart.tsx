@@ -1,16 +1,16 @@
 import { Cell, Pie, PieChart } from "recharts"
+import { PieChartIcon } from "lucide-react"
+import { CATEGORY_COLORS } from "./overview-chart-config"
+import type { ChartConfig } from "@/components/ui/chart"
 import {
   ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
 } from "@/components/ui/chart"
-import { CATEGORY_COLORS } from "./overview-chart-config"
 import { formatCurrency } from "@/lib/money"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
-import { PieChartIcon } from "lucide-react"
-import type { ChartConfig } from "@/components/ui/chart"
 
 export function OverviewCategoryBreakdownChart({
   data,

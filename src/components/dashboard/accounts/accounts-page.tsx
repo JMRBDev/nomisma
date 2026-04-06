@@ -5,18 +5,13 @@ import { toast } from "sonner"
 import { api } from "../../../../convex/_generated/api"
 import type { AccountRecord } from "@/components/dashboard/accounts/accounts-shared"
 import { AccountFormDialog } from "@/components/dashboard/accounts/account-form-dialog"
-import { AccountsEmptyState } from "@/components/dashboard/accounts/accounts-empty-state"
-import { AccountsTable } from "@/components/dashboard/accounts/accounts-table"
+import { AccountsContent } from "@/components/dashboard/accounts/accounts-content"
 import { DashboardPageActions } from "@/components/dashboard/dashboard-page-actions"
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
 import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
-import { DashboardSummaryCard } from "@/components/dashboard/dashboard-summary-card"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useAccountsPageData } from "@/hooks/use-money-dashboard"
 import { useAccountCreator } from "@/hooks/use-account-creator"
-import { formatCurrency } from "@/lib/money"
 import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog"
 
 export function AccountsPage() {
@@ -32,13 +27,11 @@ export function AccountsPage() {
     id: AccountRecord["_id"]
     archived: boolean
   } | null>(null)
-
   const accountCreator = useAccountCreator({
     onCreateAccount: async (payload) => {
       await createAccount(payload)
     },
   })
-
   const activeAccounts = data?.accounts.active ?? []
   const archivedAccounts = data?.accounts.archived ?? []
   const currency = data?.settings?.baseCurrency
@@ -65,19 +58,15 @@ export function AccountsPage() {
   ).length
   const hasAnyAccounts =
     activeAccounts.length > 0 || archivedAccounts.length > 0
-
   const handleArchiveRequest = (
     accountId: AccountRecord["_id"],
     archived: boolean
   ) => {
     setConfirmArchiveId({ id: accountId, archived })
   }
-
   const handleArchiveConfirm = async () => {
     if (!confirmArchiveId) return
-
     setPendingArchiveId(confirmArchiveId.id)
-
     try {
       await toggleAccountArchived({
         accountId: confirmArchiveId.id,
@@ -93,7 +82,6 @@ export function AccountsPage() {
       setPendingArchiveId(null)
     }
   }
-
   const isLoading = !data
 
   return (
@@ -109,92 +97,20 @@ export function AccountsPage() {
           </DashboardPageActions>
         }
       />
-
-      {isLoading || hasAnyAccounts ? (
-        <>
-          <div className="grid gap-4 md:grid-cols-3">
-            <DashboardSummaryCard
-              loading={isLoading}
-              title="Active balance"
-              value={formatCurrency(totalBalance, currency)}
-              description={`${activeAccounts.length} active account${activeAccounts.length === 1 ? "" : "s"}`}
-            />
-            <DashboardSummaryCard
-              loading={isLoading}
-              title="Included in totals"
-              value={formatCurrency(includedBalance, currency)}
-              description="Balances that count toward dashboard totals"
-            />
-            <DashboardSummaryCard
-              loading={isLoading}
-              title="Excluded from totals"
-              value={formatCurrency(excludedBalance, currency)}
-              description={`${excludedAccountsCount} active account${excludedAccountsCount === 1 ? "" : "s"} kept out of totals`}
-            />
-          </div>
-
-          {isLoading ? (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl">Active accounts</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <Skeleton className="h-10 w-full" />
-                  <Skeleton className="h-10 w-full" />
-                  <Skeleton className="h-10 w-full" />
-                  <Skeleton className="h-10 w-3/4" />
-                </div>
-              </CardContent>
-            </Card>
-          ) : activeAccounts.length > 0 ? (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl">Active accounts</CardTitle>
-              </CardHeader>
-
-              <CardContent>
-                <AccountsTable
-                  accounts={activeAccounts}
-                  currency={currency}
-                  archived={false}
-                  pendingAccountId={pendingArchiveId}
-                  onToggleArchived={handleArchiveRequest}
-                />
-              </CardContent>
-            </Card>
-          ) : (
-            <AccountsEmptyState
-              hasArchivedAccounts={archivedAccounts.length > 0}
-              onAddAccount={accountCreator.openDialog}
-            />
-          )}
-
-          {!isLoading && archivedAccounts.length > 0 ? (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl">Archived accounts</CardTitle>
-              </CardHeader>
-
-              <CardContent>
-                <AccountsTable
-                  accounts={archivedAccounts}
-                  currency={currency}
-                  archived
-                  pendingAccountId={pendingArchiveId}
-                  onToggleArchived={handleArchiveRequest}
-                />
-              </CardContent>
-            </Card>
-          ) : null}
-        </>
-      ) : (
-        <AccountsEmptyState
-          hasArchivedAccounts={false}
-          onAddAccount={accountCreator.openDialog}
-        />
-      )}
-
+      <AccountsContent
+        isLoading={isLoading}
+        activeAccounts={activeAccounts}
+        archivedAccounts={archivedAccounts}
+        currency={currency}
+        totalBalance={totalBalance}
+        includedBalance={includedBalance}
+        excludedBalance={excludedBalance}
+        excludedAccountsCount={excludedAccountsCount}
+        hasAnyAccounts={hasAnyAccounts}
+        pendingArchiveId={pendingArchiveId}
+        onAddAccount={accountCreator.openDialog}
+        onToggleArchived={handleArchiveRequest}
+      />
       <AccountFormDialog
         open={accountCreator.dialogOpen}
         onOpenChange={accountCreator.handleDialogOpenChange}
@@ -206,7 +122,6 @@ export function AccountsPage() {
         onValueChange={accountCreator.handleValueChange}
         onIncludeInTotalsChange={accountCreator.handleIncludeInTotalsChange}
       />
-
       <DeleteConfirmDialog
         open={confirmArchiveId !== null}
         onOpenChange={(open) => {

@@ -1,9 +1,9 @@
 import { ConvexError } from "convex/values"
+import { buildMappedTransactions } from "./read-models-transactions"
 import {
   buildAccountSummaries,
-  buildMappedTransactions,
   groupAccountSummaries,
-} from "./readModels"
+} from "./read-models-accounts"
 import {
   getAccountsByUserId,
   getCategoriesByUserId,
@@ -11,7 +11,7 @@ import {
   getResolvedSettings,
   getTransactionsByUserId,
   requireUser,
-} from "./shared"
+} from "./queries"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
 
 export async function getAccountsPageData(ctx: QueryCtx) {

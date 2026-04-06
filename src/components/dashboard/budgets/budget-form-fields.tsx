@@ -1,9 +1,9 @@
-import { FormErrorMessage } from "@/components/form-error-message"
 import type {
   BudgetCategoryOption,
   BudgetFieldErrors,
   BudgetFormValues,
 } from "@/components/dashboard/budgets/budgets-shared"
+import { FormErrorMessage } from "@/components/form-error-message"
 import {
   TOTAL_BUDGET_VALUE,
   resolveBudgetCategoryValue,

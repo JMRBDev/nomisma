@@ -1,14 +1,6 @@
 import { useMemo, useState } from "react"
 import { useNavigate } from "@tanstack/react-router"
-import {
-  LayoutDashboardIcon,
-  PiggyBankIcon,
-  ReceiptTextIcon,
-  RepeatIcon,
-  SearchIcon,
-  SettingsIcon,
-  TargetIcon,
-} from "lucide-react"
+import { SearchIcon } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { useMountEffect } from "@/hooks/use-mount-effect"
 import { Button } from "@/components/ui/button"
@@ -22,6 +14,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command"
+import { mainNavItems, secondaryNavItems } from "@/lib/dashboard-nav"
 
 type SearchItem = {
   group: string
@@ -34,6 +27,22 @@ type SearchItem = {
 
 function contains(value: string, query: string) {
   return value.toLowerCase().includes(query)
+}
+
+function buildSearchItems(navigate: ReturnType<typeof useNavigate>) {
+  return [...mainNavItems, ...secondaryNavItems].map((item) => ({
+    group: "Pages",
+    icon: item.icon,
+    id: `page-${item.label.toLowerCase()}`,
+    onSelect: () => {
+      void navigate({
+        to: item.to,
+        search: (previous) => previous,
+      })
+    },
+    title: item.label,
+    value: item.searchTerms,
+  }))
 }
 
 export function DashboardSearch() {
@@ -59,86 +68,7 @@ export function DashboardSearch() {
 
   const items = useMemo<Array<SearchItem>>(
     () =>
-      [
-        {
-          group: "Pages",
-          icon: LayoutDashboardIcon,
-          id: "page-overview",
-          onSelect: () => {
-            void navigate({
-              to: "/dashboard",
-              search: (previous) => previous,
-            })
-          },
-          title: "Overview",
-          value: "overview dashboard",
-        },
-        {
-          group: "Pages",
-          icon: PiggyBankIcon,
-          id: "page-accounts",
-          onSelect: () => {
-            void navigate({
-              to: "/dashboard/accounts",
-              search: (previous) => previous,
-            })
-          },
-          title: "Accounts",
-          value: "accounts balances money places",
-        },
-        {
-          group: "Pages",
-          icon: ReceiptTextIcon,
-          id: "page-transactions",
-          onSelect: () => {
-            void navigate({
-              to: "/dashboard/transactions",
-              search: (previous) => previous,
-            })
-          },
-          title: "Transactions",
-          value: "transactions expenses income transfers ledger",
-        },
-        {
-          group: "Pages",
-          icon: TargetIcon,
-          id: "page-budgets",
-          onSelect: () => {
-            void navigate({
-              to: "/dashboard/budgets",
-              search: (previous) => previous,
-            })
-          },
-          title: "Budgets",
-          value: "budgets spending limits",
-        },
-        {
-          group: "Pages",
-          icon: RepeatIcon,
-          id: "page-recurring",
-          onSelect: () => {
-            void navigate({
-              to: "/dashboard/recurring",
-              search: (previous) => previous,
-            })
-          },
-          title: "Recurring",
-          value: "recurring bills reminders income",
-        },
-        {
-          group: "Pages",
-          icon: SettingsIcon,
-          id: "page-settings",
-          onSelect: () => {
-            void navigate({
-              to: "/dashboard/settings",
-              search: (previous) => previous,
-            })
-          },
-          title: "Settings",
-          value: "settings currency categories archived accounts",
-        },
-      ].filter(
+      buildSearchItems(navigate).filter(
         (item) => !normalizedQuery || contains(item.value, normalizedQuery)
       ),
     [navigate, normalizedQuery]

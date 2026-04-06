@@ -9,10 +9,10 @@ import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import {
   createOverviewDateFilterSearch,
-  getOverviewDateFilterPresets,
   parseOverviewDayKey,
   toOverviewDayKey,
 } from "@/components/dashboard/overview/overview-date-filter"
+import { getOverviewDateFilterPresets } from "@/components/dashboard/overview/overview-date-filter-presets"
 import { toWeekStartsOnDayIndex } from "@/components/dashboard/settings/settings-shared"
 
 export function OverviewDateFilterSheet({

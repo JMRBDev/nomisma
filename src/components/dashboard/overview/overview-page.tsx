@@ -3,23 +3,18 @@ import {
   ArrowRightIcon,
   CheckCircle2Icon,
   FunnelIcon,
-  PiggyBankIcon,
   ReceiptTextIcon,
-  RepeatIcon,
 } from "lucide-react"
 import { OverviewAlerts } from "@/components/dashboard/overview/overview-alerts"
 import { OverviewChecklist } from "@/components/dashboard/overview/overview-checklist"
+import { OverviewChartsRow } from "@/components/dashboard/overview/overview-charts-row"
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
 import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
+import { OverviewMiddleRow } from "@/components/dashboard/overview/overview-middle-row"
 import { OverviewPanelCard } from "@/components/dashboard/overview/overview-panel-card"
 import { OverviewRecentTransactionsTable } from "@/components/dashboard/overview/overview-recent-transactions-table"
 import { OverviewSummaryCards } from "@/components/dashboard/overview/overview-summary-cards"
-import { OverviewTopSpendingCategoriesList } from "@/components/dashboard/overview/overview-top-spending-categories-list"
-import { OverviewUpcomingRecurringTable } from "@/components/dashboard/overview/overview-upcoming-recurring-table"
-import { OverviewSpendingChart } from "@/components/dashboard/overview/overview-spending-chart"
-import { OverviewIncomeVsExpensesChart } from "@/components/dashboard/overview/overview-income-vs-expenses-chart"
-import { OverviewCategoryBreakdownChart } from "@/components/dashboard/overview/overview-category-breakdown-chart"
 import { Button } from "@/components/ui/button"
 import { useOverviewData } from "@/hooks/use-money-dashboard"
 import { useDateFilter } from "@/hooks/use-date-filter"
@@ -28,18 +23,14 @@ export function OverviewPage() {
   const { hasDateFilter, filterLabel, dateRange, dateFilter } = useDateFilter()
   const activityLabel = hasDateFilter ? filterLabel : "the current month"
   const { data } = useOverviewData(dateRange)
-
   const isLoading = !data
-
   const currency = data?.settings?.baseCurrency
   const isSingleMonth =
     !hasDateFilter ||
     dateFilter.fromDate.slice(0, 7) === dateFilter.toDate.slice(0, 7)
-
   return (
     <DashboardPageSection>
       <DashboardPageHeader title="Overview" />
-
       <OverviewSummaryCards
         loading={isLoading}
         currentMoney={data?.overview.currentMoney}
@@ -52,7 +43,6 @@ export function OverviewPage() {
         currency={currency}
         activityLabel={activityLabel}
       />
-
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
         <OverviewPanelCard
           loading={isLoading}
@@ -109,7 +99,6 @@ export function OverviewPage() {
               />
             ))}
         </OverviewPanelCard>
-
         <div className="grid gap-4">
           <OverviewPanelCard
             loading={isLoading}
@@ -127,7 +116,6 @@ export function OverviewPage() {
                 />
               ))}
           </OverviewPanelCard>
-
           {!isLoading &&
           data.onboarding.completedCount < data.onboarding.totalCount ? (
             <OverviewPanelCard
@@ -143,130 +131,21 @@ export function OverviewPage() {
           ) : null}
         </div>
       </div>
-
-      <div className="grid gap-4 xl:grid-cols-2">
-        <OverviewPanelCard
-          loading={isLoading}
-          title="Top spending categories"
-          description={
-            hasDateFilter
-              ? `Where posted expense money went in ${filterLabel}.`
-              : "Where most of your posted expense money is going."
-          }
-          action={
-            <Button asChild size="sm" variant="outline">
-              <Link
-                to="/dashboard/transactions"
-                search={(previous) => previous}
-              >
-                View transactions
-                <ArrowRightIcon />
-              </Link>
-            </Button>
-          }
-        >
-          {!isLoading &&
-            (data.overview.topSpendingCategories.length > 0 ? (
-              <OverviewTopSpendingCategoriesList
-                categories={data.overview.topSpendingCategories}
-                totalExpenses={data.overview.expenses}
-                currency={currency}
-              />
-            ) : (
-              <FilteredResultsEmptyState
-                title={
-                  hasDateFilter
-                    ? "No expense activity in this date filter"
-                    : "No expense activity yet"
-                }
-                description={
-                  hasDateFilter
-                    ? "Try a wider date range to see where spending is concentrated."
-                    : "Posted expense categories will start ranking here once you record spending."
-                }
-                icon={hasDateFilter ? FunnelIcon : PiggyBankIcon}
-              />
-            ))}
-        </OverviewPanelCard>
-
-        <OverviewPanelCard
-          loading={isLoading}
-          title="Upcoming recurring"
-          description="The next recurring items scheduled to hit your accounts."
-          action={
-            <Button asChild size="sm" variant="outline">
-              <Link to="/dashboard/recurring" search={(previous) => previous}>
-                View recurring
-                <ArrowRightIcon />
-              </Link>
-            </Button>
-          }
-        >
-          {!isLoading &&
-            (data.overview.upcomingRecurring.length > 0 ? (
-              <OverviewUpcomingRecurringTable
-                recurringItems={data.overview.upcomingRecurring}
-                currency={currency}
-              />
-            ) : (
-              <FilteredResultsEmptyState
-                title="No recurring items yet"
-                description="Add recurring income or bills so future cash movement is visible here."
-                icon={RepeatIcon}
-              />
-            ))}
-        </OverviewPanelCard>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        <OverviewPanelCard
-          loading={isLoading}
-          title="Spending over time"
-          description={
-            hasDateFilter
-              ? `Daily expense totals for ${filterLabel}.`
-              : "Daily expense totals for the current month."
-          }
-        >
-          {!isLoading && (
-            <OverviewSpendingChart
-              data={data.overview.dailySpending}
-              currency={currency}
-            />
-          )}
-        </OverviewPanelCard>
-
-        <OverviewPanelCard
-          loading={isLoading}
-          title="Income vs expenses"
-          description={
-            isSingleMonth
-              ? "Weekly income and expense comparison."
-              : "Monthly income and expense comparison."
-          }
-        >
-          {!isLoading && (
-            <OverviewIncomeVsExpensesChart
-              data={data.overview.incomeExpensesComparison}
-              currency={currency}
-              isSingleMonth={isSingleMonth}
-            />
-          )}
-        </OverviewPanelCard>
-
-        <OverviewPanelCard
-          loading={isLoading}
-          title="Expense breakdown"
-          description="How your posted expenses are distributed by category."
-        >
-          {!isLoading && (
-            <OverviewCategoryBreakdownChart
-              data={data.overview.categoryBreakdown}
-              currency={currency}
-            />
-          )}
-        </OverviewPanelCard>
-      </div>
+      <OverviewMiddleRow
+        isLoading={isLoading}
+        data={data!}
+        currency={currency}
+        hasDateFilter={hasDateFilter}
+        filterLabel={filterLabel}
+      />
+      <OverviewChartsRow
+        isLoading={isLoading}
+        data={data!}
+        currency={currency}
+        hasDateFilter={hasDateFilter}
+        filterLabel={filterLabel}
+        isSingleMonth={isSingleMonth}
+      />
     </DashboardPageSection>
   )
 }

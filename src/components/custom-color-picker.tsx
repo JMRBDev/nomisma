@@ -1,6 +1,6 @@
+import { PencilIcon } from "lucide-react";
 import { getContrastColor } from "@/lib/colors";
 import { cn } from "@/lib/utils";
-import { PencilIcon } from "lucide-react";
 
 interface ColorPickerProps {
     value: string;

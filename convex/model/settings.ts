@@ -1,11 +1,11 @@
 import { ConvexError } from "convex/values"
-import { groupCategories } from "./readModels"
+import { groupCategories } from "./read-models-categories"
 import {
   getAccountsByUserId,
   getCategoriesByUserId,
   getResolvedSettings,
   requireUser,
-} from "./shared"
+} from "./queries"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
 
 export async function getSettingsPageData(ctx: QueryCtx) {

@@ -1,30 +1,20 @@
-import { PencilIcon, Trash2Icon } from "lucide-react"
 import { useMemo } from "react"
+import { PencilIcon, Trash2Icon } from "lucide-react"
 import type { TransactionRecord } from "@/components/dashboard/transactions/transactions-shared"
+import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { DashboardIconButton } from "@/components/dashboard/dashboard-icon-button"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
-import { useDataTable } from "@/hooks/use-data-table"
-import { DataTableHead } from "@/components/ui/data-table-head"
-import { DataTablePagination } from "@/components/ui/data-table-pagination"
+import { IncomeExpenseNetFooter } from "@/components/dashboard/income-expense-net-footer"
 import { Badge } from "@/components/ui/badge"
+import { TableCell, TableRow } from "@/components/ui/table"
+import { useDataTable } from "@/hooks/use-data-table"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  formatCurrency,
   formatDateLabel,
   formatSignedAmount,
   getTransactionTone,
 } from "@/lib/money"
-import { cn } from "@/lib/utils"
 
-const TRANSACTION_SORT_ACCESSORS: Record<
+const SORT_ACCESSORS: Record<
   string,
   (row: TransactionRecord) => string | number
 > = {
@@ -40,6 +30,16 @@ const TRANSACTION_SORT_ACCESSORS: Record<
   status: (row) => `${row.type}-${row.status}`,
 }
 
+const COLUMNS = [
+  { column: "date", header: "Date" },
+  { column: "description", header: "Description" },
+  { column: "accountName", header: "Account" },
+  { column: "categoryName", header: "Category" },
+  { column: "status", header: "Status" },
+  { column: "amount", header: "Amount", className: "text-right" },
+  { header: "Actions", className: "text-right" },
+]
+
 export function TransactionsTable({
   transactions,
   currency,
@@ -53,7 +53,7 @@ export function TransactionsTable({
 }) {
   const table = useDataTable({
     data: transactions,
-    sortAccessors: TRANSACTION_SORT_ACCESSORS,
+    sortAccessors: SORT_ACCESSORS,
     defaultSort: { column: "date", direction: "desc" },
   })
 
@@ -68,156 +68,71 @@ export function TransactionsTable({
   }, [table.allSortedData])
 
   return (
-    <div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <DataTableHead
-              column="date"
-              sort={table.sort}
-              onSort={table.toggleSort}
-            >
-              Date
-            </DataTableHead>
-            <DataTableHead
-              column="description"
-              sort={table.sort}
-              onSort={table.toggleSort}
-            >
-              Description
-            </DataTableHead>
-            <DataTableHead
-              column="accountName"
-              sort={table.sort}
-              onSort={table.toggleSort}
-            >
-              Account
-            </DataTableHead>
-            <DataTableHead
-              column="categoryName"
-              sort={table.sort}
-              onSort={table.toggleSort}
-            >
-              Category
-            </DataTableHead>
-            <DataTableHead
-              column="status"
-              sort={table.sort}
-              onSort={table.toggleSort}
-            >
-              Status
-            </DataTableHead>
-            <DataTableHead
-              column="amount"
-              sort={table.sort}
-              onSort={table.toggleSort}
-              className="text-right"
-            >
-              Amount
-            </DataTableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {table.data.map((transaction) => (
-            <TableRow key={transaction._id}>
-              <TableCell>{formatDateLabel(transaction.date)}</TableCell>
-              <TableCell>
-                <div className="space-y-1">
-                  <p className="font-medium">{transaction.description}</p>
-                  {transaction.note ? (
-                    <p className="text-xs text-muted-foreground">
-                      {transaction.note}
-                    </p>
-                  ) : null}
-                </div>
-              </TableCell>
-              <TableCell>
-                {transaction.accountName}
-                {transaction.toAccountName
-                  ? ` → ${transaction.toAccountName}`
-                  : ""}
-              </TableCell>
-              <TableCell>{transaction.categoryName ?? "Transfer"}</TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Badge variant="outline">{transaction.type}</Badge>
-                  <Badge
-                    variant={
-                      transaction.status === "posted" ? "default" : "outline"
-                    }
-                  >
-                    {transaction.status}
-                  </Badge>
-                </div>
-              </TableCell>
-              <TableCell
-                className={`text-right font-medium ${getTransactionTone(transaction.type)}`}
+    <DashboardTable
+      table={table}
+      columns={COLUMNS}
+      footer={
+        <IncomeExpenseNetFooter
+          aggregates={aggregates}
+          currency={currency}
+          labelColSpan={5}
+          trailingColSpan={2}
+        />
+      }
+    >
+      {table.data.map((transaction) => (
+        <TableRow key={transaction._id}>
+          <TableCell>{formatDateLabel(transaction.date)}</TableCell>
+          <TableCell>
+            <div className="space-y-1">
+              <p className="font-medium">{transaction.description}</p>
+              {transaction.note ? (
+                <p className="text-xs text-muted-foreground">
+                  {transaction.note}
+                </p>
+              ) : null}
+            </div>
+          </TableCell>
+          <TableCell>
+            {transaction.accountName}
+            {transaction.toAccountName ? ` → ${transaction.toAccountName}` : ""}
+          </TableCell>
+          <TableCell>{transaction.categoryName ?? "Transfer"}</TableCell>
+          <TableCell>
+            <div className="flex gap-2">
+              <Badge variant="outline">{transaction.type}</Badge>
+              <Badge
+                variant={
+                  transaction.status === "posted" ? "default" : "outline"
+                }
               >
-                {formatSignedAmount(
-                  transaction.amount,
-                  currency,
-                  transaction.type
-                )}
-              </TableCell>
-              <TableCell>
-                <DashboardTableActions>
-                  <DashboardIconButton
-                    onClick={() => onEdit(transaction)}
-                    aria-label="Edit transaction"
-                  >
-                    <PencilIcon />
-                  </DashboardIconButton>
-                  <DashboardIconButton
-                    onClick={() => onDelete(transaction._id)}
-                    aria-label="Delete transaction"
-                  >
-                    <Trash2Icon />
-                  </DashboardIconButton>
-                </DashboardTableActions>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-        {table.allSortedData.length > 0 && (
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={5}>
-                <span className="text-muted-foreground">
-                  Income:{" "}
-                  <span className="font-medium text-emerald-400">
-                    {formatCurrency(aggregates.totalIncome, currency)}
-                  </span>
-                  {" · "}Expense:{" "}
-                  <span className="font-medium text-rose-300">
-                    {formatCurrency(aggregates.totalExpense, currency)}
-                  </span>
-                  {" · "}Net:{" "}
-                  <span
-                    className={cn(
-                      "font-medium",
-                      aggregates.net >= 0 ? "text-emerald-400" : "text-rose-300"
-                    )}
-                  >
-                    {formatCurrency(aggregates.net, currency)}
-                  </span>
-                </span>
-              </TableCell>
-              <TableCell colSpan={2} />
-            </TableRow>
-          </TableFooter>
-        )}
-      </Table>
-
-      <DataTablePagination
-        page={table.page}
-        pageSize={table.pageSize}
-        pageSizeOptions={table.pageSizeOptions}
-        totalPages={table.totalPages}
-        totalItems={table.totalItems}
-        onPageChange={table.setPage}
-        onPageSizeChange={table.setPageSize}
-      />
-    </div>
+                {transaction.status}
+              </Badge>
+            </div>
+          </TableCell>
+          <TableCell
+            className={`text-right font-medium ${getTransactionTone(transaction.type)}`}
+          >
+            {formatSignedAmount(transaction.amount, currency, transaction.type)}
+          </TableCell>
+          <TableCell>
+            <DashboardTableActions>
+              <DashboardIconButton
+                onClick={() => onEdit(transaction)}
+                aria-label="Edit transaction"
+              >
+                <PencilIcon />
+              </DashboardIconButton>
+              <DashboardIconButton
+                onClick={() => onDelete(transaction._id)}
+                aria-label="Delete transaction"
+              >
+                <Trash2Icon />
+              </DashboardIconButton>
+            </DashboardTableActions>
+          </TableCell>
+        </TableRow>
+      ))}
+    </DashboardTable>
   )
 }

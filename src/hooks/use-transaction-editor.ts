@@ -13,7 +13,7 @@ import {
   createTransactionDefaults,
   createTransactionFormValues,
   validateTransactionValues,
-} from "@/components/dashboard/transactions/transactions-shared"
+} from "@/components/dashboard/transactions/transactions-payload"
 import { resolveCategoryOnTypeChange } from "@/lib/form-helpers"
 import { useFormDialog } from "@/hooks/use-form-dialog"
 

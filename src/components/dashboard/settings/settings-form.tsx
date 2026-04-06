@@ -11,19 +11,12 @@ import {
   FieldGroup,
   FieldTitle,
 } from "@/components/ui/field"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import {
   defaultCurrencyOptions,
   weekStartsOnOptions,
 } from "@/components/dashboard/settings/settings-shared"
+import { SettingsSelect } from "@/components/dashboard/settings/settings-select"
 
 export function SettingsForm({
   initialValues,
@@ -41,12 +34,12 @@ export function SettingsForm({
   )
     ? defaultCurrencyOptions
     : [
-      {
-        value: values.baseCurrency,
-        label: `${values.baseCurrency} (current)`,
-      },
-      ...defaultCurrencyOptions,
-    ]
+        {
+          value: values.baseCurrency,
+          label: `${values.baseCurrency} (current)`,
+        },
+        ...defaultCurrencyOptions,
+      ]
 
   const isDirty =
     values.baseCurrency !== savedValues.baseCurrency ||
@@ -94,27 +87,16 @@ export function SettingsForm({
               Base currency
             </FieldTitle>
             <FieldDescription>
-              Format balances, totals, and budget limits with one shared currency.
+              Format balances, totals, and budget limits with one shared
+              currency.
             </FieldDescription>
           </FieldContent>
-
-          <Select
+          <SettingsSelect
             value={values.baseCurrency}
             onValueChange={(value) => handleValueChange("baseCurrency", value)}
-          >
-            <SelectTrigger className="w-full sm:w-56">
-              <SelectValue placeholder="Choose a currency" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {currencyOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+            options={currencyOptions}
+            placeholder="Choose a currency"
+          />
         </Field>
 
         <Field>
@@ -123,37 +105,22 @@ export function SettingsForm({
               Week starts on
             </FieldTitle>
             <FieldDescription>
-              Control how weekly ranges and calendars are aligned across the app.
+              Control how weekly ranges and calendars are aligned across the
+              app.
             </FieldDescription>
           </FieldContent>
-
-          <Select
+          <SettingsSelect
             value={values.weekStartsOn}
             onValueChange={(value) => handleValueChange("weekStartsOn", value)}
-          >
-            <SelectTrigger className="w-full sm:w-56">
-              <SelectValue placeholder="Choose a day" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {weekStartsOnOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+            options={weekStartsOnOptions}
+            placeholder="Choose a day"
+          />
         </Field>
       </FieldGroup>
 
       <Separator />
 
-      {formError ? (
-        <>
-          <FormErrorMessage error={formError} />
-        </>
-      ) : null}
+      {formError ? <FormErrorMessage error={formError} /> : null}
 
       <div className="flex flex-wrap justify-end gap-2">
         <Button

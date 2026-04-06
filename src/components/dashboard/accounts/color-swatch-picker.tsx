@@ -1,7 +1,7 @@
+import { useState } from "react"
 import { CustomColorPicker } from "@/components/custom-color-picker"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
-import { useState } from "react"
 
 const COLORS = [
   { name: "amber", className: "bg-amber-600" },
@@ -30,7 +30,7 @@ export function ColorSwatchPicker({
           type="button"
           onClick={() => {
             setIsCustomColor(false);
-            onChange(color.className as string);
+            onChange(color.className);
           }}
           className={cn(
             "size-8 aspect-square rounded-full border",

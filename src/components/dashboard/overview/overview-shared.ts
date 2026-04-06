@@ -1,6 +1,8 @@
 import type { useOverviewData } from "@/hooks/use-money-dashboard"
 
-type OverviewData = NonNullable<ReturnType<typeof useOverviewData>["data"]>
+export type OverviewData = NonNullable<
+  ReturnType<typeof useOverviewData>["data"]
+>
 
 export type OverviewAlertRecord = OverviewData["overview"]["alerts"][number]
 export type OverviewTopSpendingCategory =
