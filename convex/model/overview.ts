@@ -59,6 +59,126 @@ function buildTopSpendingCategories(
     .slice(0, 5)
 }
 
+type DashboardTransactions = ReturnType<typeof buildMappedTransactions>
+
+function buildDailySpending(
+  transactions: DashboardTransactions,
+  dateRange: { startDate: string; endDate: string }
+): Array<{ date: string; amount: number }> {
+  const dailyMap = new Map<string, number>()
+  let current = dateRange.startDate
+  while (current <= dateRange.endDate) {
+    dailyMap.set(current, 0)
+    current = addDays(current, 1)
+  }
+  for (const t of transactions) {
+    if (
+      t.status !== "posted" ||
+      t.type !== "expense" ||
+      !inRange(t.date, dateRange.startDate, dateRange.endDate)
+    ) {
+      continue
+    }
+    dailyMap.set(t.date, (dailyMap.get(t.date) ?? 0) + t.amount)
+  }
+  return [...dailyMap.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, amount]) => ({ date, amount }))
+}
+
+function buildIncomeExpensesComparison(
+  transactions: DashboardTransactions,
+  dateRange: { startDate: string; endDate: string }
+): Array<{ period: string; income: number; expenses: number }> {
+  const sameMonth =
+    dateRange.startDate.slice(0, 7) === dateRange.endDate.slice(0, 7)
+  const periodMap = new Map<string, { income: number; expenses: number }>()
+
+  if (sameMonth) {
+    let weekStart = dateRange.startDate
+    while (weekStart <= dateRange.endDate) {
+      periodMap.set(weekStart, { income: 0, expenses: 0 })
+      weekStart = addDays(weekStart, 7)
+    }
+  } else {
+    let [year, month] = dateRange.startDate.slice(0, 7).split("-").map(Number)
+    const endMonth = dateRange.endDate.slice(0, 7)
+    let current = `${year}-${String(month).padStart(2, "0")}`
+    while (current <= endMonth) {
+      periodMap.set(current, { income: 0, expenses: 0 })
+      const next = new Date(Date.UTC(year, month, 1))
+      year = next.getUTCFullYear()
+      month = next.getUTCMonth() + 1
+      current = `${year}-${String(month).padStart(2, "0")}`
+    }
+  }
+
+  for (const t of transactions) {
+    if (
+      t.status !== "posted" ||
+      !inRange(t.date, dateRange.startDate, dateRange.endDate)
+    ) {
+      continue
+    }
+    let key: string
+    if (sameMonth) {
+      const diffMs =
+        new Date(`${t.date}T00:00:00Z`).getTime() -
+        new Date(`${dateRange.startDate}T00:00:00Z`).getTime()
+      const diffDays = Math.round(diffMs / 86400000)
+      key = addDays(dateRange.startDate, Math.floor(diffDays / 7) * 7)
+    } else {
+      key = t.date.slice(0, 7)
+    }
+    const entry = periodMap.get(key)
+    if (!entry) continue
+    if (t.type === "income") entry.income += t.amount
+    if (t.type === "expense") entry.expenses += t.amount
+  }
+
+  return [...periodMap.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([period, data]) => ({ period, ...data }))
+}
+
+function buildCategoryBreakdown(
+  transactions: DashboardTransactions,
+  dateRange: { startDate: string; endDate: string }
+): Array<{ categoryName: string; amount: number; percentage: number }> {
+  const categoryMap = new Map<
+    string,
+    { categoryName: string; amount: number }
+  >()
+  for (const t of transactions) {
+    if (
+      t.status !== "posted" ||
+      t.type !== "expense" ||
+      !inRange(t.date, dateRange.startDate, dateRange.endDate)
+    ) {
+      continue
+    }
+    const name = t.categoryName ?? "Uncategorized"
+    const existing = categoryMap.get(name)
+    if (existing) {
+      existing.amount += t.amount
+    } else {
+      categoryMap.set(name, { categoryName: name, amount: t.amount })
+    }
+  }
+  const sorted = [...categoryMap.values()].sort((a, b) => b.amount - a.amount)
+  const totalExpenses = sorted.reduce((sum, c) => sum + c.amount, 0)
+  if (totalExpenses === 0) return []
+  const top = sorted.slice(0, 5)
+  const otherAmount = sorted.slice(5).reduce((sum, c) => sum + c.amount, 0)
+  if (otherAmount > 0) {
+    top.push({ categoryName: "Other", amount: otherAmount })
+  }
+  return top.map((item) => ({
+    ...item,
+    percentage: Math.round((item.amount / totalExpenses) * 100),
+  }))
+}
+
 function resolveSelectedDateRange(args: {
   startDate?: string
   endDate?: string
@@ -281,6 +401,18 @@ export async function getOverviewData(
             .slice(0, 8)
         : dashboardTransactions.slice(0, 8),
       upcomingRecurring: recurring.all.slice(0, 8),
+      dailySpending: buildDailySpending(
+        dashboardTransactions,
+        selectedDateRange
+      ),
+      incomeExpensesComparison: buildIncomeExpensesComparison(
+        dashboardTransactions,
+        selectedDateRange
+      ),
+      categoryBreakdown: buildCategoryBreakdown(
+        dashboardTransactions,
+        selectedDateRange
+      ),
     },
     onboarding: {
       completedCount: [

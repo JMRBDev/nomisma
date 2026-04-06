@@ -24,6 +24,9 @@ import { OverviewRecentTransactionsTable } from "@/components/dashboard/overview
 import { OverviewSummaryCards } from "@/components/dashboard/overview/overview-summary-cards"
 import { OverviewTopSpendingCategoriesList } from "@/components/dashboard/overview/overview-top-spending-categories-list"
 import { OverviewUpcomingRecurringTable } from "@/components/dashboard/overview/overview-upcoming-recurring-table"
+import { OverviewSpendingChart } from "@/components/dashboard/overview/overview-spending-chart"
+import { OverviewIncomeVsExpensesChart } from "@/components/dashboard/overview/overview-income-vs-expenses-chart"
+import { OverviewCategoryBreakdownChart } from "@/components/dashboard/overview/overview-category-breakdown-chart"
 import { Button } from "@/components/ui/button"
 import { useOverviewData } from "@/hooks/use-money-dashboard"
 
@@ -46,6 +49,9 @@ export function OverviewPage() {
   }
 
   const currency = data.settings?.baseCurrency
+  const isSingleMonth =
+    !hasDateFilter ||
+    dateFilter.fromDate.slice(0, 7) === dateFilter.toDate.slice(0, 7)
 
   return (
     <DashboardPageSection>
@@ -216,6 +222,47 @@ export function OverviewPage() {
               icon={RepeatIcon}
             />
           )}
+        </OverviewPanelCard>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <OverviewPanelCard
+          title="Spending over time"
+          description={
+            hasDateFilter
+              ? `Daily expense totals for ${filterLabel}.`
+              : "Daily expense totals for the current month."
+          }
+        >
+          <OverviewSpendingChart
+            data={data.overview.dailySpending}
+            currency={currency}
+          />
+        </OverviewPanelCard>
+
+        <OverviewPanelCard
+          title="Income vs expenses"
+          description={
+            isSingleMonth
+              ? "Weekly income and expense comparison."
+              : "Monthly income and expense comparison."
+          }
+        >
+          <OverviewIncomeVsExpensesChart
+            data={data.overview.incomeExpensesComparison}
+            currency={currency}
+            isSingleMonth={isSingleMonth}
+          />
+        </OverviewPanelCard>
+
+        <OverviewPanelCard
+          title="Expense breakdown"
+          description="How your posted expenses are distributed by category."
+        >
+          <OverviewCategoryBreakdownChart
+            data={data.overview.categoryBreakdown}
+            currency={currency}
+          />
         </OverviewPanelCard>
       </div>
     </DashboardPageSection>
