@@ -90,9 +90,3 @@ export function getBudgetStatusLabel(status: BudgetRecord["status"]) {
   if (status === "near") return "Close to limit"
   return "Healthy"
 }
-
-export function getBudgetBadgeVariant(status: BudgetRecord["status"]) {
-  if (status === "over") return "destructive" as const
-  if (status === "near") return "secondary" as const
-  return "outline" as const
-}

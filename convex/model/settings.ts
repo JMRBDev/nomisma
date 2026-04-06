@@ -1,5 +1,5 @@
 import { ConvexError } from "convex/values"
-import { groupCategories } from "./read-models-categories"
+import { groupCategories } from "./read_models_categories"
 import {
   getAccountsByUserId,
   getCategoriesByUserId,

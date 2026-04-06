@@ -1,11 +1,12 @@
 import { useMemo } from "react"
 import type { OverviewRecentTransactionRecord } from "@/components/dashboard/overview/overview-shared"
+import { AccountNameCell } from "@/components/dashboard/account-name-cell"
 import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { IncomeExpenseNetFooter } from "@/components/dashboard/income-expense-net-footer"
-import { Badge } from "@/components/ui/badge"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { useDataTable } from "@/hooks/use-data-table"
 import {
+  capitalizeFirstLetter,
   formatDateLabel,
   formatSignedAmount,
   getTransactionTone,
@@ -19,7 +20,8 @@ const SORT_ACCESSORS: Record<
   date: (row) => row.date,
   description: (row) => row.description.toLowerCase(),
   accountName: (row) => row.accountName.toLowerCase(),
-  status: (row) => `${row.type}-${row.status}`,
+  type: (row) => row.type,
+  status: (row) => row.status,
   amount: (row) => {
     if (row.type === "income") return row.amount
     if (row.type === "expense") return -row.amount
@@ -31,6 +33,7 @@ const COLUMNS = [
   { column: "date", header: "Date" },
   { column: "description", header: "Description" },
   { column: "accountName", header: "Account" },
+  { column: "type", header: "Type" },
   { column: "status", header: "Status" },
   { column: "amount", header: "Amount", className: "text-right" },
 ]
@@ -67,14 +70,18 @@ export function OverviewRecentTransactionsTable({
         <IncomeExpenseNetFooter
           aggregates={aggregates}
           currency={currency}
-          labelColSpan={4}
+          labelColSpan={5}
           showBreakdown={false}
         />
       }
     >
       {table.data.map((transaction) => (
         <TableRow key={transaction._id}>
-          <TableCell>{formatDateLabel(transaction.date)}</TableCell>
+          <TableCell>
+            <span className="text-muted-foreground">
+              {formatDateLabel(transaction.date)}
+            </span>
+          </TableCell>
           <TableCell>
             <div className="space-y-1">
               <p className="font-medium">{transaction.description}</p>
@@ -84,20 +91,21 @@ export function OverviewRecentTransactionsTable({
             </div>
           </TableCell>
           <TableCell>
-            {transaction.accountName}
-            {transaction.toAccountName ? ` → ${transaction.toAccountName}` : ""}
+            <AccountNameCell
+              name={transaction.accountName}
+              icon={transaction.accountIcon}
+              color={transaction.accountColor}
+            />
           </TableCell>
           <TableCell>
-            <div className="flex gap-2">
-              <Badge variant="outline">{transaction.type}</Badge>
-              <Badge
-                variant={
-                  transaction.status === "posted" ? "default" : "outline"
-                }
-              >
-                {transaction.status}
-              </Badge>
-            </div>
+            <span className={cn(getTransactionTone(transaction.type))}>
+              {capitalizeFirstLetter(transaction.type)}
+            </span>
+          </TableCell>
+          <TableCell>
+            <span className="text-muted-foreground">
+              {capitalizeFirstLetter(transaction.status)}
+            </span>
           </TableCell>
           <TableCell
             className={cn(

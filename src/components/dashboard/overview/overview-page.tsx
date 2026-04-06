@@ -37,9 +37,7 @@ export function OverviewPage() {
         income={data?.overview.income}
         expenses={data?.overview.expenses}
         net={data?.overview.net}
-        budgetRemaining={data?.overview.budgetRemaining}
         hasAccounts={data?.hasAccounts}
-        currentMonth={data?.currentMonth}
         currency={currency}
         activityLabel={activityLabel}
       />

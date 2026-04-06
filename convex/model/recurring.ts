@@ -1,10 +1,10 @@
-import { buildMappedTransactions } from "./read-models-transactions"
+import { buildMappedTransactions } from "./read_models_transactions"
 import {
   buildAccountSummaries,
   groupAccountSummaries,
-} from "./read-models-accounts"
-import { groupCategories } from "./read-models-categories"
-import { buildRecurringItems } from "./read-models-recurring"
+} from "./read_models_accounts"
+import { groupCategories } from "./read_models_categories"
+import { buildRecurringItems } from "./read_models_recurring"
 import {
   getAccountsByUserId,
   getCategoriesByUserId,
@@ -16,8 +16,8 @@ import {
 import { toDayKey } from "./dates"
 import type { QueryCtx } from "../_generated/server"
 
-export { createRecurringRule, updateRecurringRule } from "./recurring-mutations"
-export { toggleRecurringRule, confirmRecurringRule } from "./recurring-actions"
+export { createRecurringRule, updateRecurringRule } from "./recurring_mutations"
+export { toggleRecurringRule, confirmRecurringRule } from "./recurring_actions"
 
 export async function getRecurringPageData(ctx: QueryCtx) {
   const user = await requireUser(ctx)

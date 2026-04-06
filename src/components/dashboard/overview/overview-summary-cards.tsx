@@ -5,16 +5,14 @@ import {
   WalletCardsIcon,
 } from "lucide-react"
 import { OverviewMetricCard } from "@/components/dashboard/overview/overview-metric-card"
-import { formatCurrency, formatMonthLabel, getBudgetTone } from "@/lib/money"
+import { formatCurrency } from "@/lib/money"
 
 export function OverviewSummaryCards({
   currentMoney = 0,
   income = 0,
   expenses = 0,
   net = 0,
-  budgetRemaining = null,
   hasAccounts = false,
-  currentMonth = "",
   currency,
   activityLabel = "the current month",
   loading,
@@ -23,44 +21,27 @@ export function OverviewSummaryCards({
   income?: number
   expenses?: number
   net?: number
-  budgetRemaining?: number | null
   hasAccounts?: boolean
-  currentMonth?: string
   currency?: string | null
   activityLabel?: string
   loading?: boolean
 }) {
   if (loading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-        {Array.from({ length: 5 }).map((_, i) => (
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
           <OverviewMetricCard key={i} title="" loading />
         ))}
       </div>
     )
   }
 
-  const monthLabel = formatMonthLabel(currentMonth)
   const netToneClassName = net < 0 ? "text-destructive" : "text-emerald-400"
-  const budgetRemainingLabel =
-    budgetRemaining === null
-      ? "No limit set"
-      : formatCurrency(budgetRemaining, currency)
-  const budgetRemainingToneClassName =
-    budgetRemaining === null
-      ? undefined
-      : getBudgetTone(
-          budgetRemaining < 0
-            ? "over"
-            : budgetRemaining === 0
-              ? "near"
-              : "healthy"
-        )
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       <OverviewMetricCard
-        title="Current money"
+        title="Grand total"
         value={formatCurrency(currentMoney, currency)}
         description={
           hasAccounts
@@ -89,13 +70,6 @@ export function OverviewSummaryCards({
         description={`Income minus expenses in ${activityLabel}`}
         icon={<TargetIcon className="size-4" />}
         valueClassName={netToneClassName}
-      />
-      <OverviewMetricCard
-        title="Budget remaining"
-        value={budgetRemainingLabel}
-        description={`Available budget space for ${monthLabel}`}
-        icon={<TargetIcon className="size-4" />}
-        valueClassName={budgetRemainingToneClassName}
       />
     </div>
   )

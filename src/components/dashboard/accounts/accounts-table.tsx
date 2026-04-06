@@ -10,17 +10,14 @@ const SORT_ACCESSORS: Record<string, (row: AccountRecord) => string | number> =
   {
     name: (row) => row.name.toLowerCase(),
     type: (row) => row.type,
-    openingBalance: (row) => row.openingBalance,
     currentBalance: (row) => row.currentBalance,
   }
 
 const COLUMNS = [
   { column: "name", header: "Account" },
   { column: "type", header: "Type" },
-  { header: "Totals" },
-  { column: "openingBalance", header: "Opening", className: "text-right" },
+  { header: "Totals", className: "text-center" },
   { column: "currentBalance", header: "Current", className: "text-right" },
-  { header: "Recent activity" },
   { header: "Actions", className: "text-right" },
 ]
 
@@ -29,12 +26,14 @@ export function AccountsTable({
   currency,
   archived,
   pendingAccountId,
+  onEdit,
   onToggleArchived,
 }: {
   accounts: Array<AccountRecord>
   currency?: string | null
   archived: boolean
   pendingAccountId?: AccountRecord["_id"] | null
+  onEdit: (account: AccountRecord) => void
   onToggleArchived: (
     accountId: AccountRecord["_id"],
     archived: boolean
@@ -46,15 +45,11 @@ export function AccountsTable({
   })
 
   const aggregates = useMemo(() => {
-    const totalOpening = table.allSortedData.reduce(
-      (sum, a) => sum + a.openingBalance,
-      0
-    )
     const totalCurrent = table.allSortedData.reduce(
       (sum, a) => sum + a.currentBalance,
       0
     )
-    return { totalOpening, totalCurrent }
+    return { totalCurrent }
   }, [table.allSortedData])
 
   return (
@@ -70,12 +65,9 @@ export function AccountsTable({
             </span>
           </TableCell>
           <TableCell className="text-right font-medium">
-            {formatCurrency(aggregates.totalOpening, currency)}
-          </TableCell>
-          <TableCell className="text-right font-medium">
             {formatCurrency(aggregates.totalCurrent, currency)}
           </TableCell>
-          <TableCell colSpan={2} />
+          <TableCell />
         </TableRow>
       }
     >
@@ -86,6 +78,7 @@ export function AccountsTable({
           currency={currency}
           archived={archived}
           pendingAccountId={pendingAccountId}
+          onEdit={onEdit}
           onToggleArchived={onToggleArchived}
         />
       ))}

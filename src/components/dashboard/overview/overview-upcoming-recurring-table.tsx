@@ -3,10 +3,10 @@ import type { OverviewUpcomingRecurringRecord } from "@/components/dashboard/ove
 import { getRecurringStatusLabel } from "@/components/dashboard/recurring/recurring-shared"
 import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { IncomeExpenseNetFooter } from "@/components/dashboard/income-expense-net-footer"
-import { Badge } from "@/components/ui/badge"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { useDataTable } from "@/hooks/use-data-table"
 import {
+  capitalizeFirstLetter,
   formatDateLabel,
   formatSignedAmount,
   getRecurringTone,
@@ -21,13 +21,15 @@ const SORT_ACCESSORS: Record<
   nextDueDate: (row) => row.nextDueDate,
   description: (row) => row.description.toLowerCase(),
   frequency: (row) => row.frequency,
+  status: (row) => row.status,
   amount: (row) => (row.type === "income" ? row.amount : -row.amount),
 }
 
 const COLUMNS = [
   { column: "nextDueDate", header: "Next due" },
   { column: "description", header: "Description" },
-  { column: "frequency", header: "Schedule" },
+  { column: "frequency", header: "Frequency" },
+  { column: "status", header: "Status" },
   { column: "amount", header: "Amount", className: "text-right" },
 ]
 
@@ -63,7 +65,7 @@ export function OverviewUpcomingRecurringTable({
         <IncomeExpenseNetFooter
           aggregates={aggregates}
           currency={currency}
-          labelColSpan={3}
+          labelColSpan={4}
           showBreakdown={false}
         />
       }
@@ -83,18 +85,11 @@ export function OverviewUpcomingRecurringTable({
               </p>
             </div>
           </TableCell>
+          <TableCell>{capitalizeFirstLetter(item.frequency)}</TableCell>
           <TableCell>
-            <div className="flex gap-2">
-              <Badge variant="outline">{item.frequency}</Badge>
-              <Badge
-                variant={item.status === "overdue" ? "destructive" : "outline"}
-                className={cn(
-                  item.status !== "overdue" && getRecurringTone(item.status)
-                )}
-              >
-                {getRecurringStatusLabel(item.status)}
-              </Badge>
-            </div>
+            <span className={cn(getRecurringTone(item.status))}>
+              {getRecurringStatusLabel(item.status)}
+            </span>
           </TableCell>
           <TableCell
             className={cn(

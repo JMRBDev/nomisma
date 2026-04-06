@@ -93,6 +93,10 @@ export function getRecurringTone(status: string) {
   return "text-muted-foreground"
 }
 
+export function capitalizeFirstLetter(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
 export function todayInputValue() {
   return new Date().toISOString().slice(0, 10)
 }

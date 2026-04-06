@@ -14,18 +14,23 @@ export function buildRecurringItems(
 
   const all = recurringRules
     .filter((rule) => rule.active)
-    .map((rule) => ({
-      ...rule,
-      accountName: accountMap.get(rule.accountId)?.name ?? "Unknown account",
-      categoryName:
-        categoryMap.get(rule.categoryId)?.name ?? "Unknown category",
-      status:
-        rule.nextDueDate < today
-          ? ("overdue" as const)
-          : rule.nextDueDate <= addDays(today, 7)
-            ? ("dueSoon" as const)
-            : ("upcoming" as const),
-    }))
+    .map((rule) => {
+      const account = accountMap.get(rule.accountId)
+      return {
+        ...rule,
+        accountName: account?.name ?? "Unknown account",
+        accountIcon: account?.icon ?? null,
+        accountColor: account?.color ?? null,
+        categoryName:
+          categoryMap.get(rule.categoryId)?.name ?? "Unknown category",
+        status:
+          rule.nextDueDate < today
+            ? ("overdue" as const)
+            : rule.nextDueDate <= addDays(today, 7)
+              ? ("dueSoon" as const)
+              : ("upcoming" as const),
+      }
+    })
     .sort((a, b) => (a.nextDueDate < b.nextDueDate ? -1 : 1))
 
   return {

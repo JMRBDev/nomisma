@@ -13,11 +13,10 @@ interface AccountsContentProps {
   currency: string | undefined
   totalBalance: number
   includedBalance: number
-  excludedBalance: number
-  excludedAccountsCount: number
   hasAnyAccounts: boolean
   pendingArchiveId: AccountRecord["_id"] | null
   onAddAccount: () => void
+  onEdit: (account: AccountRecord) => void
   onToggleArchived: (accountId: AccountRecord["_id"], archived: boolean) => void
 }
 
@@ -28,17 +27,16 @@ export function AccountsContent({
   currency,
   totalBalance,
   includedBalance,
-  excludedBalance,
-  excludedAccountsCount,
   hasAnyAccounts,
   pendingArchiveId,
   onAddAccount,
+  onEdit,
   onToggleArchived,
 }: AccountsContentProps) {
   if (isLoading || hasAnyAccounts) {
     return (
       <>
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2">
           <DashboardSummaryCard
             loading={isLoading}
             title="Active balance"
@@ -50,12 +48,6 @@ export function AccountsContent({
             title="Included in totals"
             value={formatCurrency(includedBalance, currency)}
             description="Balances that count toward dashboard totals"
-          />
-          <DashboardSummaryCard
-            loading={isLoading}
-            title="Excluded from totals"
-            value={formatCurrency(excludedBalance, currency)}
-            description={`${excludedAccountsCount} active account${excludedAccountsCount === 1 ? "" : "s"} kept out of totals`}
           />
         </div>
 
@@ -85,6 +77,7 @@ export function AccountsContent({
                 currency={currency}
                 archived={false}
                 pendingAccountId={pendingArchiveId}
+                onEdit={onEdit}
                 onToggleArchived={onToggleArchived}
               />
             </CardContent>
@@ -108,6 +101,7 @@ export function AccountsContent({
                 currency={currency}
                 archived
                 pendingAccountId={pendingArchiveId}
+                onEdit={onEdit}
                 onToggleArchived={onToggleArchived}
               />
             </CardContent>

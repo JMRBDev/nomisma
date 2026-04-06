@@ -1,7 +1,7 @@
 import { getBudgetStatus } from "./dates"
 import type { Id } from "../_generated/dataModel"
 import type { BudgetDoc, CategoryDoc } from "./types"
-import type { MappedTransaction } from "./read-models-transactions"
+import type { MappedTransaction } from "./read_models_transactions"
 
 export function buildBudgetStatuses(
   budgets: Array<BudgetDoc>,

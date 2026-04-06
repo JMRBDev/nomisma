@@ -1,15 +1,26 @@
-import { PencilIcon, PowerIcon, PowerOffIcon } from "lucide-react"
+import {
+  CheckCircle2Icon,
+  EllipsisIcon,
+  PencilIcon,
+  PowerIcon,
+  PowerOffIcon,
+} from "lucide-react"
 import type { RecurringRecord } from "@/components/dashboard/recurring/recurring-shared"
 import {
   canConfirmRecurringItem,
   getRecurringStatusLabel,
 } from "@/components/dashboard/recurring/recurring-shared"
+import { AccountNameCell } from "@/components/dashboard/account-name-cell"
 import { DashboardIconButton } from "@/components/dashboard/dashboard-icon-button"
-import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { TableCell, TableRow } from "@/components/ui/table"
 import {
+  capitalizeFirstLetter,
   formatDateLabel,
   formatSignedAmount,
   getRecurringTone,
@@ -36,6 +47,7 @@ export function RecurringTableRow({
 }) {
   const canConfirm = canConfirmRecurringItem(item, today)
   const pending = pendingRuleId === item._id
+
   return (
     <TableRow>
       <TableCell>
@@ -44,28 +56,21 @@ export function RecurringTableRow({
         </p>
       </TableCell>
       <TableCell>
-        <div className="space-y-1">
-          <p className="font-medium">{item.description}</p>
-          <p className="text-xs text-muted-foreground">
-            Starts {formatDateLabel(item.startDate)}
-            {item.endDate ? ` · Ends ${formatDateLabel(item.endDate)}` : ""}
-          </p>
-        </div>
+        <p className="font-medium">{item.description}</p>
       </TableCell>
-      <TableCell>{item.accountName}</TableCell>
+      <TableCell>
+        <AccountNameCell
+          name={item.accountName}
+          icon={item.accountIcon}
+          color={item.accountColor}
+        />
+      </TableCell>
       <TableCell>{item.categoryName}</TableCell>
+      <TableCell>{capitalizeFirstLetter(item.frequency)}</TableCell>
       <TableCell>
-        <Badge variant="outline">{item.frequency}</Badge>
-      </TableCell>
-      <TableCell>
-        <Badge
-          variant={item.status === "overdue" ? "destructive" : "outline"}
-          className={cn(
-            item.status !== "overdue" && getRecurringTone(item.status)
-          )}
-        >
+        <span className={cn(getRecurringTone(item.status))}>
           {getRecurringStatusLabel(item.status)}
-        </Badge>
+        </span>
       </TableCell>
       <TableCell
         className={cn("text-right font-medium", getTransactionTone(item.type))}
@@ -73,36 +78,32 @@ export function RecurringTableRow({
         {formatSignedAmount(item.amount, currency, item.type)}
       </TableCell>
       <TableCell>
-        <DashboardTableActions>
-          <DashboardIconButton
-            onClick={() => onEdit(item)}
-            aria-label="Edit recurring item"
-          >
-            <PencilIcon />
-          </DashboardIconButton>
-          <DashboardIconButton
-            onClick={() => onToggle(item._id, !item.active)}
-            aria-label={
-              item.active
-                ? "Deactivate recurring item"
-                : "Activate recurring item"
-            }
-          >
-            {item.active ? <PowerOffIcon /> : <PowerIcon />}
-          </DashboardIconButton>
-          {canConfirm ? (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => onConfirm(item._id)}
-              disabled={pending}
-            >
-              {pending ? "Saving..." : "Confirm"}
-            </Button>
-          ) : (
-            <span className="text-sm text-muted-foreground">Due later</span>
-          )}
-        </DashboardTableActions>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <DashboardIconButton aria-label="Actions">
+              <EllipsisIcon />
+            </DashboardIconButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onEdit(item)}>
+              <PencilIcon />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onToggle(item._id, !item.active)}>
+              {item.active ? <PowerOffIcon /> : <PowerIcon />}
+              {item.active ? "Deactivate" : "Activate"}
+            </DropdownMenuItem>
+            {canConfirm && (
+              <DropdownMenuItem
+                onClick={() => onConfirm(item._id)}
+                disabled={pending}
+              >
+                <CheckCircle2Icon />
+                {pending ? "Saving..." : "Confirm"}
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </TableCell>
     </TableRow>
   )

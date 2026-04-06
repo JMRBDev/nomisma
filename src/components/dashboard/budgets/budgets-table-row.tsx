@@ -1,12 +1,8 @@
 import { PencilIcon, Trash2Icon } from "lucide-react"
 import type { BudgetRecord } from "@/components/dashboard/budgets/budgets-shared"
-import {
-  getBudgetBadgeVariant,
-  getBudgetStatusLabel,
-} from "@/components/dashboard/budgets/budgets-shared"
+import { getBudgetStatusLabel } from "@/components/dashboard/budgets/budgets-shared"
 import { DashboardIconButton } from "@/components/dashboard/dashboard-icon-button"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
-import { Badge } from "@/components/ui/badge"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 import { formatCurrency, getBudgetTone } from "@/lib/money"
@@ -67,9 +63,9 @@ export function BudgetsTableRow({
         {formatCurrency(budget.remaining, currency)}
       </TableCell>
       <TableCell>
-        <Badge variant={getBudgetBadgeVariant(budget.status)}>
+        <span className={cn(getBudgetTone(budget.status))}>
           {getBudgetStatusLabel(budget.status)}
-        </Badge>
+        </span>
       </TableCell>
       <TableCell>
         <DashboardTableActions>

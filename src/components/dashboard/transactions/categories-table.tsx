@@ -4,9 +4,9 @@ import type { Id } from "../../../../convex/_generated/dataModel"
 import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { DashboardIconButton } from "@/components/dashboard/dashboard-icon-button"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
-import { Badge } from "@/components/ui/badge"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { useDataTable } from "@/hooks/use-data-table"
+import { cn } from "@/lib/utils"
 
 export type CategoryTableRow = {
   _id: Id<"categories">
@@ -84,23 +84,20 @@ export function CategoriesTable({
         <TableRow key={category._id}>
           <TableCell className="font-medium">{category.name}</TableCell>
           <TableCell>
-            <Badge
-              variant={category.kind === "income" ? "default" : "outline"}
-              className={
+            <span
+              className={cn(
                 category.kind === "income"
-                  ? "bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25"
-                  : "bg-rose-500/15 text-rose-300 hover:bg-rose-500/25"
-              }
+                  ? "text-emerald-400"
+                  : "text-rose-300"
+              )}
             >
               {category.kind === "income" ? "Income" : "Expense"}
-            </Badge>
+            </span>
           </TableCell>
           <TableCell>
-            {category.archived ? (
-              <Badge variant="outline">Archived</Badge>
-            ) : (
-              <Badge variant="default">Active</Badge>
-            )}
+            <span className={cn(category.archived && "text-muted-foreground")}>
+              {category.archived ? "Archived" : "Active"}
+            </span>
           </TableCell>
           <TableCell className="text-right">
             {category.transactionCount}

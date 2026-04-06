@@ -1,7 +1,7 @@
 import { buildBalanceMap } from "./balances"
 import type { Id } from "../_generated/dataModel"
 import type { AccountDoc, TransactionDoc } from "./types"
-import type { MappedTransaction } from "./read-models-transactions"
+import type { MappedTransaction } from "./read_models_transactions"
 
 export function buildAccountSummaries(
   accounts: Array<AccountDoc>,

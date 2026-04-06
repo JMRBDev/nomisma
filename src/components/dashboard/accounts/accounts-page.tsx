@@ -12,14 +12,14 @@ import { DashboardPageSection } from "@/components/dashboard/dashboard-page-sect
 import { Button } from "@/components/ui/button"
 import { useAccountsPageData } from "@/hooks/use-money-dashboard"
 import { useAccountCreator } from "@/hooks/use-account-creator"
+import { useAccountEditor } from "@/hooks/use-account-editor"
 import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog"
 
 export function AccountsPage() {
   const { data } = useAccountsPageData()
   const createAccount = useConvexMutation(api.accounts.createAccount)
-  const toggleAccountArchived = useConvexMutation(
-    api.accounts.toggleAccountArchived
-  )
+  const updateAccount = useConvexMutation(api.accounts.updateAccount)
+  const toggleArchived = useConvexMutation(api.accounts.toggleAccountArchived)
   const [pendingArchiveId, setPendingArchiveId] = useState<
     AccountRecord["_id"] | null
   >(null)
@@ -27,48 +27,45 @@ export function AccountsPage() {
     id: AccountRecord["_id"]
     archived: boolean
   } | null>(null)
-  const accountCreator = useAccountCreator({
-    onCreateAccount: async (payload) => {
-      await createAccount(payload)
-    },
+
+  const creator = useAccountCreator({
+    onCreateAccount: (p) => createAccount(p),
   })
-  const activeAccounts = data?.accounts.active ?? []
-  const archivedAccounts = data?.accounts.archived ?? []
+  const editor = useAccountEditor({
+    onUpdateAccount: (id, p) => updateAccount({ accountId: id, ...p }),
+    createFormValues: (a) => ({
+      name: a.name,
+      type: a.type,
+      openingBalance: a.openingBalance.toString(),
+      includeInTotals: a.includeInTotals,
+      color: a.color ?? "",
+      icon: a.icon ?? "",
+    }),
+  })
+
+  const active = data?.accounts.active ?? []
+  const archived = data?.accounts.archived ?? []
   const currency = data?.settings?.baseCurrency
   const totalBalance = useMemo(
-    () =>
-      activeAccounts.reduce(
-        (total, account) => total + account.currentBalance,
-        0
-      ),
-    [activeAccounts]
+    () => active.reduce((s, a) => s + a.currentBalance, 0),
+    [active]
   )
   const includedBalance = useMemo(
     () =>
-      activeAccounts.reduce(
-        (total, account) =>
-          account.includeInTotals ? total + account.currentBalance : total,
+      active.reduce(
+        (s, a) => (a.includeInTotals ? s + a.currentBalance : s),
         0
       ),
-    [activeAccounts]
+    [active]
   )
-  const excludedBalance = totalBalance - includedBalance
-  const excludedAccountsCount = activeAccounts.filter(
-    (account) => !account.includeInTotals
-  ).length
-  const hasAnyAccounts =
-    activeAccounts.length > 0 || archivedAccounts.length > 0
-  const handleArchiveRequest = (
-    accountId: AccountRecord["_id"],
-    archived: boolean
-  ) => {
-    setConfirmArchiveId({ id: accountId, archived })
-  }
+  const hasAny = active.length > 0 || archived.length > 0
+  const isLoading = !data
+
   const handleArchiveConfirm = async () => {
     if (!confirmArchiveId) return
     setPendingArchiveId(confirmArchiveId.id)
     try {
-      await toggleAccountArchived({
+      await toggleArchived({
         accountId: confirmArchiveId.id,
         archived: confirmArchiveId.archived,
       })
@@ -82,7 +79,6 @@ export function AccountsPage() {
       setPendingArchiveId(null)
     }
   }
-  const isLoading = !data
 
   return (
     <DashboardPageSection>
@@ -90,7 +86,7 @@ export function AccountsPage() {
         title="Accounts"
         action={
           <DashboardPageActions>
-            <Button onClick={accountCreator.openDialog} disabled={isLoading}>
+            <Button onClick={creator.openDialog} disabled={isLoading}>
               Add account
               <PlusIcon />
             </Button>
@@ -99,28 +95,39 @@ export function AccountsPage() {
       />
       <AccountsContent
         isLoading={isLoading}
-        activeAccounts={activeAccounts}
-        archivedAccounts={archivedAccounts}
+        activeAccounts={active}
+        archivedAccounts={archived}
         currency={currency}
         totalBalance={totalBalance}
         includedBalance={includedBalance}
-        excludedBalance={excludedBalance}
-        excludedAccountsCount={excludedAccountsCount}
-        hasAnyAccounts={hasAnyAccounts}
+        hasAnyAccounts={hasAny}
         pendingArchiveId={pendingArchiveId}
-        onAddAccount={accountCreator.openDialog}
-        onToggleArchived={handleArchiveRequest}
+        onAddAccount={creator.openDialog}
+        onEdit={(a) => editor.openEditDialog(a)}
+        onToggleArchived={(id, a) => setConfirmArchiveId({ id, archived: a })}
       />
       <AccountFormDialog
-        open={accountCreator.dialogOpen}
-        onOpenChange={accountCreator.handleDialogOpenChange}
-        onSubmit={accountCreator.handleSubmit}
-        values={accountCreator.values}
-        errors={accountCreator.errors}
-        formError={accountCreator.formError}
-        pending={accountCreator.pending}
-        onValueChange={accountCreator.handleValueChange}
-        onIncludeInTotalsChange={accountCreator.handleIncludeInTotalsChange}
+        open={creator.dialogOpen}
+        onOpenChange={creator.handleDialogOpenChange}
+        onSubmit={creator.handleSubmit}
+        values={creator.values}
+        errors={creator.errors}
+        formError={creator.formError}
+        pending={creator.pending}
+        onValueChange={creator.handleValueChange}
+        onIncludeInTotalsChange={creator.handleIncludeInTotalsChange}
+      />
+      <AccountFormDialog
+        open={editor.dialogOpen}
+        onOpenChange={editor.handleDialogOpenChange}
+        onSubmit={editor.handleSubmit}
+        values={editor.values}
+        errors={editor.errors}
+        formError={editor.formError}
+        pending={editor.pending}
+        editing
+        onValueChange={editor.handleValueChange}
+        onIncludeInTotalsChange={editor.handleIncludeInTotalsChange}
       />
       <DeleteConfirmDialog
         open={confirmArchiveId !== null}

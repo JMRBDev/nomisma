@@ -1,9 +1,9 @@
-import { buildMappedTransactions } from "./read-models-transactions"
+import { buildMappedTransactions } from "./read_models_transactions"
 import {
   buildAccountSummaries,
   groupAccountSummaries,
-} from "./read-models-accounts"
-import { groupCategories } from "./read-models-categories"
+} from "./read_models_accounts"
+import { groupCategories } from "./read_models_categories"
 import {
   getAccountsByUserId,
   getCategoriesByUserId,
@@ -13,8 +13,8 @@ import {
 } from "./queries"
 import type { QueryCtx } from "../_generated/server"
 
-export { createTransaction, updateTransaction } from "./transaction-mutations"
-export { deleteTransaction } from "./transaction-delete"
+export { createTransaction, updateTransaction } from "./transaction_mutations"
+export { deleteTransaction } from "./transaction_delete"
 
 export async function getTransactionsPageData(ctx: QueryCtx) {
   const user = await requireUser(ctx)

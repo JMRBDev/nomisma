@@ -1,18 +1,20 @@
 import { useMemo } from "react"
 import { PencilIcon, Trash2Icon } from "lucide-react"
 import type { TransactionRecord } from "@/components/dashboard/transactions/transactions-shared"
+import { AccountNameCell } from "@/components/dashboard/account-name-cell"
 import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { DashboardIconButton } from "@/components/dashboard/dashboard-icon-button"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { IncomeExpenseNetFooter } from "@/components/dashboard/income-expense-net-footer"
-import { Badge } from "@/components/ui/badge"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { useDataTable } from "@/hooks/use-data-table"
 import {
+  capitalizeFirstLetter,
   formatDateLabel,
   formatSignedAmount,
   getTransactionTone,
 } from "@/lib/money"
+import { cn } from "@/lib/utils"
 
 const SORT_ACCESSORS: Record<
   string,
@@ -22,12 +24,13 @@ const SORT_ACCESSORS: Record<
   description: (row) => row.description.toLowerCase(),
   accountName: (row) => row.accountName.toLowerCase(),
   categoryName: (row) => (row.categoryName ?? "Transfer").toLowerCase(),
+  type: (row) => row.type,
+  status: (row) => row.status,
   amount: (row) => {
     if (row.type === "income") return row.amount
     if (row.type === "expense") return -row.amount
     return 0
   },
-  status: (row) => `${row.type}-${row.status}`,
 }
 
 const COLUMNS = [
@@ -35,6 +38,7 @@ const COLUMNS = [
   { column: "description", header: "Description" },
   { column: "accountName", header: "Account" },
   { column: "categoryName", header: "Category" },
+  { column: "type", header: "Type" },
   { column: "status", header: "Status" },
   { column: "amount", header: "Amount", className: "text-right" },
   { header: "Actions", className: "text-right" },
@@ -75,43 +79,49 @@ export function TransactionsTable({
         <IncomeExpenseNetFooter
           aggregates={aggregates}
           currency={currency}
-          labelColSpan={5}
+          labelColSpan={6}
           trailingColSpan={2}
         />
       }
     >
       {table.data.map((transaction) => (
         <TableRow key={transaction._id}>
-          <TableCell>{formatDateLabel(transaction.date)}</TableCell>
           <TableCell>
-            <div className="space-y-1">
-              <p className="font-medium">{transaction.description}</p>
-              {transaction.note ? (
-                <p className="text-xs text-muted-foreground">
-                  {transaction.note}
-                </p>
-              ) : null}
-            </div>
+            <span className="text-muted-foreground">
+              {formatDateLabel(transaction.date)}
+            </span>
           </TableCell>
           <TableCell>
-            {transaction.accountName}
-            {transaction.toAccountName ? ` → ${transaction.toAccountName}` : ""}
+            <p
+              className="max-w-xs truncate font-medium"
+              title={transaction.description}
+            >
+              {transaction.description}
+            </p>
+          </TableCell>
+          <TableCell>
+            <AccountNameCell
+              name={transaction.accountName}
+              icon={transaction.accountIcon}
+              color={transaction.accountColor}
+            />
           </TableCell>
           <TableCell>{transaction.categoryName ?? "Transfer"}</TableCell>
           <TableCell>
-            <div className="flex gap-2">
-              <Badge variant="outline">{transaction.type}</Badge>
-              <Badge
-                variant={
-                  transaction.status === "posted" ? "default" : "outline"
-                }
-              >
-                {transaction.status}
-              </Badge>
-            </div>
+            <span className={cn(getTransactionTone(transaction.type))}>
+              {capitalizeFirstLetter(transaction.type)}
+            </span>
+          </TableCell>
+          <TableCell>
+            <span className="text-muted-foreground">
+              {capitalizeFirstLetter(transaction.status)}
+            </span>
           </TableCell>
           <TableCell
-            className={`text-right font-medium ${getTransactionTone(transaction.type)}`}
+            className={cn(
+              "text-right font-medium",
+              getTransactionTone(transaction.type)
+            )}
           >
             {formatSignedAmount(transaction.amount, currency, transaction.type)}
           </TableCell>

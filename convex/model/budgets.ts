@@ -1,7 +1,7 @@
 import { ConvexError } from "convex/values"
-import { buildMappedTransactions } from "./read-models-transactions"
-import { buildBudgetStatuses } from "./read-models-budgets"
-import { groupCategories } from "./read-models-categories"
+import { buildMappedTransactions } from "./read_models_transactions"
+import { buildBudgetStatuses } from "./read_models_budgets"
+import { groupCategories } from "./read_models_categories"
 import {
   getAccountsByUserId,
   getBudgetsByUserId,

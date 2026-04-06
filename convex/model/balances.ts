@@ -103,8 +103,12 @@ export function mapTransaction(
   return {
     ...transaction,
     accountName: account?.name ?? "Unknown account",
+    accountIcon: account?.icon ?? null,
+    accountColor: account?.color ?? null,
     categoryName: category?.name ?? null,
     toAccountName: toAccount?.name ?? null,
+    toAccountIcon: toAccount?.icon ?? null,
+    toAccountColor: toAccount?.color ?? null,
   }
 }
 

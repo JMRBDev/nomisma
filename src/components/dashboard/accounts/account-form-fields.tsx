@@ -24,6 +24,7 @@ export function AccountFormFields({
   errors,
   onValueChange,
   onIncludeInTotalsChange,
+  editing = false,
 }: {
   values: AccountFormValues
   errors: AccountFieldErrors
@@ -32,6 +33,7 @@ export function AccountFormFields({
     value: string
   ) => void
   onIncludeInTotalsChange: (checked: boolean) => void
+  editing?: boolean
 }) {
   return (
     <FieldGroup>
@@ -68,22 +70,24 @@ export function AccountFormFields({
           </NativeSelect>
         </Field>
 
-        <Field>
-          <FieldLabel htmlFor="account-opening-balance">
-            <FieldTitle>Opening balance</FieldTitle>
-          </FieldLabel>
-          <Input
-            id="account-opening-balance"
-            type="number"
-            min="0"
-            step="0.01"
-            value={values.openingBalance}
-            onChange={(event) =>
-              onValueChange("openingBalance", event.target.value)
-            }
-          />
-          <FormErrorMessage error={errors.openingBalance} />
-        </Field>
+        {!editing && (
+          <Field>
+            <FieldLabel htmlFor="account-opening-balance">
+              <FieldTitle>Opening balance</FieldTitle>
+            </FieldLabel>
+            <Input
+              id="account-opening-balance"
+              type="number"
+              min="0"
+              step="0.01"
+              value={values.openingBalance}
+              onChange={(event) =>
+                onValueChange("openingBalance", event.target.value)
+              }
+            />
+            <FormErrorMessage error={errors.openingBalance} />
+          </Field>
+        )}
 
         <Field>
           <FieldTitle>Color</FieldTitle>

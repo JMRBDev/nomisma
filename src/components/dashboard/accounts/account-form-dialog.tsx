@@ -14,6 +14,7 @@ export function AccountFormDialog({
   errors,
   formError,
   pending,
+  editing = false,
   onValueChange,
   onIncludeInTotalsChange,
 }: {
@@ -24,6 +25,7 @@ export function AccountFormDialog({
   errors: AccountFieldErrors
   formError: string
   pending: boolean
+  editing?: boolean
   onValueChange: (
     name: keyof Omit<AccountFormValues, "includeInTotals">,
     value: string
@@ -34,7 +36,7 @@ export function AccountFormDialog({
     <DashboardFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Add account"
+      title={editing ? "Edit account" : "Add account"}
       description="Set the starting balance and whether this account should count toward your headline dashboard totals."
     >
       <form className="space-y-4" onSubmit={onSubmit}>
@@ -43,12 +45,13 @@ export function AccountFormDialog({
           errors={errors}
           onValueChange={onValueChange}
           onIncludeInTotalsChange={onIncludeInTotalsChange}
+          editing={editing}
         />
 
         <DashboardFormActions
           pending={pending}
           formError={formError}
-          submitLabel="Save account"
+          submitLabel={editing ? "Save changes" : "Save account"}
           pendingLabel="Saving..."
         />
       </form>

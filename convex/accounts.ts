@@ -27,3 +27,15 @@ export const toggleAccountArchived = mutation({
   },
   handler: (ctx, args) => Accounts.toggleAccountArchived(ctx, args),
 })
+
+export const updateAccount = mutation({
+  args: {
+    accountId: v.id("accounts"),
+    name: v.string(),
+    type: accountTypeValidator,
+    includeInTotals: v.boolean(),
+    color: v.optional(v.string()),
+    icon: v.optional(v.string()),
+  },
+  handler: (ctx, args) => Accounts.updateAccount(ctx, args),
+})

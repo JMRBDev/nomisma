@@ -1,9 +1,9 @@
 import { ConvexError } from "convex/values"
-import { buildMappedTransactions } from "./read-models-transactions"
+import { buildMappedTransactions } from "./read_models_transactions"
 import {
   buildAccountSummaries,
   groupAccountSummaries,
-} from "./read-models-accounts"
+} from "./read_models_accounts"
 import {
   getAccountsByUserId,
   getCategoriesByUserId,
@@ -91,6 +91,34 @@ export async function toggleAccountArchived(
 
   await ctx.db.patch(account._id, {
     archived: args.archived,
+    updatedAt: Date.now(),
+  })
+}
+
+export async function updateAccount(
+  ctx: MutationCtx,
+  args: {
+    accountId: Parameters<typeof getOwnedAccount>[2]
+    name: string
+    type: "checking" | "savings" | "cash" | "wallet"
+    includeInTotals: boolean
+    color?: string
+    icon?: string
+  }
+) {
+  const user = await requireUser(ctx)
+  const account = await getOwnedAccount(ctx, user._id, args.accountId)
+
+  if (!args.name.trim()) {
+    throw new ConvexError("Account name is required.")
+  }
+
+  await ctx.db.patch(account._id, {
+    name: args.name.trim(),
+    type: args.type,
+    includeInTotals: args.includeInTotals,
+    color: args.color?.trim() || undefined,
+    icon: args.icon?.trim() || undefined,
     updatedAt: Date.now(),
   })
 }
