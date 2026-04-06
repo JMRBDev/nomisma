@@ -1,14 +1,7 @@
 import { format } from "date-fns"
+import { getCurrencyLocale } from "@/lib/currency"
 
 export const APP_NAME = "Clear Money"
-
-export const currencyOptions = [
-  { label: "US Dollar", value: "USD" },
-  { label: "Euro", value: "EUR" },
-  { label: "British Pound", value: "GBP" },
-  { label: "Mexican Peso", value: "MXN" },
-  { label: "Colombian Peso", value: "COP" },
-] as const
 
 export const accountTypeOptions = [
   { label: "Checking", value: "checking" },
@@ -40,19 +33,22 @@ export function formatCurrency(
   currency?: string | null,
   compact = false
 ) {
+  const locale = currency ? getCurrencyLocale(currency) : "en-US"
+  const notation = compact ? "compact" : "standard"
+
   if (!currency) {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat(locale, {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-      notation: compact ? "compact" : "standard",
+      notation,
     }).format(value)
   }
 
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency,
     maximumFractionDigits: 2,
-    notation: compact ? "compact" : "standard",
+    notation,
   }).format(value)
 }
 

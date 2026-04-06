@@ -1,3 +1,5 @@
+import { CURRENCY_OPTIONS } from "@/lib/currency"
+
 export type SettingsFormValues = {
   baseCurrency: string
   weekStartsOn: WeekStartsOnPreference
@@ -5,14 +7,7 @@ export type SettingsFormValues = {
 
 export type WeekStartsOnPreference = "sunday" | "monday"
 
-export const defaultCurrencyOptions = [
-  { value: "USD", label: "US Dollar (USD)" },
-  { value: "EUR", label: "Euro (EUR)" },
-  { value: "GBP", label: "British Pound (GBP)" },
-  { value: "CAD", label: "Canadian Dollar (CAD)" },
-  { value: "AUD", label: "Australian Dollar (AUD)" },
-  { value: "MXN", label: "Mexican Peso (MXN)" },
-]
+export const defaultCurrencyOptions = CURRENCY_OPTIONS
 
 export const weekStartsOnOptions = [
   { value: "sunday", label: "Sunday" },
