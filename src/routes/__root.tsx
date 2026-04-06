@@ -14,6 +14,7 @@ import { authClient } from "@/lib/auth-client"
 import { getToken } from "@/lib/auth-server"
 import { APP_NAME } from "@/lib/money"
 import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/sonner"
 
 import appCss from "@/styles/globals.css?url"
 
@@ -103,6 +104,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="bg-background text-foreground">
         <ThemeProvider>{children}</ThemeProvider>
+        <Toaster />
         <Scripts />
       </body>
     </html>

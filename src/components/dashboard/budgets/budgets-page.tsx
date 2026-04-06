@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { PlusIcon } from "lucide-react"
+import { toast } from "sonner"
 import { api } from "../../../../convex/_generated/api"
 import type { BudgetRecord } from "@/components/dashboard/budgets/budgets-shared"
 import { BudgetFormDialog } from "@/components/dashboard/budgets/budget-form-dialog"
@@ -21,12 +22,16 @@ import { Card, CardContent } from "@/components/ui/card"
 import { useFormDialog } from "@/hooks/use-form-dialog"
 import { useBudgetsPageData } from "@/hooks/use-money-dashboard"
 import { formatCurrency, formatMonthLabel } from "@/lib/money"
+import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog"
 
 export function BudgetsPage() {
   const { data } = useBudgetsPageData()
   const upsertBudget = useConvexMutation(api.budgets.upsertBudget)
   const deleteBudget = useConvexMutation(api.budgets.deleteBudget)
   const [pendingBudgetId, setPendingBudgetId] = useState<
+    BudgetRecord["_id"] | null
+  >(null)
+  const [pendingDeleteId, setPendingDeleteId] = useState<
     BudgetRecord["_id"] | null
   >(null)
 
@@ -59,14 +64,26 @@ export function BudgetsPage() {
     (budget) => budget.status === "near"
   ).length
 
-  const handleDelete = async (budgetId: BudgetRecord["_id"]) => {
-    setPendingBudgetId(budgetId)
+  const handleDeleteRequest = (budgetId: BudgetRecord["_id"]) => {
+    setPendingDeleteId(budgetId)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!pendingDeleteId) return
+
+    setPendingBudgetId(pendingDeleteId)
 
     try {
-      await deleteBudget({ budgetId })
-      if (dialog.editingEntity?._id === budgetId) {
+      await deleteBudget({ budgetId: pendingDeleteId })
+      if (dialog.editingEntity?._id === pendingDeleteId) {
         dialog.handleDialogOpenChange(false)
       }
+      setPendingDeleteId(null)
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Unable to delete the budget."
+      )
+      setPendingDeleteId(null)
     } finally {
       setPendingBudgetId(null)
     }
@@ -124,7 +141,7 @@ export function BudgetsPage() {
                 currency={currency}
                 pendingBudgetId={pendingBudgetId}
                 onEdit={dialog.openEditDialog}
-                onDelete={handleDelete}
+                onDelete={handleDeleteRequest}
               />
             </CardContent>
           </Card>
@@ -142,7 +159,7 @@ export function BudgetsPage() {
         onSubmit={dialog.handleSubmit}
         onDelete={
           dialog.editingEntity
-            ? () => handleDelete(dialog.editingEntity!._id)
+            ? () => handleDeleteRequest(dialog.editingEntity!._id)
             : undefined
         }
         editing={dialog.isEditing}
@@ -158,6 +175,17 @@ export function BudgetsPage() {
         }
         categoryOptions={categoryOptions}
         onValueChange={dialog.handleValueChange}
+      />
+
+      <DeleteConfirmDialog
+        open={pendingDeleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingDeleteId(null)
+        }}
+        title="Delete this budget?"
+        description="This action cannot be undone. The budget will be permanently removed."
+        onConfirm={handleDeleteConfirm}
+        pending={pendingBudgetId !== null}
       />
     </DashboardPageSection>
   )

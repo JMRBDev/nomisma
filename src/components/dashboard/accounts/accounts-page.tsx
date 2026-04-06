@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { PlusIcon } from "lucide-react"
+import { toast } from "sonner"
 import { api } from "../../../../convex/_generated/api"
 import type { AccountRecord } from "@/components/dashboard/accounts/accounts-shared"
 import { AccountFormDialog } from "@/components/dashboard/accounts/account-form-dialog"
@@ -15,6 +16,7 @@ import { Button } from "@/components/ui/button"
 import { useAccountsPageData } from "@/hooks/use-money-dashboard"
 import { useAccountCreator } from "@/hooks/use-account-creator"
 import { formatCurrency } from "@/lib/money"
+import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog"
 
 export function AccountsPage() {
   const { data } = useAccountsPageData()
@@ -25,6 +27,10 @@ export function AccountsPage() {
   const [pendingArchiveId, setPendingArchiveId] = useState<
     AccountRecord["_id"] | null
   >(null)
+  const [confirmArchiveId, setConfirmArchiveId] = useState<{
+    id: AccountRecord["_id"]
+    archived: boolean
+  } | null>(null)
 
   const accountCreator = useAccountCreator({
     onCreateAccount: (payload) => createAccount(payload),
@@ -57,17 +63,29 @@ export function AccountsPage() {
   const hasAnyAccounts =
     activeAccounts.length > 0 || archivedAccounts.length > 0
 
-  const handleToggleArchived = async (
+  const handleArchiveRequest = (
     accountId: AccountRecord["_id"],
     archived: boolean
   ) => {
-    setPendingArchiveId(accountId)
+    setConfirmArchiveId({ id: accountId, archived })
+  }
+
+  const handleArchiveConfirm = async () => {
+    if (!confirmArchiveId) return
+
+    setPendingArchiveId(confirmArchiveId.id)
 
     try {
       await toggleAccountArchived({
-        accountId,
-        archived,
+        accountId: confirmArchiveId.id,
+        archived: confirmArchiveId.archived,
       })
+      setConfirmArchiveId(null)
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Unable to update the account."
+      )
+      setConfirmArchiveId(null)
     } finally {
       setPendingArchiveId(null)
     }
@@ -123,7 +141,7 @@ export function AccountsPage() {
                   currency={currency}
                   archived={false}
                   pendingAccountId={pendingArchiveId}
-                  onToggleArchived={handleToggleArchived}
+                  onToggleArchived={handleArchiveRequest}
                 />
               </CardContent>
             </Card>
@@ -146,7 +164,7 @@ export function AccountsPage() {
                   currency={currency}
                   archived
                   pendingAccountId={pendingArchiveId}
-                  onToggleArchived={handleToggleArchived}
+                  onToggleArchived={handleArchiveRequest}
                 />
               </CardContent>
             </Card>
@@ -169,6 +187,26 @@ export function AccountsPage() {
         pending={accountCreator.pending}
         onValueChange={accountCreator.handleValueChange}
         onIncludeInTotalsChange={accountCreator.handleIncludeInTotalsChange}
+      />
+
+      <DeleteConfirmDialog
+        open={confirmArchiveId !== null}
+        onOpenChange={(open) => {
+          if (!open) setConfirmArchiveId(null)
+        }}
+        title={
+          confirmArchiveId?.archived
+            ? "Archive this account?"
+            : "Restore this account?"
+        }
+        description={
+          confirmArchiveId?.archived
+            ? "Archived accounts are hidden from the dashboard. You can restore them at any time."
+            : "This account will be added back to your active accounts and included in totals."
+        }
+        confirmLabel={confirmArchiveId?.archived ? "Archive" : "Restore"}
+        onConfirm={handleArchiveConfirm}
+        pending={pendingArchiveId !== null}
       />
     </DashboardPageSection>
   )

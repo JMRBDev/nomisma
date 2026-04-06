@@ -157,8 +157,20 @@ export function useTransactionEditor({
     }
   }
 
-  const deleteTransaction = (transactionId: TransactionRecord["_id"]) => {
-    void onDeleteTransaction(transactionId)
+  const deleteTransaction = async (transactionId: TransactionRecord["_id"]) => {
+    setPending(true)
+
+    try {
+      await onDeleteTransaction(transactionId)
+    } catch (mutationError) {
+      setFormError(
+        mutationError instanceof Error
+          ? mutationError.message
+          : "Unable to delete the transaction."
+      )
+    } finally {
+      setPending(false)
+    }
   }
 
   return {

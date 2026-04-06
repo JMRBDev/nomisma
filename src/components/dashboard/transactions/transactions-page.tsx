@@ -2,8 +2,12 @@ import { useMemo, useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { getRouteApi, useNavigate } from "@tanstack/react-router"
 import { PlusIcon, ReceiptTextIcon, TagIcon } from "lucide-react"
+import { toast } from "sonner"
 import { api } from "../../../../convex/_generated/api"
-import type { TransactionFilterValues } from "@/components/dashboard/transactions/transactions-shared"
+import type {
+  TransactionFilterValues,
+  TransactionRecord,
+} from "@/components/dashboard/transactions/transactions-shared"
 import type { CategoryTableRow } from "@/components/dashboard/transactions/categories-table"
 import { DashboardFilterButton } from "@/components/dashboard/dashboard-filter-button"
 import { DashboardPageActions } from "@/components/dashboard/dashboard-page-actions"
@@ -33,6 +37,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CategoriesTable } from "@/components/dashboard/transactions/categories-table"
 import { CategoryFormDialog } from "@/components/dashboard/transactions/category-form-dialog"
 import { useCategoryManager } from "@/hooks/use-category-manager"
+import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog"
 
 const dashboardRouteApi = getRouteApi("/_authenticated/dashboard")
 
@@ -60,6 +65,9 @@ export function TransactionsPage() {
   const [filters, setFilters] = useState<TransactionFilterValues>(
     DEFAULT_FILTER_VALUES
   )
+  const [pendingDeleteId, setPendingDeleteId] = useState<
+    TransactionRecord["_id"] | null
+  >(null)
   const accountOptions = data?.accounts.active ?? []
   const allCategoryOptions = data?.categories.all ?? []
   const incomeCategoryOptions = data?.categories.activeIncome ?? []
@@ -78,6 +86,26 @@ export function TransactionsPage() {
     onDeleteTransaction: (transactionId) =>
       deleteTransaction({ transactionId }),
   })
+
+  const handleDeleteRequest = (transactionId: TransactionRecord["_id"]) => {
+    setPendingDeleteId(transactionId)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!pendingDeleteId) return
+
+    try {
+      await deleteTransaction({ transactionId: pendingDeleteId })
+      setPendingDeleteId(null)
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Unable to delete the transaction."
+      )
+      setPendingDeleteId(null)
+    }
+  }
 
   const { dialog: categoryDialog, toggleCategoryArchived } =
     useCategoryManager()
@@ -221,7 +249,7 @@ export function TransactionsPage() {
                 transactions={filteredTransactions}
                 currency={data.settings?.baseCurrency}
                 onEdit={transactionEditor.openEditDialog}
-                onDelete={transactionEditor.deleteTransaction}
+                onDelete={handleDeleteRequest}
               />
             )}
           </CardContent>
@@ -307,6 +335,17 @@ export function TransactionsPage() {
         pending={categoryDialog.pending}
         isEditing={categoryDialog.isEditing}
         onValueChange={categoryDialog.handleValueChange}
+      />
+
+      <DeleteConfirmDialog
+        open={pendingDeleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingDeleteId(null)
+        }}
+        title="Delete this transaction?"
+        description="This action cannot be undone. The transaction will be permanently removed."
+        onConfirm={handleDeleteConfirm}
+        pending={transactionEditor.pending}
       />
     </DashboardPageSection>
   )
