@@ -1,4 +1,4 @@
-import { Cell, Pie, PieChart } from "recharts"
+import { Pie, PieChart } from "recharts"
 import { PieChartIcon } from "lucide-react"
 import { CATEGORY_COLORS } from "./overview-chart-config"
 import type { ChartConfig } from "@/components/ui/chart"
@@ -62,11 +62,7 @@ export function OverviewCategoryBreakdownChart({
           innerRadius={55}
           outerRadius={85}
           paddingAngle={2}
-        >
-          {chartData.map((entry) => (
-            <Cell key={entry.categoryName} fill={entry.fill} />
-          ))}
-        </Pie>
+        />
       </PieChart>
     </ChartContainer>
   )
