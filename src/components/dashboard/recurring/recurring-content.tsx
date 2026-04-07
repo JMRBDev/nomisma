@@ -1,7 +1,7 @@
 import { FunnelIcon, ShapesIcon, WalletCardsIcon } from "lucide-react"
 import type { RecurringRecord } from "@/components/dashboard/recurring/recurring-shared"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
-import { GuidedEmptyState } from "@/components/guided-empty-state"
+import { PrerequisiteEmptyState } from "@/components/prerequisite-empty-state"
 import { RecurringEmptyState } from "@/components/dashboard/recurring/recurring-empty-state"
 import { RecurringSummaryCards } from "@/components/dashboard/recurring/recurring-summary-cards"
 import { RecurringTable } from "@/components/dashboard/recurring/recurring-table"
@@ -99,24 +99,24 @@ export function RecurringContent({
 
   if (!hasAccounts) {
     return (
-      <GuidedEmptyState
+      <PrerequisiteEmptyState
+        icon={<WalletCardsIcon className="size-5" />}
         title="Add an account before scheduling recurring items"
         description="Recurring bills and paychecks need an account so every future money movement points somewhere real."
         ctaLabel="Create an account"
         ctaTo="/dashboard/accounts"
-        icon={<WalletCardsIcon className="size-5" />}
       />
     )
   }
 
   if (!hasCategoryOptions) {
     return (
-      <GuidedEmptyState
+      <PrerequisiteEmptyState
+        icon={<ShapesIcon className="size-5" />}
         title="Create a category before adding recurring items"
         description="Recurring rules need income or expense categories so upcoming paychecks and bills stay organized when you confirm them."
         ctaLabel="Manage categories"
         ctaTo="/dashboard/settings"
-        icon={<ShapesIcon className="size-5" />}
       />
     )
   }

@@ -6,7 +6,6 @@ import {
   ReceiptTextIcon,
 } from "lucide-react"
 import { OverviewAlerts } from "@/components/dashboard/overview/overview-alerts"
-import { OverviewChecklist } from "@/components/dashboard/overview/overview-checklist"
 import { OverviewChartsRow } from "@/components/dashboard/overview/overview-charts-row"
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
 import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
@@ -114,19 +113,6 @@ export function OverviewPage() {
                 />
               ))}
           </OverviewPanelCard>
-          {!isLoading &&
-          data.onboarding.completedCount < data.onboarding.totalCount ? (
-            <OverviewPanelCard
-              title="Setup checklist"
-              description={`${data.onboarding.completedCount} of ${data.onboarding.totalCount} setup steps completed.`}
-            >
-              <OverviewChecklist
-                completedCount={data.onboarding.completedCount}
-                totalCount={data.onboarding.totalCount}
-                steps={data.onboarding.steps}
-              />
-            </OverviewPanelCard>
-          ) : null}
         </div>
       </div>
       <OverviewMiddleRow

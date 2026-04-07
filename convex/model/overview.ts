@@ -5,7 +5,6 @@ import {
 } from "./overview_spending"
 import { buildIncomeExpensesComparison } from "./overview_comparison"
 import { buildOverviewAlerts } from "./overview_alerts"
-import { buildOnboarding } from "./overview_onboarding"
 import { fetchOverviewData } from "./overview_data"
 import { inRange } from "./dates"
 import type { QueryCtx } from "../_generated/server"
@@ -63,13 +62,5 @@ export async function getOverviewData(
         d.selectedDateRange
       ),
     },
-    onboarding: buildOnboarding({
-      hasSettings: Boolean(d.settingsDoc),
-      accountCount: d.accountSummaries.length,
-      transactionCount: d.dashboardTransactions.length,
-      categoryCount: d.categories.length,
-      budgetCount: d.budgetsView.items.length,
-      recurringCount: d.recurring.all.length,
-    }),
   }
 }

@@ -22,7 +22,6 @@ import type * as model_overview from "../model/overview.js";
 import type * as model_overview_alerts from "../model/overview_alerts.js";
 import type * as model_overview_comparison from "../model/overview_comparison.js";
 import type * as model_overview_data from "../model/overview_data.js";
-import type * as model_overview_onboarding from "../model/overview_onboarding.js";
 import type * as model_overview_spending from "../model/overview_spending.js";
 import type * as model_queries from "../model/queries.js";
 import type * as model_readModels from "../model/readModels.js";
@@ -66,7 +65,6 @@ declare const fullApi: ApiFromModules<{
   "model/overview_alerts": typeof model_overview_alerts;
   "model/overview_comparison": typeof model_overview_comparison;
   "model/overview_data": typeof model_overview_data;
-  "model/overview_onboarding": typeof model_overview_onboarding;
   "model/overview_spending": typeof model_overview_spending;
   "model/queries": typeof model_queries;
   "model/readModels": typeof model_readModels;

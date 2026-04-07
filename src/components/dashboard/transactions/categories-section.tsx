@@ -7,7 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { CategoriesTable } from "@/components/dashboard/transactions/categories-table"
 import { CategoryFormDialog } from "@/components/dashboard/transactions/category-form-dialog"
-import { GuidedEmptyState } from "@/components/guided-empty-state"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
 import { useCategoryManager } from "@/hooks/use-category-manager"
 
 type PageData = NonNullable<ReturnType<typeof useTransactionsPageData>["data"]>
@@ -64,17 +71,24 @@ export function CategoriesSection({
               <Skeleton className="h-10 w-full" />
             </div>
           ) : categoryRows.length === 0 ? (
-            <GuidedEmptyState
-              title="Add your first category"
-              description="Create income and expense categories to organize your transactions and budgets."
-              icon={<TagIcon className="size-5" />}
-              action={
+            <Empty className="border-border/60 bg-card/70">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <TagIcon className="size-5" />
+                </EmptyMedia>
+                <EmptyTitle>Add your first category</EmptyTitle>
+                <EmptyDescription>
+                  Create income and expense categories to organize your
+                  transactions and budgets.
+                </EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
                 <Button onClick={categoryDialog.openCreateDialog}>
                   Add category
                   <PlusIcon />
                 </Button>
-              }
-            />
+              </EmptyContent>
+            </Empty>
           ) : (
             <CategoriesTable
               categories={categoryRows}

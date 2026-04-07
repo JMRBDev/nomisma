@@ -11,4 +11,3 @@ export type OverviewRecentTransactionRecord =
   OverviewData["overview"]["recentTransactions"][number]
 export type OverviewUpcomingRecurringRecord =
   OverviewData["overview"]["upcomingRecurring"][number]
-export type OverviewOnboardingStep = OverviewData["onboarding"]["steps"][number]

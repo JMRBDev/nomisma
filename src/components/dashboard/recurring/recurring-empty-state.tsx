@@ -1,5 +1,12 @@
 import { PlusIcon, RepeatIcon } from "lucide-react"
-import { GuidedEmptyState } from "@/components/guided-empty-state"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
 import { Button } from "@/components/ui/button"
 
 export function RecurringEmptyState({
@@ -8,16 +15,23 @@ export function RecurringEmptyState({
   onAddRecurring: () => void
 }) {
   return (
-    <GuidedEmptyState
-      title="No recurring items yet"
-      description="Add your regular bills or expected income so upcoming money movements stay visible before they hit your account history."
-      icon={<RepeatIcon className="size-5" />}
-      action={
+    <Empty className="border-border/60 bg-card/70">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <RepeatIcon className="size-5" />
+        </EmptyMedia>
+        <EmptyTitle>No recurring items yet</EmptyTitle>
+        <EmptyDescription>
+          Add your regular bills or expected income so upcoming money movements
+          stay visible before they hit your account history.
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
         <Button onClick={onAddRecurring}>
           Add recurring item
           <PlusIcon />
         </Button>
-      }
-    />
+      </EmptyContent>
+    </Empty>
   )
 }

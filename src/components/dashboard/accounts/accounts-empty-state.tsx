@@ -1,7 +1,14 @@
 import { WalletCardsIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
-import { GuidedEmptyState } from "@/components/guided-empty-state"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
 
 export function AccountsEmptyState({
   hasArchivedAccounts,
@@ -26,11 +33,20 @@ export function AccountsEmptyState({
   }
 
   return (
-    <GuidedEmptyState
-      title="Add your first account"
-      description="Create the cash, bank, or wallet accounts you use so balances and transaction history have a real home."
-      icon={<WalletCardsIcon className="size-5" />}
-      action={<Button onClick={onAddAccount}>Add account</Button>}
-    />
+    <Empty className="border-border/60 bg-card/70">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <WalletCardsIcon className="size-5" />
+        </EmptyMedia>
+        <EmptyTitle>Add your first account</EmptyTitle>
+        <EmptyDescription>
+          Create the cash, bank, or wallet accounts you use so balances and
+          transaction history have a real home.
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button onClick={onAddAccount}>Add account</Button>
+      </EmptyContent>
+    </Empty>
   )
 }

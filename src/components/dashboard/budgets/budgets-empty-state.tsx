@@ -1,5 +1,12 @@
 import { PiggyBankIcon, PlusIcon } from "lucide-react"
-import { GuidedEmptyState } from "@/components/guided-empty-state"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
 import { Button } from "@/components/ui/button"
 
 export function BudgetsEmptyState({
@@ -10,16 +17,23 @@ export function BudgetsEmptyState({
   onAddBudget: () => void
 }) {
   return (
-    <GuidedEmptyState
-      title="No budgets for this month yet"
-      description={`Set a limit for ${monthLabel} to keep total spending or a specific category in view before the month gets away from you.`}
-      icon={<PiggyBankIcon className="size-5" />}
-      action={
+    <Empty className="border-border/60 bg-card/70">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <PiggyBankIcon className="size-5" />
+        </EmptyMedia>
+        <EmptyTitle>No budgets for this month yet</EmptyTitle>
+        <EmptyDescription>
+          Set a limit for {monthLabel} to keep total spending or a specific
+          category in view before the month gets away from you.
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
         <Button onClick={onAddBudget}>
           Add budget
           <PlusIcon />
         </Button>
-      }
-    />
+      </EmptyContent>
+    </Empty>
   )
 }

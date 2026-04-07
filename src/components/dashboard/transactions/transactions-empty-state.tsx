@@ -1,6 +1,13 @@
 import { PlusIcon, ReceiptTextIcon } from "lucide-react"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
-import { GuidedEmptyState } from "@/components/guided-empty-state"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
 import { Button } from "@/components/ui/button"
 
 export function TransactionsEmptyState({
@@ -34,16 +41,20 @@ export function TransactionsEmptyState({
   }
 
   return (
-    <GuidedEmptyState
-      title={title}
-      description={description}
-      icon={<ReceiptTextIcon className="size-5" />}
-      action={
+    <Empty className="border-border/60 bg-card/70">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <ReceiptTextIcon className="size-5" />
+        </EmptyMedia>
+        <EmptyTitle>{title}</EmptyTitle>
+        <EmptyDescription>{description}</EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
         <Button onClick={onAddTransaction}>
           {actionLabel}
           <PlusIcon />
         </Button>
-      }
-    />
+      </EmptyContent>
+    </Empty>
   )
 }

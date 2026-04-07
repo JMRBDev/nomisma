@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
-import { GuidedEmptyState } from "@/components/guided-empty-state"
+import { PrerequisiteEmptyState } from "@/components/prerequisite-empty-state"
 import { TransactionsEmptyState } from "@/components/dashboard/transactions/transactions-empty-state"
 import { TransactionsTable } from "@/components/dashboard/transactions/transactions-table"
 
@@ -61,12 +61,12 @@ export function TransactionsContent({
 
   if (accountOptions.length === 0) {
     return (
-      <GuidedEmptyState
+      <PrerequisiteEmptyState
+        icon={<ReceiptTextIcon className="size-5" />}
         title="Add an account before recording transactions"
         description="Transactions need an account because every movement starts from somewhere real."
         ctaLabel="Create an account"
         ctaTo="/dashboard/accounts"
-        icon={<ReceiptTextIcon className="size-5" />}
       />
     )
   }

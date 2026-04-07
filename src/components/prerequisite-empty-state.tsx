@@ -11,20 +11,18 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 
-export function GuidedEmptyState({
+export function PrerequisiteEmptyState({
+  icon,
   title,
   description,
   ctaLabel,
   ctaTo,
-  icon,
-  action,
 }: {
+  icon: ReactNode
   title: string
   description: string
-  ctaLabel?: string
-  ctaTo?: string
-  icon: ReactNode
-  action?: ReactNode
+  ctaLabel: string
+  ctaTo: string
 }) {
   return (
     <Empty className="border-border/60 bg-card/70">
@@ -34,15 +32,12 @@ export function GuidedEmptyState({
         <EmptyDescription>{description}</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        {action ??
-          (ctaLabel && ctaTo ? (
-            <Button asChild>
-              <Link to={ctaTo} search={(previous) => previous}>
-                {ctaLabel}
-                <ArrowRightIcon />
-              </Link>
-            </Button>
-          ) : null)}
+        <Button asChild>
+          <Link to={ctaTo} search={(previous) => previous}>
+            {ctaLabel}
+            <ArrowRightIcon />
+          </Link>
+        </Button>
       </EmptyContent>
     </Empty>
   )
