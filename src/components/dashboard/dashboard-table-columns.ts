@@ -96,28 +96,30 @@ export function readStoredVisibleColumnIds(
   }
 
   try {
-    const parsed = JSON.parse(value)
+    const parsed: unknown = JSON.parse(value)
 
-    if (
-      parsed &&
-      typeof parsed === "object" &&
-      Array.isArray(parsed.hiddenColumnIds)
-    ) {
-      return {
-        visibleColumnIds: getVisibleColumnIdsFromHidden(
-          columns,
-          parsed.hiddenColumnIds.filter(
-            (item): item is string => typeof item === "string"
-          )
-        ),
-        migratedValue: null,
+    if (parsed && typeof parsed === "object") {
+      const parsedObject = parsed as { hiddenColumnIds?: unknown }
+
+      if (Array.isArray(parsedObject.hiddenColumnIds)) {
+        return {
+          visibleColumnIds: getVisibleColumnIdsFromHidden(
+            columns,
+            parsedObject.hiddenColumnIds.filter(
+              (item: unknown): item is string => typeof item === "string"
+            )
+          ),
+          migratedValue: null,
+        }
       }
     }
 
     if (Array.isArray(parsed)) {
       const visibleColumnIds = sanitizeVisibleColumnIds(
         columns,
-        parsed.filter((item): item is string => typeof item === "string")
+        parsed.filter(
+          (item: unknown): item is string => typeof item === "string"
+        )
       )
 
       return {
