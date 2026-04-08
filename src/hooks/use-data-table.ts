@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react"
 import type { DashboardTableColumn } from "@/components/dashboard/dashboard-table-columns"
 import { useDataTableColumnVisibility } from "@/hooks/use-data-table-column-visibility"
+import { useMountEffect } from "@/hooks/use-mount-effect"
 import { useDataTableSort } from "@/hooks/use-data-table-sort"
 
 export type SortState = {
@@ -16,6 +17,28 @@ export type DataTableOptions<T> = {
   defaultSort?: SortState
   defaultPageSize?: number
   pageSizeOptions?: Array<number>
+}
+
+function getPageSizeStorageKey(storageKey?: string) {
+  return storageKey ? `${storageKey}:page-size` : undefined
+}
+
+function parseStoredPageSize(
+  value: string | null,
+  pageSizeOptions: Array<number>,
+  defaultPageSize: number
+) {
+  if (!value) {
+    return defaultPageSize
+  }
+
+  const parsed = Number(value)
+
+  if (!Number.isInteger(parsed) || !pageSizeOptions.includes(parsed)) {
+    return defaultPageSize
+  }
+
+  return parsed
 }
 
 export function useDataTable<T>({
@@ -59,13 +82,35 @@ export function useDataTable<T>({
   }, [currentPage, pageSize, sortedData])
 
   const handlePageSizeChange = useCallback((size: number) => {
+    const pageSizeStorageKey = getPageSizeStorageKey(columnVisibilityStorageKey)
+
+    if (typeof window !== "undefined" && pageSizeStorageKey) {
+      window.localStorage.setItem(pageSizeStorageKey, String(size))
+    }
+
     setPageSize(size)
     setPage(1)
-  }, [])
+  }, [columnVisibilityStorageKey])
 
   const handlePageChange = useCallback((nextPage: number) => {
     setPage(Math.max(1, nextPage))
   }, [])
+
+  useMountEffect(() => {
+    const pageSizeStorageKey = getPageSizeStorageKey(columnVisibilityStorageKey)
+
+    if (typeof window === "undefined" || !pageSizeStorageKey) {
+      return
+    }
+
+    setPageSize(
+      parseStoredPageSize(
+        window.localStorage.getItem(pageSizeStorageKey),
+        pageSizeOptions,
+        defaultPageSize
+      )
+    )
+  })
 
   return {
     data: paginatedData,
