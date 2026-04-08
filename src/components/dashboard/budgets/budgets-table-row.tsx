@@ -1,7 +1,6 @@
 import { PencilIcon, Trash2Icon } from "lucide-react"
 import type { BudgetRecord } from "@/components/dashboard/budgets/budgets-shared"
 import { getBudgetStatusLabel } from "@/components/dashboard/budgets/budgets-shared"
-import { DashboardIconButton } from "@/components/dashboard/dashboard-icon-button"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
@@ -81,22 +80,25 @@ export function BudgetsTableRow({
       )}
       {isColumnVisible("actions") && (
         <TableCell>
-          <DashboardTableActions>
-            <DashboardIconButton
-              onClick={() => onEdit(budget)}
-              aria-label="Edit budget"
-              disabled={pending}
-            >
-              <PencilIcon />
-            </DashboardIconButton>
-            <DashboardIconButton
-              onClick={() => onDelete(budget._id)}
-              aria-label="Delete budget"
-              disabled={pending}
-            >
-              <Trash2Icon />
-            </DashboardIconButton>
-          </DashboardTableActions>
+          <DashboardTableActions
+            actions={[
+              {
+                id: "edit",
+                label: "Edit",
+                icon: PencilIcon,
+                disabled: pending,
+                onSelect: () => onEdit(budget),
+              },
+              {
+                id: "delete",
+                label: "Delete",
+                icon: Trash2Icon,
+                disabled: pending,
+                variant: "destructive",
+                onSelect: () => onDelete(budget._id),
+              },
+            ]}
+          />
         </TableCell>
       )}
     </TableRow>

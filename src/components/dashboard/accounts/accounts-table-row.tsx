@@ -8,7 +8,6 @@ import {
 import type { AccountRecord } from "@/components/dashboard/accounts/accounts-shared"
 import { getAccountTypeLabel } from "@/components/dashboard/accounts/accounts-shared"
 import { AccountIconAvatar } from "@/components/dashboard/account-icon-avatar"
-import { DashboardIconButton } from "@/components/dashboard/dashboard-icon-button"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { formatCurrency } from "@/lib/money"
@@ -64,21 +63,23 @@ export function AccountsTableRow({
       )}
       {isColumnVisible("actions") && (
         <TableCell>
-          <DashboardTableActions>
-            <DashboardIconButton
-              onClick={() => onEdit(account)}
-              aria-label="Edit account"
-            >
-              <PencilIcon />
-            </DashboardIconButton>
-            <DashboardIconButton
-              onClick={() => onToggleArchived(account._id, !archived)}
-              disabled={pendingAccountId === account._id}
-              aria-label={archived ? "Restore account" : "Archive account"}
-            >
-              {archived ? <ArchiveRestoreIcon /> : <ArchiveIcon />}
-            </DashboardIconButton>
-          </DashboardTableActions>
+          <DashboardTableActions
+            actions={[
+              {
+                id: "edit",
+                label: "Edit",
+                icon: PencilIcon,
+                onSelect: () => onEdit(account),
+              },
+              {
+                id: "toggle-archived",
+                label: archived ? "Restore" : "Archive",
+                icon: archived ? ArchiveRestoreIcon : ArchiveIcon,
+                disabled: pendingAccountId === account._id,
+                onSelect: () => onToggleArchived(account._id, !archived),
+              },
+            ]}
+          />
         </TableCell>
       )}
     </TableRow>

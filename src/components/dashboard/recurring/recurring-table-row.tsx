@@ -1,6 +1,5 @@
 import {
   CheckCircle2Icon,
-  EllipsisIcon,
   PencilIcon,
   PowerIcon,
   PowerOffIcon,
@@ -11,13 +10,7 @@ import {
   getRecurringStatusLabel,
 } from "@/components/dashboard/recurring/recurring-shared"
 import { AccountNameCell } from "@/components/dashboard/account-name-cell"
-import { DashboardIconButton } from "@/components/dashboard/dashboard-icon-button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { TableCell, TableRow } from "@/components/ui/table"
 import {
   capitalizeFirstLetter,
@@ -98,34 +91,33 @@ export function RecurringTableRow({
       )}
       {isColumnVisible("actions") && (
         <TableCell>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <DashboardIconButton aria-label="Actions">
-                <EllipsisIcon />
-              </DashboardIconButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onEdit(item)}>
-                <PencilIcon />
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => onToggle(item._id, !item.active)}
-              >
-                {item.active ? <PowerOffIcon /> : <PowerIcon />}
-                {item.active ? "Deactivate" : "Activate"}
-              </DropdownMenuItem>
-              {canConfirm && (
-                <DropdownMenuItem
-                  onClick={() => onConfirm(item._id)}
-                  disabled={pending}
-                >
-                  <CheckCircle2Icon />
-                  {pending ? "Saving..." : "Confirm"}
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <DashboardTableActions
+            actions={[
+              {
+                id: "edit",
+                label: "Edit",
+                icon: PencilIcon,
+                onSelect: () => onEdit(item),
+              },
+              {
+                id: "toggle",
+                label: item.active ? "Deactivate" : "Activate",
+                icon: item.active ? PowerOffIcon : PowerIcon,
+                onSelect: () => onToggle(item._id, !item.active),
+              },
+              ...(canConfirm
+                ? [
+                    {
+                      id: "confirm",
+                      label: pending ? "Saving..." : "Confirm",
+                      icon: CheckCircle2Icon,
+                      disabled: pending,
+                      onSelect: () => onConfirm(item._id),
+                    },
+                  ]
+                : []),
+            ]}
+          />
         </TableCell>
       )}
     </TableRow>

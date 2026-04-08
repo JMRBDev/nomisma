@@ -3,7 +3,6 @@ import { ArchiveIcon, ArchiveRestoreIcon, PencilIcon } from "lucide-react"
 import type { Id } from "../../../../convex/_generated/dataModel"
 import type { DashboardTableColumn } from "@/components/dashboard/dashboard-table-columns"
 import { DashboardTable } from "@/components/dashboard/dashboard-table"
-import { DashboardIconButton } from "@/components/dashboard/dashboard-icon-button"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { useDataTable } from "@/hooks/use-data-table"
@@ -127,24 +126,23 @@ export function CategoriesTable({
           )}
           {table.isColumnVisible("actions") && (
             <TableCell>
-              <DashboardTableActions>
-                <DashboardIconButton
-                  onClick={() => onEdit(category)}
-                  aria-label="Edit category"
-                >
-                  <PencilIcon />
-                </DashboardIconButton>
-                <DashboardIconButton
-                  onClick={() =>
-                    onToggleArchived(category._id, !category.archived)
-                  }
-                  aria-label={
-                    category.archived ? "Restore category" : "Archive category"
-                  }
-                >
-                  {category.archived ? <ArchiveRestoreIcon /> : <ArchiveIcon />}
-                </DashboardIconButton>
-              </DashboardTableActions>
+              <DashboardTableActions
+                actions={[
+                  {
+                    id: "edit",
+                    label: "Edit",
+                    icon: PencilIcon,
+                    onSelect: () => onEdit(category),
+                  },
+                  {
+                    id: "toggle-archived",
+                    label: category.archived ? "Restore" : "Archive",
+                    icon: category.archived ? ArchiveRestoreIcon : ArchiveIcon,
+                    onSelect: () =>
+                      onToggleArchived(category._id, !category.archived),
+                  },
+                ]}
+              />
             </TableCell>
           )}
         </TableRow>

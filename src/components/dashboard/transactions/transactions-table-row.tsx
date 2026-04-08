@@ -1,7 +1,6 @@
 import { PencilIcon, Trash2Icon } from "lucide-react"
 import type { TransactionRecord } from "@/components/dashboard/transactions/transactions-shared"
 import { AccountNameCell } from "@/components/dashboard/account-name-cell"
-import { DashboardIconButton } from "@/components/dashboard/dashboard-icon-button"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { TableCell, TableRow } from "@/components/ui/table"
 import {
@@ -82,20 +81,23 @@ export function TransactionsTableRow({
       )}
       {isColumnVisible("actions") && (
         <TableCell>
-          <DashboardTableActions>
-            <DashboardIconButton
-              onClick={() => onEdit(transaction)}
-              aria-label="Edit transaction"
-            >
-              <PencilIcon />
-            </DashboardIconButton>
-            <DashboardIconButton
-              onClick={() => onDelete(transaction._id)}
-              aria-label="Delete transaction"
-            >
-              <Trash2Icon />
-            </DashboardIconButton>
-          </DashboardTableActions>
+          <DashboardTableActions
+            actions={[
+              {
+                id: "edit",
+                label: "Edit",
+                icon: PencilIcon,
+                onSelect: () => onEdit(transaction),
+              },
+              {
+                id: "delete",
+                label: "Delete",
+                icon: Trash2Icon,
+                variant: "destructive",
+                onSelect: () => onDelete(transaction._id),
+              },
+            ]}
+          />
         </TableCell>
       )}
     </TableRow>
