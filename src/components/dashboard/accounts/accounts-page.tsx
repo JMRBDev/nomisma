@@ -1,4 +1,4 @@
-import { getRouteApi } from "@tanstack/react-router"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { PlusIcon } from "lucide-react"
@@ -15,11 +15,10 @@ import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog"
 import { Button } from "@/components/ui/button"
 import { useAccountCreator } from "@/hooks/use-account-creator"
 import { useAccountEditor } from "@/hooks/use-account-editor"
-
-const accountsRouteApi = getRouteApi("/_authenticated/dashboard/accounts")
+import { getAccountsPageDataQueryOptions } from "@/lib/dashboard-query-options"
 
 export function AccountsPage() {
-  const data = accountsRouteApi.useLoaderData()
+  const { data } = useSuspenseQuery(getAccountsPageDataQueryOptions())
   const createAccount = useConvexMutation(api.accounts.createAccount)
   const updateAccount = useConvexMutation(api.accounts.updateAccount)
   const toggleArchived = useConvexMutation(api.accounts.toggleAccountArchived)

@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { getRouteApi, useNavigate } from "@tanstack/react-router"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { CalendarRangeIcon } from "lucide-react"
 import type { OverviewDateFilterValues } from "@/components/dashboard/overview/overview-date-filter"
 import {
@@ -13,11 +14,12 @@ import {
 import { OverviewDateFilterSheet } from "@/components/dashboard/overview/overview-date-filter-sheet"
 import { DashboardSearch } from "@/components/dashboard/dashboard-search"
 import { Button } from "@/components/ui/button"
+import { getUserSettingsQueryOptions } from "@/lib/dashboard-query-options"
 
 const dashboardRouteApi = getRouteApi("/_authenticated/dashboard")
 
 function OverviewDateFilterControl() {
-  const { userSettings } = dashboardRouteApi.useRouteContext()
+  const { data: userSettings } = useSuspenseQuery(getUserSettingsQueryOptions())
   const navigate = useNavigate()
   const appliedSearch = dashboardRouteApi.useSearch()
   const appliedValues = resolveOverviewDateFilterValues(appliedSearch)

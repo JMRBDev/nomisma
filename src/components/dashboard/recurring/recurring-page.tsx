@@ -1,4 +1,4 @@
-import { getRouteApi } from "@tanstack/react-router"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { PlusIcon } from "lucide-react"
 import { AccountReferenceDialog } from "@/components/dashboard/account-reference-dialog"
 import { CategoryReferenceDialog } from "@/components/dashboard/category-reference-dialog"
@@ -13,13 +13,14 @@ import { useAccountReferenceActions } from "@/hooks/use-account-reference-action
 import { useCalendarContext } from "@/hooks/use-calendar-context"
 import { useCategoryReferenceActions } from "@/hooks/use-category-reference-actions"
 import { useDateFilter } from "@/hooks/use-date-filter"
-
-const recurringRouteApi = getRouteApi("/_authenticated/dashboard/recurring")
+import { getRecurringPageDataQueryOptions } from "@/lib/dashboard-query-options"
 
 export function RecurringPage() {
   const { hasDateFilter, filterLabel, dateRange } = useDateFilter()
   const calendarContext = useCalendarContext()
-  const data = recurringRouteApi.useLoaderData()
+  const { data } = useSuspenseQuery(
+    getRecurringPageDataQueryOptions(calendarContext)
+  )
   const {
     dialog,
     pendingRuleId,

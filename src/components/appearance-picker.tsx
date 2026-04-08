@@ -1,4 +1,5 @@
 import { PencilIcon } from "lucide-react"
+import { Separator } from "./ui/separator"
 import type { LucideIcon } from "lucide-react"
 import type { IconOption } from "@/components/picker-shared"
 import { IconAvatar } from "@/components/icon-avatar"
@@ -15,7 +16,6 @@ import {
 } from "@/components/ui/popover"
 import { getContrastColor } from "@/lib/colors"
 import { cn } from "@/lib/utils"
-import { Separator } from "./ui/separator"
 
 export function AppearancePicker({
   colorValue,

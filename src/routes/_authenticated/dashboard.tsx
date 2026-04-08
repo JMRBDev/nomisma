@@ -8,15 +8,8 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
     breadcrumb: "Overview",
   },
   validateSearch: parseOverviewDateFilterSearch,
-  beforeLoad: async ({ context }) => {
-    const userSettings = await context.queryClient.ensureQueryData(
-      getUserSettingsQueryOptions()
-    )
-
-    return {
-      userSettings,
-    }
-  },
+  beforeLoad: async ({ context }) =>
+    context.queryClient.ensureQueryData(getUserSettingsQueryOptions()),
   component: DashboardLayout,
 })
 

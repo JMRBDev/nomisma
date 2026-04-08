@@ -1,5 +1,6 @@
 import { Suspense, lazy } from "react"
-import { Link, getRouteApi } from "@tanstack/react-router"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { Link } from "@tanstack/react-router"
 import { ArrowRightIcon, CheckCircle2Icon, FunnelIcon, ReceiptTextIcon, RepeatIcon } from "lucide-react"
 import { OverviewAlerts } from "@/components/dashboard/overview/overview-alerts"
 import { OverviewChartsRowFallback } from "@/components/dashboard/overview/overview-charts-row-fallback"
@@ -11,18 +12,20 @@ import { OverviewSummaryCards } from "@/components/dashboard/overview/overview-s
 import { RecurringTable } from "@/components/dashboard/recurring/recurring-table"
 import { TransactionsTable } from "@/components/dashboard/transactions/transactions-table"
 import { Button } from "@/components/ui/button"
+import { useCalendarContext } from "@/hooks/use-calendar-context"
 import { useDateFilter } from "@/hooks/use-date-filter"
+import { getOverviewDataQueryOptions } from "@/lib/dashboard-query-options"
 
-const overviewRouteApi = getRouteApi("/_authenticated/dashboard/")
-const LazyOverviewChartsRow = lazy(async () => {
-  const module = await import("@/components/dashboard/overview/overview-charts-row")
-  return { default: module.OverviewChartsRow }
-})
+const LazyOverviewChartsRow = lazy(async () => ({
+  default: (await import("@/components/dashboard/overview/overview-charts-row"))
+    .OverviewChartsRow,
+}))
 
 export function OverviewPage() {
-  const { hasDateFilter, filterLabel, dateFilter } = useDateFilter()
+  const calendarContext = useCalendarContext()
+  const { hasDateFilter, filterLabel, dateFilter, dateRange } = useDateFilter()
   const activityLabel = hasDateFilter ? filterLabel : "the current month"
-  const data = overviewRouteApi.useLoaderData()
+  const { data } = useSuspenseQuery(getOverviewDataQueryOptions(calendarContext, dateRange))
   const currency = data.settings?.baseCurrency
   const isSingleMonth =
     !hasDateFilter ||

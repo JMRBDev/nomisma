@@ -1,4 +1,4 @@
-import { getRouteApi } from "@tanstack/react-router"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { PlusIcon } from "lucide-react"
@@ -18,13 +18,16 @@ import { Card, CardContent } from "@/components/ui/card"
 import { useFormDialog } from "@/hooks/use-form-dialog"
 import { formatMonthLabel } from "@/lib/money"
 import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog"
+import { useCalendarContext } from "@/hooks/use-calendar-context"
 import { useCategoryReferenceActions } from "@/hooks/use-category-reference-actions"
 import { useDeleteConfirmation } from "@/hooks/use-delete-confirmation"
-
-const budgetsRouteApi = getRouteApi("/_authenticated/dashboard/budgets")
+import { getBudgetsPageDataQueryOptions } from "@/lib/dashboard-query-options"
 
 export function BudgetsPage() {
-  const data = budgetsRouteApi.useLoaderData()
+  const calendarContext = useCalendarContext()
+  const { data } = useSuspenseQuery(
+    getBudgetsPageDataQueryOptions(calendarContext)
+  )
   const upsertBudget = useConvexMutation(api.budgets.upsertBudget)
   const deleteBudgetMutation = useConvexMutation(api.budgets.deleteBudget)
   const [pendingBudgetId, setPendingBudgetId] = useState<BudgetRecord["_id"] | null>(null)
