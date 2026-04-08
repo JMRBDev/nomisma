@@ -32,6 +32,10 @@ export function CategoryFormDialog({
   formError,
   pending,
   isEditing,
+  title,
+  description,
+  submitLabel,
+  kindDisabled,
   onValueChange,
 }: {
   open: boolean
@@ -42,17 +46,22 @@ export function CategoryFormDialog({
   formError: string
   pending: boolean
   isEditing: boolean
+  title?: string
+  description?: string
+  submitLabel?: string
+  kindDisabled?: boolean
   onValueChange: (name: keyof CategoryFormValues, value: string) => void
 }) {
   return (
     <DashboardFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={isEditing ? "Edit category" : "Add category"}
+      title={title ?? (isEditing ? "Edit category" : "Add category")}
       description={
-        isEditing
+        description ??
+        (isEditing
           ? "Update this category."
-          : "Create a new category to group your transactions."
+          : "Create a new category to group your transactions.")
       }
     >
       <form className="space-y-4" onSubmit={onSubmit}>
@@ -84,7 +93,7 @@ export function CategoryFormDialog({
                     event.target.value as "income" | "expense"
                   )
                 }
-                disabled={isEditing}
+                disabled={kindDisabled ?? isEditing}
               >
                 {categoryKindOptions.map((option) => (
                   <NativeSelectOption key={option.value} value={option.value}>
@@ -123,7 +132,9 @@ export function CategoryFormDialog({
         <DashboardFormActions
           pending={pending}
           formError={formError}
-          submitLabel={isEditing ? "Save changes" : "Create category"}
+          submitLabel={
+            submitLabel ?? (isEditing ? "Save changes" : "Create category")
+          }
           pendingLabel="Saving..."
         />
       </form>

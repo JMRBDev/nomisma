@@ -3,6 +3,7 @@ import type {
   BudgetFieldErrors,
   BudgetFormValues,
 } from "@/components/dashboard/budgets/budgets-shared"
+import type { CategoryOption } from "@/components/dashboard/transactions/transactions-shared"
 import { BudgetFormFields } from "@/components/dashboard/budgets/budget-form-fields"
 import { DashboardFormActions } from "@/components/dashboard/dashboard-form-actions"
 import { DashboardFormDialog } from "@/components/dashboard/dashboard-form-dialog"
@@ -20,7 +21,10 @@ export function BudgetFormDialog({
   formError,
   pending,
   categoryOptions,
+  allCategoryOptions,
   onValueChange,
+  onCreateCategory,
+  onUnarchiveCategory,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -33,7 +37,10 @@ export function BudgetFormDialog({
   formError: string
   pending: boolean
   categoryOptions: Array<BudgetCategoryOption>
+  allCategoryOptions: Array<CategoryOption>
   onValueChange: (name: keyof BudgetFormValues, value: string) => void
+  onCreateCategory: (name: string) => void
+  onUnarchiveCategory: (categoryId: string) => void
 }) {
   return (
     <DashboardFormDialog
@@ -47,7 +54,10 @@ export function BudgetFormDialog({
           values={values}
           errors={errors}
           categoryOptions={categoryOptions}
+          allCategoryOptions={allCategoryOptions}
           onValueChange={onValueChange}
+          onCreateCategory={onCreateCategory}
+          onUnarchiveCategory={onUnarchiveCategory}
         />
 
         <DashboardFormActions

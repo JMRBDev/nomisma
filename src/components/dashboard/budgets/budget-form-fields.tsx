@@ -3,57 +3,79 @@ import type {
   BudgetFieldErrors,
   BudgetFormValues,
 } from "@/components/dashboard/budgets/budgets-shared"
-import { FormErrorMessage } from "@/components/form-error-message"
+import type { CategoryOption } from "@/components/dashboard/transactions/transactions-shared"
+import { ReferenceComboboxField } from "@/components/dashboard/reference-combobox-field"
 import {
   TOTAL_BUDGET_VALUE,
   resolveBudgetCategoryValue,
 } from "@/components/dashboard/budgets/budgets-shared"
+import { getCreateOrRestoreActions } from "@/lib/reference-entities"
 import {
   Field,
-  FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldTitle,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
+import { FormErrorMessage } from "@/components/form-error-message"
 
 export function BudgetFormFields({
   values,
   errors,
   categoryOptions,
+  allCategoryOptions,
   onValueChange,
+  onCreateCategory,
+  onUnarchiveCategory,
 }: {
   values: BudgetFormValues
   errors: BudgetFieldErrors
   categoryOptions: Array<BudgetCategoryOption>
+  allCategoryOptions: Array<CategoryOption>
   onValueChange: (name: keyof BudgetFormValues, value: string) => void
+  onCreateCategory: (name: string) => void
+  onUnarchiveCategory: (categoryId: string) => void
 }) {
+  const categoryReferenceOptions = allCategoryOptions.filter(
+    (category) => category.kind === "expense"
+  )
+
+  const getCategoryActions = (query: string) => {
+    return getCreateOrRestoreActions({
+      options: categoryReferenceOptions,
+      query,
+      createKey: "create-category",
+      unarchiveKey: "unarchive-category",
+      createDescription: "Finish category setup and use it for this budget.",
+      unarchiveDescription: "Restore this category and use it here.",
+      onCreate: onCreateCategory,
+      onUnarchive: (category) => onUnarchiveCategory(category._id),
+    })
+  }
+
   return (
     <FieldGroup>
-      <Field>
-        <FieldLabel htmlFor="budget-category">
-          <FieldTitle>Budget target</FieldTitle>
-        </FieldLabel>
-        <NativeSelect
-          id="budget-category"
-          value={resolveBudgetCategoryValue(values.categoryId, categoryOptions)}
-          onChange={(event) => onValueChange("categoryId", event.target.value)}
-        >
-          <NativeSelectOption value={TOTAL_BUDGET_VALUE}>
-            Total spending
-          </NativeSelectOption>
-          {categoryOptions.map((category) => (
-            <NativeSelectOption key={category._id} value={category._id}>
-              {category.name}
-            </NativeSelectOption>
-          ))}
-        </NativeSelect>
-        <FieldDescription>
-          Track all posted expenses or focus on one expense category.
-        </FieldDescription>
-        <FormErrorMessage error={errors.categoryId} />
-      </Field>
+      <ReferenceComboboxField
+        id="budget-category"
+        label="Budget target"
+        value={resolveBudgetCategoryValue(values.categoryId, categoryOptions)}
+        options={[
+          {
+            value: TOTAL_BUDGET_VALUE,
+            label: "Total spending",
+          },
+          ...categoryOptions.map((category) => ({
+            value: category._id,
+            label: category.name,
+          })),
+        ]}
+        error={errors.categoryId}
+        placeholder="Search or create an expense category"
+        emptyMessage="No budget targets found."
+        description="Track all posted expenses or focus on one expense category."
+        onValueChange={(nextValue) => onValueChange("categoryId", nextValue)}
+        getActions={getCategoryActions}
+      />
 
       <Field>
         <FieldLabel htmlFor="budget-limit">

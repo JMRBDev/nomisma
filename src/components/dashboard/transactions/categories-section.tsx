@@ -60,7 +60,7 @@ export function CategoriesSection({
             <Button
               size="sm"
               variant="outline"
-              onClick={categoryDialog.openCreateDialog}
+              onClick={() => categoryDialog.openCreateDialog()}
             >
               Add category
               <PlusIcon />
@@ -81,7 +81,7 @@ export function CategoriesSection({
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
-                <Button onClick={categoryDialog.openCreateDialog}>
+                <Button onClick={() => categoryDialog.openCreateDialog()}>
                   Add category
                   <PlusIcon />
                 </Button>

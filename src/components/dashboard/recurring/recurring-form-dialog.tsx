@@ -20,10 +20,16 @@ export function RecurringFormDialog({
   pending,
   editing = false,
   accountOptions,
+  allAccountOptions,
   incomeCategoryOptions,
   expenseCategoryOptions,
+  allCategoryOptions,
   onValueChange,
   onTypeChange,
+  onCreateAccount,
+  onUnarchiveAccount,
+  onCreateCategory,
+  onUnarchiveCategory,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -34,18 +40,22 @@ export function RecurringFormDialog({
   pending: boolean
   editing?: boolean
   accountOptions: Array<RecurringAccountOption>
+  allAccountOptions: Array<RecurringAccountOption>
   incomeCategoryOptions: Array<RecurringCategoryOption>
   expenseCategoryOptions: Array<RecurringCategoryOption>
+  allCategoryOptions: Array<RecurringCategoryOption>
   onValueChange: (name: keyof RecurringFormValues, value: string) => void
   onTypeChange: (value: RecurringType) => void
+  onCreateAccount: (name: string) => void
+  onUnarchiveAccount: (accountId: string) => void
+  onCreateCategory: (name: string) => void
+  onUnarchiveCategory: (categoryId: string) => void
 }) {
   const categoryOptions = getCategoryOptions(
     values.type,
     incomeCategoryOptions,
     expenseCategoryOptions
   )
-  const submitDisabled =
-    accountOptions.length === 0 || categoryOptions.length === 0
 
   return (
     <DashboardFormDialog
@@ -59,23 +69,28 @@ export function RecurringFormDialog({
           values={values}
           errors={errors}
           accountOptions={accountOptions}
+          allAccountOptions={allAccountOptions}
           incomeCategoryOptions={incomeCategoryOptions}
           expenseCategoryOptions={expenseCategoryOptions}
+          allCategoryOptions={allCategoryOptions}
           onValueChange={onValueChange}
           onTypeChange={onTypeChange}
+          onCreateAccount={onCreateAccount}
+          onUnarchiveAccount={onUnarchiveAccount}
+          onCreateCategory={onCreateCategory}
+          onUnarchiveCategory={onUnarchiveCategory}
         />
 
         {categoryOptions.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Create at least one {values.type} category in Settings before saving
-            this recurring item.
+            You can create a {values.type} category directly from the category
+            field if you need a new one.
           </p>
         ) : null}
 
         <DashboardFormActions
           pending={pending}
           formError={formError}
-          disabled={submitDisabled}
           submitLabel={
             editing ? "Update recurring item" : "Save recurring item"
           }

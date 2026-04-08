@@ -11,16 +11,23 @@ import { useFormDialog } from "@/hooks/use-form-dialog"
 
 export function useAccountCreator({
   onCreateAccount,
+  onCreateSuccess,
 }: {
   onCreateAccount: (
     payload: ReturnType<typeof buildAccountPayload>
   ) => Promise<unknown>
+  onCreateSuccess?: (accountId: string) => Promise<unknown> | unknown
 }) {
   const dialog = useFormDialog<AccountFormValues, AccountFieldErrors>({
     createDefaults: () => DEFAULT_ACCOUNT_VALUES,
     validate: validateAccountValues,
     onSubmit: async (values) => {
-      await onCreateAccount(buildAccountPayload(values))
+      return onCreateAccount(buildAccountPayload(values))
+    },
+    onSubmitSuccess: async (result) => {
+      if (typeof result === "string") {
+        await onCreateSuccess?.(result)
+      }
     },
     onValueChange: (name, value, { setValues, setErrors, setFormError }) => {
       setValues((current) => ({

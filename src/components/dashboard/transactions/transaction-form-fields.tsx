@@ -1,11 +1,7 @@
 import type {
-  AccountOption,
-  CategoryOption,
-  TransactionFieldErrors,
-  TransactionFormValues,
   TransactionStatus,
-  TransactionType,
 } from "@/components/dashboard/transactions/transactions-shared"
+import type { TransactionFormFieldsProps } from "@/components/dashboard/transactions/transaction-form-types"
 import {
   Field,
   FieldGroup,
@@ -24,21 +20,18 @@ export function TransactionFormFields({
   values,
   errors,
   accountOptions,
+  allAccountOptions,
   incomeCategoryOptions,
   expenseCategoryOptions,
+  allCategoryOptions,
   onValueChange,
   onTypeChange,
   onAccountChange,
-}: {
-  values: TransactionFormValues
-  errors: TransactionFieldErrors
-  accountOptions: Array<AccountOption>
-  incomeCategoryOptions: Array<CategoryOption>
-  expenseCategoryOptions: Array<CategoryOption>
-  onValueChange: (name: keyof TransactionFormValues, value: string) => void
-  onTypeChange: (value: TransactionType) => void
-  onAccountChange: (value: string) => void
-}) {
+  onCreateAccount,
+  onUnarchiveAccount,
+  onCreateCategory,
+  onUnarchiveCategory,
+}: TransactionFormFieldsProps) {
   const categoryOptions = getCategoryOptions(
     values.type,
     incomeCategoryOptions,
@@ -55,7 +48,7 @@ export function TransactionFormFields({
             id="transaction-type"
             value={values.type}
             onChange={(event) =>
-              onTypeChange(event.target.value as TransactionType)
+              onTypeChange(event.target.value as TransactionFormFieldsProps["values"]["type"])
             }
           >
             {transactionTypeOptions.map((option) => (
@@ -114,9 +107,15 @@ export function TransactionFormFields({
         values={values}
         errors={errors}
         accountOptions={accountOptions}
+        allAccountOptions={allAccountOptions}
         categoryOptions={categoryOptions}
+        allCategoryOptions={allCategoryOptions}
         onValueChange={onValueChange}
         onAccountChange={onAccountChange}
+        onCreateAccount={onCreateAccount}
+        onUnarchiveAccount={onUnarchiveAccount}
+        onCreateCategory={onCreateCategory}
+        onUnarchiveCategory={onUnarchiveCategory}
       />
       <Field>
         <FieldLabel htmlFor="transaction-description">

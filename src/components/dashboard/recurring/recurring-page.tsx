@@ -1,5 +1,7 @@
 import { getRouteApi } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react"
+import { AccountReferenceDialog } from "@/components/dashboard/account-reference-dialog"
+import { CategoryReferenceDialog } from "@/components/dashboard/category-reference-dialog"
 import { DashboardPageActions } from "@/components/dashboard/dashboard-page-actions"
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
 import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
@@ -7,7 +9,9 @@ import { RecurringContent } from "@/components/dashboard/recurring/recurring-con
 import { RecurringFormDialog } from "@/components/dashboard/recurring/recurring-form-dialog"
 import { useRecurringDialog } from "@/components/dashboard/recurring/use-recurring-dialog"
 import { Button } from "@/components/ui/button"
+import { useAccountReferenceActions } from "@/hooks/use-account-reference-actions"
 import { useCalendarContext } from "@/hooks/use-calendar-context"
+import { useCategoryReferenceActions } from "@/hooks/use-category-reference-actions"
 import { useDateFilter } from "@/hooks/use-date-filter"
 
 const recurringRouteApi = getRouteApi("/_authenticated/dashboard/recurring")
@@ -29,6 +33,10 @@ export function RecurringPage() {
     handleToggle,
     handleDialogClose,
   } = useRecurringDialog(data)
+  const allAccountOptions = [...data.accounts.active, ...data.accounts.archived]
+  const allCategoryOptions = data.categories.all
+  const accountActions = useAccountReferenceActions()
+  const categoryActions = useCategoryReferenceActions()
 
   const recurringItems = data.recurring.all
   const visibleRecurringItems = recurringItems.filter((item) => {
@@ -40,9 +48,6 @@ export function RecurringPage() {
   const currency = data.settings?.baseCurrency
   const today = calendarContext.today
   const hasRecurringItems = recurringItems.length > 0
-  const hasCategoryOptions =
-    incomeCategoryOptions.length > 0 || expenseCategoryOptions.length > 0
-  const createDisabled = accountOptions.length === 0 || !hasCategoryOptions
 
   return (
     <DashboardPageSection>
@@ -50,7 +55,7 @@ export function RecurringPage() {
         title="Recurring"
         action={
           <DashboardPageActions>
-            <Button onClick={dialog.openCreateDialog} disabled={createDisabled}>
+            <Button onClick={() => dialog.openCreateDialog()}>
               Add recurring item
               <PlusIcon />
             </Button>
@@ -69,7 +74,9 @@ export function RecurringPage() {
         hasDateFilter={hasDateFilter}
         filterLabel={filterLabel}
         hasAccounts={accountOptions.length > 0}
-        hasCategoryOptions={hasCategoryOptions}
+        hasCategoryOptions={
+          incomeCategoryOptions.length > 0 || expenseCategoryOptions.length > 0
+        }
         onConfirm={handleConfirm}
         onEdit={handleEdit}
         onToggle={handleToggle}
@@ -86,10 +93,42 @@ export function RecurringPage() {
         pending={dialog.pending}
         editing={dialog.isEditing}
         accountOptions={accountOptions}
+        allAccountOptions={allAccountOptions}
         incomeCategoryOptions={incomeCategoryOptions}
         expenseCategoryOptions={expenseCategoryOptions}
+        allCategoryOptions={allCategoryOptions}
         onValueChange={dialog.handleValueChange}
         onTypeChange={handleTypeChange}
+        onCreateAccount={(name) =>
+          accountActions.handleCreateAccount(name, (accountId) =>
+            dialog.handleValueChange("accountId", accountId)
+          )
+        }
+        onUnarchiveAccount={(accountId) =>
+          accountActions.handleUnarchiveAccount(accountId, (nextAccountId) =>
+            dialog.handleValueChange("accountId", nextAccountId)
+          )
+        }
+        onCreateCategory={(name) =>
+          categoryActions.handleCreateCategory(
+            name,
+            dialog.values.type,
+            (categoryId) => dialog.handleValueChange("categoryId", categoryId)
+          )
+        }
+        onUnarchiveCategory={(categoryId) =>
+          categoryActions.handleUnarchiveCategory(categoryId, (nextCategoryId) =>
+            dialog.handleValueChange("categoryId", nextCategoryId)
+          )
+        }
+      />
+      <AccountReferenceDialog
+        accountActions={accountActions}
+        description="Save this account and it will be selected in the recurring item form."
+      />
+      <CategoryReferenceDialog
+        categoryActions={categoryActions}
+        description="Save this category and it will be selected in the recurring item form."
       />
     </DashboardPageSection>
   )

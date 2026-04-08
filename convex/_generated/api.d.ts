@@ -13,6 +13,7 @@ import type * as auth from "../auth.js";
 import type * as budgets from "../budgets.js";
 import type * as categories from "../categories.js";
 import type * as http from "../http.js";
+import type * as model_account_name_conflicts from "../model/account_name_conflicts.js";
 import type * as model_accounts from "../model/accounts.js";
 import type * as model_balances from "../model/balances.js";
 import type * as model_budgets from "../model/budgets.js";
@@ -60,6 +61,7 @@ declare const fullApi: ApiFromModules<{
   budgets: typeof budgets;
   categories: typeof categories;
   http: typeof http;
+  "model/account_name_conflicts": typeof model_account_name_conflicts;
   "model/accounts": typeof model_accounts;
   "model/balances": typeof model_balances;
   "model/budgets": typeof model_budgets;

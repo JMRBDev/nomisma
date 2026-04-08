@@ -12,7 +12,11 @@ import {
 } from "@/components/dashboard/transactions/categories-shared"
 import { useFormDialog } from "@/hooks/use-form-dialog"
 
-export function useCategoryManager() {
+export function useCategoryManager({
+  onCreateSuccess,
+}: {
+  onCreateSuccess?: (categoryId: string) => Promise<unknown> | unknown
+} = {}) {
   const createCategory = useConvexMutation(api.categories.createCategory)
   const updateCategory = useConvexMutation(api.categories.updateCategory)
   const toggleCategoryArchived = useConvexMutation(
@@ -41,7 +45,12 @@ export function useCategoryManager() {
           icon: values.icon.trim() || undefined,
         })
       } else {
-        await createCategory(buildCategoryPayload(values))
+        return createCategory(buildCategoryPayload(values))
+      }
+    },
+    onSubmitSuccess: async (result) => {
+      if (!dialog.isEditing && typeof result === "string") {
+        await onCreateSuccess?.(result)
       }
     },
     onValueChange: (name, value, { setValues, setErrors, setFormError }) => {

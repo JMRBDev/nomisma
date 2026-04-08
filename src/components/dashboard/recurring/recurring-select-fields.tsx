@@ -6,6 +6,7 @@ import type {
 } from "@/components/dashboard/recurring/recurring-shared"
 import { resolveValidOption } from "@/components/dashboard/recurring/recurring-shared"
 import { FormErrorMessage } from "@/components/form-error-message"
+import { ReferenceComboboxField } from "@/components/dashboard/reference-combobox-field"
 import {
   Field,
   FieldDescription,
@@ -13,74 +14,94 @@ import {
   FieldTitle,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
+import { getCreateOrRestoreActions } from "@/lib/reference-entities"
 
 export function RecurringSelectFields({
   values,
   errors,
   accountOptions,
+  allAccountOptions,
   categoryOptions,
+  allCategoryOptions,
   onValueChange,
+  onCreateAccount,
+  onUnarchiveAccount,
+  onCreateCategory,
+  onUnarchiveCategory,
 }: {
   values: RecurringFormValues
   errors: RecurringFieldErrors
   accountOptions: Array<RecurringAccountOption>
+  allAccountOptions: Array<RecurringAccountOption>
   categoryOptions: Array<RecurringCategoryOption>
+  allCategoryOptions: Array<RecurringCategoryOption>
   onValueChange: (name: keyof RecurringFormValues, value: string) => void
+  onCreateAccount: (name: string) => void
+  onUnarchiveAccount: (accountId: string) => void
+  onCreateCategory: (name: string) => void
+  onUnarchiveCategory: (categoryId: string) => void
 }) {
+  const getAccountActions = (query: string) => {
+    return getCreateOrRestoreActions({
+      options: allAccountOptions,
+      query,
+      createKey: "create-account",
+      unarchiveKey: "unarchive-account",
+      createDescription: "Finish account setup and select it here.",
+      unarchiveDescription: "Restore this account and select it here.",
+      onCreate: onCreateAccount,
+      onUnarchive: (account) => onUnarchiveAccount(account._id),
+    })
+  }
+
+  const categoryReferenceOptions = allCategoryOptions.filter(
+    (category) => category.kind === values.type
+  )
+
+  const getCategoryActions = (query: string) => {
+    return getCreateOrRestoreActions({
+      options: categoryReferenceOptions,
+      query,
+      createKey: "create-category",
+      unarchiveKey: "unarchive-category",
+      createDescription: "Finish category setup and select it here.",
+      unarchiveDescription: "Restore this category and select it here.",
+      onCreate: onCreateCategory,
+      onUnarchive: (category) => onUnarchiveCategory(category._id),
+    })
+  }
+
   return (
     <>
-      <Field>
-        <FieldLabel htmlFor="recurring-account">
-          <FieldTitle>
-            {values.type === "income" ? "Deposit account" : "Payment account"}
-          </FieldTitle>
-        </FieldLabel>
-        <NativeSelect
-          id="recurring-account"
-          value={resolveValidOption(values.accountId, accountOptions)}
-          onChange={(event) => onValueChange("accountId", event.target.value)}
-          disabled={accountOptions.length === 0}
-        >
-          {accountOptions.length === 0 ? (
-            <NativeSelectOption value="">
-              Create an account first
-            </NativeSelectOption>
-          ) : null}
-          {accountOptions.map((account) => (
-            <NativeSelectOption key={account._id} value={account._id}>
-              {account.name}
-            </NativeSelectOption>
-          ))}
-        </NativeSelect>
-        <FormErrorMessage error={errors.accountId} />
-      </Field>
+      <ReferenceComboboxField
+        id="recurring-account"
+        label={values.type === "income" ? "Deposit account" : "Payment account"}
+        value={resolveValidOption(values.accountId, accountOptions)}
+        options={accountOptions.map((account) => ({
+          value: account._id,
+          label: account.name,
+        }))}
+        error={errors.accountId}
+        placeholder="Search or create an account"
+        emptyMessage="No accounts found."
+        onValueChange={(nextValue) => onValueChange("accountId", nextValue)}
+        getActions={getAccountActions}
+      />
 
-      <Field>
-        <FieldLabel htmlFor="recurring-category">
-          <FieldTitle>
-            {values.type === "income" ? "Income category" : "Expense category"}
-          </FieldTitle>
-        </FieldLabel>
-        <NativeSelect
-          id="recurring-category"
-          value={resolveValidOption(values.categoryId, categoryOptions)}
-          onChange={(event) => onValueChange("categoryId", event.target.value)}
-          disabled={categoryOptions.length === 0}
-        >
-          {categoryOptions.length === 0 ? (
-            <NativeSelectOption value="">
-              Create a category first
-            </NativeSelectOption>
-          ) : null}
-          {categoryOptions.map((category) => (
-            <NativeSelectOption key={category._id} value={category._id}>
-              {category.name}
-            </NativeSelectOption>
-          ))}
-        </NativeSelect>
-        <FormErrorMessage error={errors.categoryId} />
-      </Field>
+      <ReferenceComboboxField
+        id="recurring-category"
+        label={values.type === "income" ? "Income category" : "Expense category"}
+        value={resolveValidOption(values.categoryId, categoryOptions)}
+        options={categoryOptions.map((category) => ({
+          value: category._id,
+          label: category.name,
+        }))}
+        error={errors.categoryId}
+        placeholder={`Search or create a ${values.type} category`}
+        emptyMessage={`No ${values.type} categories found.`}
+        onValueChange={(nextValue) => onValueChange("categoryId", nextValue)}
+        getActions={getCategoryActions}
+      />
 
       <Field>
         <FieldLabel htmlFor="recurring-start-date">

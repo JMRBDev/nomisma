@@ -87,7 +87,7 @@ export function AccountsPage() {
         title="Accounts"
         action={
           <DashboardPageActions>
-            <Button onClick={creator.openDialog}>
+            <Button onClick={() => creator.openDialog()}>
               Add account
               <PlusIcon />
             </Button>
@@ -102,7 +102,7 @@ export function AccountsPage() {
         includedBalance={includedBalance}
         hasAnyAccounts={hasAny}
         pendingArchiveId={pendingArchiveId}
-        onAddAccount={creator.openDialog}
+        onAddAccount={() => creator.openDialog()}
         onEdit={(a) => editor.openEditDialog(a)}
         onToggleArchived={(id, a) => setConfirmArchiveId({ id, archived: a })}
       />

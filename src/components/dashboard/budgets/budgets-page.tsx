@@ -8,12 +8,8 @@ import { BudgetFormDialog } from "@/components/dashboard/budgets/budget-form-dia
 import { BudgetsEmptyState } from "@/components/dashboard/budgets/budgets-empty-state"
 import { BudgetsSummaryCards } from "@/components/dashboard/budgets/budgets-summary-cards"
 import { BudgetsTable } from "@/components/dashboard/budgets/budgets-table"
-import {
-  buildBudgetPayload,
-  createBudgetDefaults,
-  createBudgetFormValues,
-  validateBudgetValues,
-} from "@/components/dashboard/budgets/budgets-shared"
+import { CategoryReferenceDialog } from "@/components/dashboard/category-reference-dialog"
+import { buildBudgetPayload, createBudgetDefaults, createBudgetFormValues, validateBudgetValues } from "@/components/dashboard/budgets/budgets-shared"
 import { DashboardPageActions } from "@/components/dashboard/dashboard-page-actions"
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
 import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
@@ -22,6 +18,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { useFormDialog } from "@/hooks/use-form-dialog"
 import { formatMonthLabel } from "@/lib/money"
 import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog"
+import { useCategoryReferenceActions } from "@/hooks/use-category-reference-actions"
 import { useDeleteConfirmation } from "@/hooks/use-delete-confirmation"
 
 const budgetsRouteApi = getRouteApi("/_authenticated/dashboard/budgets")
@@ -30,9 +27,8 @@ export function BudgetsPage() {
   const data = budgetsRouteApi.useLoaderData()
   const upsertBudget = useConvexMutation(api.budgets.upsertBudget)
   const deleteBudgetMutation = useConvexMutation(api.budgets.deleteBudget)
-  const [pendingBudgetId, setPendingBudgetId] = useState<
-    BudgetRecord["_id"] | null
-  >(null)
+  const [pendingBudgetId, setPendingBudgetId] = useState<BudgetRecord["_id"] | null>(null)
+  const categoryActions = useCategoryReferenceActions()
   const dialog = useFormDialog({
     createDefaults: () => {
       const categoryOptions = data.categories.activeExpense
@@ -60,6 +56,7 @@ export function BudgetsPage() {
     errorMessage: "Unable to delete the budget.",
   })
   const categoryOptions = data.categories.activeExpense
+  const allCategoryOptions = data.categories.all
   const budgets = data.budgets.items
   const currency = data.settings?.baseCurrency
   const monthLabel = formatMonthLabel(data.budgets.currentMonth)
@@ -71,7 +68,7 @@ export function BudgetsPage() {
         title="Budgets"
         action={
           <DashboardPageActions>
-            <Button onClick={dialog.openCreateDialog}>
+            <Button onClick={() => dialog.openCreateDialog()}>
               Add budget
               <PlusIcon />
             </Button>
@@ -101,10 +98,7 @@ export function BudgetsPage() {
           </Card>
         </>
       ) : (
-        <BudgetsEmptyState
-          monthLabel={monthLabel}
-          onAddBudget={dialog.openCreateDialog}
-        />
+        <BudgetsEmptyState monthLabel={monthLabel} onAddBudget={dialog.openCreateDialog} />
       )}
       <BudgetFormDialog
         open={dialog.dialogOpen}
@@ -127,7 +121,22 @@ export function BudgetsPage() {
             : false)
         }
         categoryOptions={categoryOptions}
+        allCategoryOptions={allCategoryOptions}
         onValueChange={dialog.handleValueChange}
+        onCreateCategory={(name) =>
+          categoryActions.handleCreateCategory(name, "expense", (categoryId) =>
+            dialog.handleValueChange("categoryId", categoryId)
+          )
+        }
+        onUnarchiveCategory={(categoryId) =>
+          categoryActions.handleUnarchiveCategory(categoryId, (nextCategoryId) =>
+            dialog.handleValueChange("categoryId", nextCategoryId)
+          )
+        }
+      />
+      <CategoryReferenceDialog
+        categoryActions={categoryActions}
+        description="Save this category and it will be selected in the budget form."
       />
       <DeleteConfirmDialog
         {...deleteConfirmation.dialogProps}

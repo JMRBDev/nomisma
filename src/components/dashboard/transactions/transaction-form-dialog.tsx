@@ -22,11 +22,17 @@ export function TransactionFormDialog({
   formError,
   pending,
   accountOptions,
+  allAccountOptions,
   incomeCategoryOptions,
   expenseCategoryOptions,
+  allCategoryOptions,
   onValueChange,
   onTypeChange,
   onAccountChange,
+  onCreateAccount,
+  onUnarchiveAccount,
+  onCreateCategory,
+  onUnarchiveCategory,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -38,21 +44,29 @@ export function TransactionFormDialog({
   formError: string
   pending: boolean
   accountOptions: Array<AccountOption>
+  allAccountOptions: Array<AccountOption>
   incomeCategoryOptions: Array<CategoryOption>
   expenseCategoryOptions: Array<CategoryOption>
+  allCategoryOptions: Array<CategoryOption>
   onValueChange: (name: keyof TransactionFormValues, value: string) => void
   onTypeChange: (value: TransactionType) => void
   onAccountChange: (value: string) => void
+  onCreateAccount: (
+    name: string,
+    fieldName: "accountId" | "toAccountId"
+  ) => void
+  onUnarchiveAccount: (
+    accountId: string,
+    fieldName: "accountId" | "toAccountId"
+  ) => void
+  onCreateCategory: (name: string) => void
+  onUnarchiveCategory: (categoryId: string) => void
 }) {
   const categoryOptions = getCategoryOptions(
     values.type,
     incomeCategoryOptions,
     expenseCategoryOptions
   )
-  const needsCategory = values.type !== "transfer"
-  const submitDisabled =
-    accountOptions.length === 0 ||
-    (needsCategory && categoryOptions.length === 0)
 
   return (
     <DashboardFormDialog
@@ -66,24 +80,29 @@ export function TransactionFormDialog({
           values={values}
           errors={errors}
           accountOptions={accountOptions}
+          allAccountOptions={allAccountOptions}
           incomeCategoryOptions={incomeCategoryOptions}
           expenseCategoryOptions={expenseCategoryOptions}
+          allCategoryOptions={allCategoryOptions}
           onValueChange={onValueChange}
           onTypeChange={onTypeChange}
           onAccountChange={onAccountChange}
+          onCreateAccount={onCreateAccount}
+          onUnarchiveAccount={onUnarchiveAccount}
+          onCreateCategory={onCreateCategory}
+          onUnarchiveCategory={onUnarchiveCategory}
         />
 
-        {needsCategory && categoryOptions.length === 0 ? (
+        {values.type !== "transfer" && categoryOptions.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Create at least one {values.type} category in Settings before saving
-            this transaction.
+            You can create a {values.type} category directly from the category
+            field if you need a new one.
           </p>
         ) : null}
 
         <DashboardFormActions
           pending={pending}
           formError={formError}
-          disabled={submitDisabled}
           submitLabel={editing ? "Update transaction" : "Save transaction"}
           secondaryAction={
             editing ? (

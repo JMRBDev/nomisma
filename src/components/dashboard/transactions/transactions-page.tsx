@@ -3,14 +3,8 @@ import { useMemo, useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { PlusIcon } from "lucide-react"
 import { api } from "../../../../convex/_generated/api"
-import type {
-  TransactionFilterValues,
-  TransactionRecord,
-} from "@/components/dashboard/transactions/transactions-shared"
-import {
-  DEFAULT_FILTER_VALUES,
-  countActiveFilters,
-} from "@/components/dashboard/transactions/transactions-shared"
+import type { TransactionFilterValues, TransactionRecord } from "@/components/dashboard/transactions/transactions-shared"
+import { DEFAULT_FILTER_VALUES, countActiveFilters } from "@/components/dashboard/transactions/transactions-shared"
 import { useTransactionSearchFilter } from "@/components/dashboard/transactions/transactions-page-shared"
 import { DashboardFilterButton } from "@/components/dashboard/dashboard-filter-button"
 import { DashboardPageActions } from "@/components/dashboard/dashboard-page-actions"
@@ -20,14 +14,15 @@ import { TransactionFiltersSheet } from "@/components/dashboard/transactions/tra
 import { TransactionFormDialog } from "@/components/dashboard/transactions/transaction-form-dialog"
 import { TransactionsContent } from "@/components/dashboard/transactions/transactions-content"
 import { CategoriesSection } from "@/components/dashboard/transactions/categories-section"
+import { AccountReferenceDialog } from "@/components/dashboard/account-reference-dialog"
+import { CategoryReferenceDialog } from "@/components/dashboard/category-reference-dialog"
 import { useTransactionEditor } from "@/hooks/use-transaction-editor"
 import { Button } from "@/components/ui/button"
 import { useDateFilter } from "@/hooks/use-date-filter"
 import { useDeleteConfirmation } from "@/hooks/use-delete-confirmation"
+import { useTransactionReferenceHandlers } from "@/hooks/use-transaction-reference-handlers"
 
-const transactionsRouteApi = getRouteApi(
-  "/_authenticated/dashboard/transactions"
-)
+const transactionsRouteApi = getRouteApi("/_authenticated/dashboard/transactions")
 
 export function TransactionsPage() {
   const { hasDateFilter, filterLabel, dateRange } = useDateFilter()
@@ -38,6 +33,7 @@ export function TransactionsPage() {
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false)
   const [filters, setFilters] = useState(DEFAULT_FILTER_VALUES)
   const accountOptions = data.accounts.active
+  const allAccountOptions = [...data.accounts.active, ...data.accounts.archived]
   const allCategoryOptions = data.categories.all
   const incomeCategoryOptions = data.categories.activeIncome
   const expenseCategoryOptions = data.categories.activeExpense
@@ -50,6 +46,7 @@ export function TransactionsPage() {
       updateTx({ transactionId: id, ...payload }),
     onDeleteTransaction: (id) => deleteTx({ transactionId: id }),
   })
+  const transactionReferences = useTransactionReferenceHandlers(transactionEditor)
   const deleteConfirmation = useDeleteConfirmation<TransactionRecord["_id"]>({
     onConfirm: (id) => deleteTx({ transactionId: id }),
     errorMessage: "Unable to delete the transaction.",
@@ -81,10 +78,7 @@ export function TransactionsPage() {
               activeCount={filterCount}
               onClick={() => setFiltersSheetOpen((open) => !open)}
             />
-            <Button
-              onClick={transactionEditor.openCreateDialog}
-              disabled={accountOptions.length === 0}
-            >
+            <Button onClick={() => transactionEditor.openCreateDialog()}>
               Add transaction
               <PlusIcon />
             </Button>
@@ -127,11 +121,25 @@ export function TransactionsPage() {
         formError={transactionEditor.formError}
         pending={transactionEditor.pending}
         accountOptions={accountOptions}
+        allAccountOptions={allAccountOptions}
         incomeCategoryOptions={incomeCategoryOptions}
         expenseCategoryOptions={expenseCategoryOptions}
+        allCategoryOptions={allCategoryOptions}
         onValueChange={transactionEditor.handleValueChange}
         onTypeChange={transactionEditor.handleTypeChange}
         onAccountChange={transactionEditor.handleAccountChange}
+        onCreateAccount={transactionReferences.handleCreateAccount}
+        onUnarchiveAccount={transactionReferences.handleUnarchiveAccount}
+        onCreateCategory={transactionReferences.handleCreateCategory}
+        onUnarchiveCategory={transactionReferences.handleUnarchiveCategory}
+      />
+      <AccountReferenceDialog
+        accountActions={transactionReferences.accountActions}
+        description="Save this account and it will be selected in the transaction form."
+      />
+      <CategoryReferenceDialog
+        categoryActions={transactionReferences.categoryActions}
+        description="Save this category and it will be selected in the transaction form."
       />
     </DashboardPageSection>
   )

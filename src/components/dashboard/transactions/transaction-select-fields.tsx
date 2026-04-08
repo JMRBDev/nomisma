@@ -5,96 +5,123 @@ import type {
   TransactionFormValues,
 } from "@/components/dashboard/transactions/transactions-shared"
 import { resolveValidOption } from "@/components/dashboard/transactions/transactions-shared"
-import { FormErrorMessage } from "@/components/form-error-message"
-import { Field, FieldLabel, FieldTitle } from "@/components/ui/field"
-import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
+import { ReferenceComboboxField } from "@/components/dashboard/reference-combobox-field"
+import { getCreateOrRestoreActions } from "@/lib/reference-entities"
 
 export function TransactionSelectFields({
   values,
   errors,
   accountOptions,
+  allAccountOptions,
   categoryOptions,
+  allCategoryOptions,
   onValueChange,
   onAccountChange,
+  onCreateAccount,
+  onUnarchiveAccount,
+  onCreateCategory,
+  onUnarchiveCategory,
 }: {
   values: TransactionFormValues
   errors: TransactionFieldErrors
   accountOptions: Array<AccountOption>
+  allAccountOptions: Array<AccountOption>
   categoryOptions: Array<CategoryOption>
+  allCategoryOptions: Array<CategoryOption>
   onValueChange: (name: keyof TransactionFormValues, value: string) => void
   onAccountChange: (value: string) => void
+  onCreateAccount: (
+    name: string,
+    fieldName: "accountId" | "toAccountId"
+  ) => void
+  onUnarchiveAccount: (
+    accountId: string,
+    fieldName: "accountId" | "toAccountId"
+  ) => void
+  onCreateCategory: (name: string) => void
+  onUnarchiveCategory: (categoryId: string) => void
 }) {
+  const getAccountActions = (query: string, fieldName: "accountId" | "toAccountId") => {
+    return getCreateOrRestoreActions({
+      options: allAccountOptions,
+      query,
+      createKey: `create-account-${fieldName}`,
+      unarchiveKey: `unarchive-account-${fieldName}`,
+      createDescription: "Finish account setup and select it here.",
+      unarchiveDescription: "Restore this account and select it here.",
+      onCreate: (name) => onCreateAccount(name, fieldName),
+      onUnarchive: (account) => onUnarchiveAccount(account._id, fieldName),
+    })
+  }
+
+  const categoryReferenceOptions = allCategoryOptions.filter(
+    (category) => category.kind === values.type
+  )
+
+  const getCategoryActions = (query: string) => {
+    return getCreateOrRestoreActions({
+      options: categoryReferenceOptions,
+      query,
+      createKey: "create-category",
+      unarchiveKey: "unarchive-category",
+      createDescription: "Finish category setup and use it for this transaction.",
+      unarchiveDescription: "Restore this category and use it here.",
+      onCreate: onCreateCategory,
+      onUnarchive: (category) => onUnarchiveCategory(category._id),
+    })
+  }
+
+  const destinationAccountOptions = accountOptions.filter(
+    (account) => account._id !== values.accountId
+  )
+
   return (
     <>
-      <Field>
-        <FieldLabel htmlFor="transaction-account">
-          <FieldTitle>
-            {values.type === "transfer" ? "From account" : "Account"}
-          </FieldTitle>
-        </FieldLabel>
-        <NativeSelect
-          id="transaction-account"
-          value={resolveValidOption(values.accountId, accountOptions)}
-          onChange={(event) => onAccountChange(event.target.value)}
-        >
-          {accountOptions.map((account) => (
-            <NativeSelectOption key={account._id} value={account._id}>
-              {account.name}
-            </NativeSelectOption>
-          ))}
-        </NativeSelect>
-        <FormErrorMessage error={errors.accountId} />
-      </Field>
+      <ReferenceComboboxField
+        id="transaction-account"
+        label={values.type === "transfer" ? "From account" : "Account"}
+        value={resolveValidOption(values.accountId, accountOptions)}
+        options={accountOptions.map((account) => ({
+          value: account._id,
+          label: account.name,
+        }))}
+        error={errors.accountId}
+        placeholder="Search or create an account"
+        emptyMessage="No accounts found."
+        onValueChange={onAccountChange}
+        getActions={(query) => getAccountActions(query, "accountId")}
+      />
 
       {values.type === "transfer" ? (
-        <Field>
-          <FieldLabel htmlFor="transaction-to-account">
-            <FieldTitle>Destination account</FieldTitle>
-          </FieldLabel>
-          <NativeSelect
-            id="transaction-to-account"
-            value={values.toAccountId}
-            onChange={(event) =>
-              onValueChange("toAccountId", event.target.value)
-            }
-          >
-            <NativeSelectOption value="">Choose account</NativeSelectOption>
-            {accountOptions
-              .filter((account) => account._id !== values.accountId)
-              .map((account) => (
-                <NativeSelectOption key={account._id} value={account._id}>
-                  {account.name}
-                </NativeSelectOption>
-              ))}
-          </NativeSelect>
-          <FormErrorMessage error={errors.toAccountId} />
-        </Field>
+        <ReferenceComboboxField
+          id="transaction-to-account"
+          label="Destination account"
+          value={values.toAccountId}
+          options={destinationAccountOptions.map((account) => ({
+            value: account._id,
+            label: account.name,
+          }))}
+          error={errors.toAccountId}
+          placeholder="Search or create an account"
+          emptyMessage="No destination accounts found."
+          onValueChange={(nextValue) => onValueChange("toAccountId", nextValue)}
+          getActions={(query) => getAccountActions(query, "toAccountId")}
+        />
       ) : (
-        <Field>
-          <FieldLabel htmlFor="transaction-category">
-            <FieldTitle>Category</FieldTitle>
-          </FieldLabel>
-          <NativeSelect
-            id="transaction-category"
-            value={resolveValidOption(values.categoryId, categoryOptions)}
-            onChange={(event) =>
-              onValueChange("categoryId", event.target.value)
-            }
-            disabled={categoryOptions.length === 0}
-          >
-            {categoryOptions.length === 0 ? (
-              <NativeSelectOption value="">
-                Create a category first
-              </NativeSelectOption>
-            ) : null}
-            {categoryOptions.map((category) => (
-              <NativeSelectOption key={category._id} value={category._id}>
-                {category.name}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-          <FormErrorMessage error={errors.categoryId} />
-        </Field>
+        <ReferenceComboboxField
+          id="transaction-category"
+          label="Category"
+          value={resolveValidOption(values.categoryId, categoryOptions)}
+          options={categoryOptions.map((category) => ({
+            value: category._id,
+            label: category.name,
+          }))}
+          error={errors.categoryId}
+          placeholder={`Search or create a ${values.type} category`}
+          emptyMessage={`No ${values.type} categories found.`}
+          onValueChange={(nextValue) => onValueChange("categoryId", nextValue)}
+          getActions={getCategoryActions}
+        />
       )}
     </>
   )
