@@ -62,7 +62,6 @@ export default defineSchema({
 
   categories: defineTable({
     userId: v.string(),
-    kind: categoryKindValidator,
     name: v.string(),
     color: v.string(),
     icon: v.string(),
@@ -70,8 +69,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
-    .index("by_userId", ["userId"])
-    .index("by_userId_kind", ["userId", "kind"]),
+    .index("by_userId", ["userId"]),
 
   transactions: defineTable({
     userId: v.string(),

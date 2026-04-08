@@ -15,13 +15,12 @@ import { toAmountInput, todayInputValue } from "@/lib/money"
 
 export type TransactionEditorOptions = {
   accountOptions: Array<AccountOption>
-  incomeCategoryOptions: Array<CategoryOption>
-  expenseCategoryOptions: Array<CategoryOption>
+  categoryOptions: Array<CategoryOption>
 }
 
 export function createTransactionDefaults(
   accountOptions: Array<AccountOption>,
-  expenseCategoryOptions: Array<CategoryOption>
+  categoryOptions: Array<CategoryOption>
 ): TransactionFormValues {
   return {
     type: "expense",
@@ -30,7 +29,7 @@ export function createTransactionDefaults(
     date: todayInputValue(),
     accountId: getFirstOptionId(accountOptions),
     toAccountId: "",
-    categoryId: getFirstOptionId(expenseCategoryOptions),
+    categoryId: getFirstOptionId(categoryOptions),
     description: "",
     note: "",
   }
@@ -54,11 +53,7 @@ export function createTransactionFormValues(
 
 export function validateTransactionValues(
   values: TransactionFormValues,
-  {
-    accountOptions,
-    incomeCategoryOptions,
-    expenseCategoryOptions,
-  }: TransactionEditorOptions
+  { accountOptions, categoryOptions }: TransactionEditorOptions
 ): TransactionFieldErrors {
   const errors: TransactionFieldErrors = {}
   const resolvedAccountId = resolveValidOption(values.accountId, accountOptions)
@@ -90,14 +85,11 @@ export function validateTransactionValues(
     return errors
   }
 
-  const categoryOptions = getCategoryOptions(
-    values.type,
-    incomeCategoryOptions,
-    expenseCategoryOptions
-  )
+  const validCategoryOptions = getCategoryOptions(values.type, categoryOptions)
 
-  if (!resolveValidOption(values.categoryId, categoryOptions)) {
-    errors.categoryId = `Create at least one ${values.type} category in Transactions before saving this transaction.`
+  if (!resolveValidOption(values.categoryId, validCategoryOptions)) {
+    errors.categoryId =
+      "Create at least one category in Transactions before saving this transaction."
   }
 
   return errors
@@ -105,22 +97,14 @@ export function validateTransactionValues(
 
 export function buildTransactionPayload(
   values: TransactionFormValues,
-  {
-    accountOptions,
-    incomeCategoryOptions,
-    expenseCategoryOptions,
-  }: TransactionEditorOptions
+  { accountOptions, categoryOptions }: TransactionEditorOptions
 ) {
   const accountId = resolveValidOption(values.accountId, accountOptions)
-  const categoryOptions = getCategoryOptions(
-    values.type,
-    incomeCategoryOptions,
-    expenseCategoryOptions
-  )
+  const validCategoryOptions = getCategoryOptions(values.type, categoryOptions)
   const categoryId =
     values.type === "transfer"
       ? undefined
-      : resolveValidOption(values.categoryId, categoryOptions) || undefined
+      : resolveValidOption(values.categoryId, validCategoryOptions) || undefined
 
   return {
     type: values.type,

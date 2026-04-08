@@ -23,8 +23,7 @@ export function RecurringFormFields({
   errors,
   accountOptions,
   allAccountOptions,
-  incomeCategoryOptions,
-  expenseCategoryOptions,
+  categoryOptions,
   allCategoryOptions,
   onValueChange,
   onTypeChange,
@@ -37,8 +36,7 @@ export function RecurringFormFields({
   errors: RecurringFieldErrors
   accountOptions: Array<RecurringAccountOption>
   allAccountOptions: Array<RecurringAccountOption>
-  incomeCategoryOptions: Array<RecurringCategoryOption>
-  expenseCategoryOptions: Array<RecurringCategoryOption>
+  categoryOptions: Array<RecurringCategoryOption>
   allCategoryOptions: Array<RecurringCategoryOption>
   onValueChange: (name: keyof RecurringFormValues, value: string) => void
   onTypeChange: (value: RecurringType) => void
@@ -47,11 +45,7 @@ export function RecurringFormFields({
   onCreateCategory: (name: string) => void
   onUnarchiveCategory: (categoryId: string) => void
 }) {
-  const categoryOptions = getCategoryOptions(
-    values.type,
-    incomeCategoryOptions,
-    expenseCategoryOptions
-  )
+  const resolvedCategoryOptions = getCategoryOptions(values.type, categoryOptions)
   return (
     <FieldGroup>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -105,7 +99,7 @@ export function RecurringFormFields({
           errors={errors}
           accountOptions={accountOptions}
           allAccountOptions={allAccountOptions}
-          categoryOptions={categoryOptions}
+          categoryOptions={resolvedCategoryOptions}
           allCategoryOptions={allCategoryOptions}
           onValueChange={onValueChange}
           onCreateAccount={onCreateAccount}

@@ -29,10 +29,7 @@ export async function createRecurringRule(
   }
 
   await getOwnedAccount(ctx, user._id, args.accountId)
-  const category = await getOwnedCategory(ctx, user._id, args.categoryId)
-  if (category.kind !== args.type) {
-    throw new ConvexError("The category must match the recurring item type.")
-  }
+  await getOwnedCategory(ctx, user._id, args.categoryId)
 
   return ctx.db.insert("recurringRules", {
     userId: user._id,
@@ -87,11 +84,7 @@ export async function updateRecurringRule(
   }
 
   if (args.categoryId !== undefined) {
-    const category = await getOwnedCategory(ctx, user._id, args.categoryId)
-    const ruleType = args.type ?? rule.type
-    if (category.kind !== ruleType) {
-      throw new ConvexError("The category must match the recurring item type.")
-    }
+    await getOwnedCategory(ctx, user._id, args.categoryId)
     patch.categoryId = args.categoryId
   }
 

@@ -64,10 +64,7 @@ export async function upsertBudget(
   }
 
   if (args.categoryId) {
-    const category = await getOwnedCategory(ctx, user._id, args.categoryId)
-    if (category.kind !== "expense") {
-      throw new ConvexError("Budgets only work with expense categories.")
-    }
+    await getOwnedCategory(ctx, user._id, args.categoryId)
   }
 
   const categoryKey = args.categoryId ?? "total"

@@ -24,11 +24,9 @@ export type TransactionFormFieldsProps = {
   errors: TransactionFieldErrors
   accountOptions: Array<AccountOption>
   allAccountOptions: Array<AccountOption>
-  incomeCategoryOptions: Array<CategoryOption>
-  expenseCategoryOptions: Array<CategoryOption>
+  categoryOptions: Array<CategoryOption>
   allCategoryOptions: Array<CategoryOption>
   onValueChange: (name: keyof TransactionFormValues, value: string) => void
   onTypeChange: (value: TransactionType) => void
   onAccountChange: (value: string) => void
 } & TransactionReferenceFieldHandlers
-

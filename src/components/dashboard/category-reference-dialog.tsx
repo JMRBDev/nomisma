@@ -21,7 +21,6 @@ export function CategoryReferenceDialog({
       title="Finish category setup"
       description={description}
       submitLabel="Create and select category"
-      kindDisabled
       onValueChange={categoryActions.manager.dialog.handleValueChange}
     />
   )

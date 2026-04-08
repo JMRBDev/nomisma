@@ -25,8 +25,7 @@ export function RecurringPage() {
     dialog,
     pendingRuleId,
     accountOptions,
-    incomeCategoryOptions,
-    expenseCategoryOptions,
+    categoryOptions,
     handleClearDateFilter,
     handleTypeChange,
     handleConfirm,
@@ -75,9 +74,7 @@ export function RecurringPage() {
         hasDateFilter={hasDateFilter}
         filterLabel={filterLabel}
         hasAccounts={accountOptions.length > 0}
-        hasCategoryOptions={
-          incomeCategoryOptions.length > 0 || expenseCategoryOptions.length > 0
-        }
+        hasCategoryOptions={categoryOptions.length > 0}
         onConfirm={handleConfirm}
         onEdit={handleEdit}
         onToggle={handleToggle}
@@ -95,8 +92,7 @@ export function RecurringPage() {
         editing={dialog.isEditing}
         accountOptions={accountOptions}
         allAccountOptions={allAccountOptions}
-        incomeCategoryOptions={incomeCategoryOptions}
-        expenseCategoryOptions={expenseCategoryOptions}
+        categoryOptions={categoryOptions}
         allCategoryOptions={allCategoryOptions}
         onValueChange={dialog.handleValueChange}
         onTypeChange={handleTypeChange}
@@ -111,10 +107,8 @@ export function RecurringPage() {
           )
         }
         onCreateCategory={(name) =>
-          categoryActions.handleCreateCategory(
-            name,
-            dialog.values.type,
-            (categoryId) => dialog.handleValueChange("categoryId", categoryId)
+          categoryActions.handleCreateCategory(name, (categoryId) =>
+            dialog.handleValueChange("categoryId", categoryId)
           )
         }
         onUnarchiveCategory={(categoryId) =>

@@ -34,12 +34,11 @@ export function BudgetsPage() {
   const categoryActions = useCategoryReferenceActions()
   const dialog = useFormDialog({
     createDefaults: () => {
-      const categoryOptions = data.categories.activeExpense
+      const categoryOptions = data.categories.active
       return createBudgetDefaults(categoryOptions)
     },
     createFormValues: createBudgetFormValues,
-    validate: (values) =>
-      validateBudgetValues(values, data.categories.activeExpense),
+    validate: (values) => validateBudgetValues(values, data.categories.active),
     onSubmit: async (values) => {
       await upsertBudget(buildBudgetPayload(values, data.budgets.currentMonth))
     },
@@ -58,7 +57,7 @@ export function BudgetsPage() {
     },
     errorMessage: "Unable to delete the budget.",
   })
-  const categoryOptions = data.categories.activeExpense
+  const categoryOptions = data.categories.active
   const allCategoryOptions = data.categories.all
   const budgets = data.budgets.items
   const currency = data.settings?.baseCurrency
@@ -127,7 +126,7 @@ export function BudgetsPage() {
         allCategoryOptions={allCategoryOptions}
         onValueChange={dialog.handleValueChange}
         onCreateCategory={(name) =>
-          categoryActions.handleCreateCategory(name, "expense", (categoryId) =>
+          categoryActions.handleCreateCategory(name, (categoryId) =>
             dialog.handleValueChange("categoryId", categoryId)
           )
         }

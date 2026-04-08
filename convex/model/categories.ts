@@ -11,7 +11,6 @@ async function getCategoryNameConflicts(
   ctx: MutationCtx,
   userId: string,
   args: {
-    kind: "income" | "expense"
     name: string
     excludedCategoryId?: Parameters<typeof getOwnedCategory>[2]
   }
@@ -20,10 +19,6 @@ async function getCategoryNameConflicts(
   const categories = await getCategoriesByUserId(ctx, userId)
 
   return categories.filter((category) => {
-    if (category.kind !== args.kind) {
-      return false
-    }
-
     if (args.excludedCategoryId && category._id === args.excludedCategoryId) {
       return false
     }
@@ -35,7 +30,6 @@ async function getCategoryNameConflicts(
 export async function createCategory(
   ctx: MutationCtx,
   args: {
-    kind: "income" | "expense"
     name: string
     color: string
     icon: string
@@ -50,21 +44,17 @@ export async function createCategory(
   }
 
   const conflicts = await getCategoryNameConflicts(ctx, user._id, {
-    kind: args.kind,
     name,
   })
 
   if (conflicts.some((category) => !category.archived)) {
-    throw new ConvexError(
-      `An active ${args.kind} category with this name already exists.`
-    )
+    throw new ConvexError("An active category with this name already exists.")
   }
 
   const timestamp = Date.now()
 
   return ctx.db.insert("categories", {
     userId: user._id,
-    kind: args.kind,
     name,
     color: appearance.color,
     icon: appearance.icon,
@@ -94,15 +84,12 @@ export async function updateCategory(
 
   if (normalizeEntityName(category.name) !== normalizeEntityName(name)) {
     const conflicts = await getCategoryNameConflicts(ctx, user._id, {
-      kind: category.kind,
       name,
       excludedCategoryId: category._id,
     })
 
     if (conflicts.some((item) => !item.archived)) {
-      throw new ConvexError(
-        `An active ${category.kind} category with this name already exists.`
-      )
+      throw new ConvexError("An active category with this name already exists.")
     }
   }
 
@@ -126,14 +113,13 @@ export async function toggleCategoryArchived(
 
   if (!args.archived) {
     const conflicts = await getCategoryNameConflicts(ctx, user._id, {
-      kind: category.kind,
       name: category.name,
       excludedCategoryId: category._id,
     })
 
     if (conflicts.some((item) => !item.archived)) {
       throw new ConvexError(
-        `An active ${category.kind} category with this name already exists. Rename it before restoring this one.`
+        "An active category with this name already exists. Rename it before restoring this one."
       )
     }
   }

@@ -1,4 +1,3 @@
-import { ConvexError } from "convex/values"
 import {
   applyTransactionToBalances,
   assertNoNegativeBalances,
@@ -37,14 +36,7 @@ export async function createTransaction(
   validateTransactionShape(args)
   await getOwnedAccount(ctx, user._id, args.accountId)
   if (args.toAccountId) await getOwnedAccount(ctx, user._id, args.toAccountId)
-  if (args.categoryId) {
-    const category = await getOwnedCategory(ctx, user._id, args.categoryId)
-    if (category.kind !== args.type) {
-      throw new ConvexError(
-        "Pick a category that matches the transaction type."
-      )
-    }
-  }
+  if (args.categoryId) await getOwnedCategory(ctx, user._id, args.categoryId)
 
   const [accounts, existingTransactions] = await Promise.all([
     getAccountsByUserId(ctx, user._id),
@@ -95,14 +87,7 @@ export async function updateTransaction(
   validateTransactionShape(args)
   await getOwnedAccount(ctx, user._id, args.accountId)
   if (args.toAccountId) await getOwnedAccount(ctx, user._id, args.toAccountId)
-  if (args.categoryId) {
-    const category = await getOwnedCategory(ctx, user._id, args.categoryId)
-    if (category.kind !== args.type) {
-      throw new ConvexError(
-        "Pick a category that matches the transaction type."
-      )
-    }
-  }
+  if (args.categoryId) await getOwnedCategory(ctx, user._id, args.categoryId)
 
   const [accounts, existingTransactions] = await Promise.all([
     getAccountsByUserId(ctx, user._id),

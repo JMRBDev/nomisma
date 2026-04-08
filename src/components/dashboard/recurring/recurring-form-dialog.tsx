@@ -21,8 +21,7 @@ export function RecurringFormDialog({
   editing = false,
   accountOptions,
   allAccountOptions,
-  incomeCategoryOptions,
-  expenseCategoryOptions,
+  categoryOptions,
   allCategoryOptions,
   onValueChange,
   onTypeChange,
@@ -41,8 +40,7 @@ export function RecurringFormDialog({
   editing?: boolean
   accountOptions: Array<RecurringAccountOption>
   allAccountOptions: Array<RecurringAccountOption>
-  incomeCategoryOptions: Array<RecurringCategoryOption>
-  expenseCategoryOptions: Array<RecurringCategoryOption>
+  categoryOptions: Array<RecurringCategoryOption>
   allCategoryOptions: Array<RecurringCategoryOption>
   onValueChange: (name: keyof RecurringFormValues, value: string) => void
   onTypeChange: (value: RecurringType) => void
@@ -51,11 +49,7 @@ export function RecurringFormDialog({
   onCreateCategory: (name: string) => void
   onUnarchiveCategory: (categoryId: string) => void
 }) {
-  const categoryOptions = getCategoryOptions(
-    values.type,
-    incomeCategoryOptions,
-    expenseCategoryOptions
-  )
+  const resolvedCategoryOptions = getCategoryOptions(values.type, categoryOptions)
 
   return (
     <DashboardFormDialog
@@ -70,8 +64,7 @@ export function RecurringFormDialog({
           errors={errors}
           accountOptions={accountOptions}
           allAccountOptions={allAccountOptions}
-          incomeCategoryOptions={incomeCategoryOptions}
-          expenseCategoryOptions={expenseCategoryOptions}
+          categoryOptions={categoryOptions}
           allCategoryOptions={allCategoryOptions}
           onValueChange={onValueChange}
           onTypeChange={onTypeChange}
@@ -81,10 +74,10 @@ export function RecurringFormDialog({
           onUnarchiveCategory={onUnarchiveCategory}
         />
 
-        {categoryOptions.length === 0 ? (
+        {resolvedCategoryOptions.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            You can create a {values.type} category directly from the category
-            field if you need a new one.
+            You can create a category directly from the category field if you
+            need a new one.
           </p>
         ) : null}
 

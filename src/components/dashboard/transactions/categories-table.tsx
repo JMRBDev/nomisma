@@ -14,7 +14,6 @@ const SORT_ACCESSORS: Record<
   (row: CategoryTableRow) => string | number
 > = {
   name: (row) => row.name.toLowerCase(),
-  kind: (row) => row.kind,
   transactionCount: (row) => row.transactionCount,
 }
 
@@ -22,7 +21,6 @@ const COLUMN_VISIBILITY_STORAGE_KEY = "nomisma-table-columns:categories"
 
 const COLUMNS: Array<DashboardTableColumn> = [
   { id: "name", column: "name", header: "Name", alwaysVisible: true },
-  { id: "kind", column: "kind", header: "Type" },
   { id: "status", header: "Status" },
   {
     id: "transactionCount",
@@ -53,7 +51,7 @@ export function CategoriesTable({
     columns: COLUMNS,
     columnVisibilityStorageKey: COLUMN_VISIBILITY_STORAGE_KEY,
     sortAccessors: SORT_ACCESSORS,
-    defaultSort: { column: "kind", direction: "asc" },
+    defaultSort: { column: "name", direction: "asc" },
   })
 
   const aggregates = useMemo(() => {
@@ -76,7 +74,6 @@ export function CategoriesTable({
               {table.allSortedData.length - aggregates.activeCount} archived
             </span>
           </TableCell>
-          {table.isColumnVisible("kind") && <TableCell />}
           {table.isColumnVisible("status") && <TableCell />}
           {table.isColumnVisible("transactionCount") && (
             <TableCell className="text-right font-medium">

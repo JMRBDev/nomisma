@@ -22,7 +22,6 @@ export type CategoryRecord = TransactionsData["categories"]["all"][number]
 
 export type CategoryFormValues = {
   name: string
-  kind: "income" | "expense"
   color: string
   icon: string
 }
@@ -69,7 +68,6 @@ export function resolveCategoryAppearance(values: {
 export function createDefaultCategoryValues(): CategoryFormValues {
   return {
     name: "",
-    kind: "expense",
     ...createRandomCategoryAppearance(),
   }
 }
@@ -99,7 +97,6 @@ export function buildCategoryPayload(values: CategoryFormValues) {
 
   return {
     name: values.name.trim(),
-    kind: values.kind,
     color: appearance.color,
     icon: appearance.icon,
   }

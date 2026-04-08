@@ -36,13 +36,9 @@ export function BudgetFormFields({
   onCreateCategory: (name: string) => void
   onUnarchiveCategory: (categoryId: string) => void
 }) {
-  const categoryReferenceOptions = allCategoryOptions.filter(
-    (category) => category.kind === "expense"
-  )
-
   const getCategoryActions = (query: string) => {
     return getCreateOrRestoreActions({
-      options: categoryReferenceOptions,
+      options: allCategoryOptions,
       query,
       createKey: "create-category",
       unarchiveKey: "unarchive-category",
@@ -70,9 +66,9 @@ export function BudgetFormFields({
           })),
         ]}
         error={errors.categoryId}
-        placeholder="Search or create an expense category"
+        placeholder="Search or create a category"
         emptyMessage="No budget targets found."
-        description="Track all posted expenses or focus on one expense category."
+        description="Track all posted expenses or focus on one category."
         onValueChange={(nextValue) => onValueChange("categoryId", nextValue)}
         getActions={getCategoryActions}
       />

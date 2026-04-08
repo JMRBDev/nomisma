@@ -9,8 +9,7 @@ type BudgetsData = ReturnType<typeof budgetsRouteApi.useLoaderData>
 export const TOTAL_BUDGET_VALUE = "total"
 
 export type BudgetRecord = BudgetsData["budgets"]["items"][number]
-export type BudgetCategoryOption =
-  BudgetsData["categories"]["activeExpense"][number]
+export type BudgetCategoryOption = BudgetsData["categories"]["active"][number]
 export type BudgetFormValues = {
   categoryId: string
   limitAmount: string
@@ -67,7 +66,7 @@ export function validateBudgetValues(
     values.categoryId !== TOTAL_BUDGET_VALUE &&
     !categoryOptions.some((category) => category._id === values.categoryId)
   ) {
-    errors.categoryId = "Pick a valid expense category."
+    errors.categoryId = "Pick a valid category."
   }
 
   return errors

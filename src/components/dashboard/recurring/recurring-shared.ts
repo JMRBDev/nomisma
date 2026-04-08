@@ -28,25 +28,15 @@ export type RecurringFieldErrors = Partial<
 >
 
 export function getCategoryOptions(
-  type: RecurringType,
-  incomeCategoryOptions: Array<RecurringCategoryOption>,
-  expenseCategoryOptions: Array<RecurringCategoryOption>
+  _type: RecurringType,
+  categoryOptions: Array<RecurringCategoryOption>
 ) {
-  return type === "income" ? incomeCategoryOptions : expenseCategoryOptions
+  return categoryOptions
 }
 
 export function getDefaultRecurringType(
-  incomeCategoryOptions: Array<RecurringCategoryOption>,
-  expenseCategoryOptions: Array<RecurringCategoryOption>
+  _categoryOptions: Array<RecurringCategoryOption>
 ): RecurringType {
-  if (expenseCategoryOptions.length > 0) {
-    return "expense"
-  }
-
-  if (incomeCategoryOptions.length > 0) {
-    return "income"
-  }
-
   return "expense"
 }
 

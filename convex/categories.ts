@@ -1,11 +1,9 @@
 import { v } from "convex/values"
 import { mutation } from "./_generated/server"
 import * as Categories from "./model/categories"
-import { categoryKindValidator } from "./schema"
 
 export const createCategory = mutation({
   args: {
-    kind: categoryKindValidator,
     name: v.string(),
     color: v.string(),
     icon: v.string(),

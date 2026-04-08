@@ -35,10 +35,8 @@ export function useTransactionReferenceHandlers(
     })
 
   const handleCreateCategory = (name: string) =>
-    categoryActions.handleCreateCategory(
-      name,
-      transactionEditor.values.type === "income" ? "income" : "expense",
-      (categoryId) => transactionEditor.handleValueChange("categoryId", categoryId)
+    categoryActions.handleCreateCategory(name, (categoryId) =>
+      transactionEditor.handleValueChange("categoryId", categoryId)
     )
 
   const handleUnarchiveCategory = (categoryId: string) =>

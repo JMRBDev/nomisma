@@ -19,14 +19,12 @@ import { useFormDialog } from "@/hooks/use-form-dialog"
 
 type TransactionEditorOptions = {
   accountOptions: Array<AccountOption>
-  incomeCategoryOptions: Array<CategoryOption>
-  expenseCategoryOptions: Array<CategoryOption>
+  categoryOptions: Array<CategoryOption>
 } & TransactionsPageActions
 
 export function useTransactionEditor({
   accountOptions,
-  incomeCategoryOptions,
-  expenseCategoryOptions,
+  categoryOptions,
   onCreateTransaction,
   onUpdateTransaction,
   onDeleteTransaction,
@@ -35,13 +33,11 @@ export function useTransactionEditor({
 
   const optionsRef = useRef({
     accountOptions,
-    incomeCategoryOptions,
-    expenseCategoryOptions,
+    categoryOptions,
   })
   optionsRef.current = {
     accountOptions,
-    incomeCategoryOptions,
-    expenseCategoryOptions,
+    categoryOptions,
   }
 
   const dialog = useFormDialog<
@@ -52,7 +48,7 @@ export function useTransactionEditor({
     createDefaults: () =>
       createTransactionDefaults(
         optionsRef.current.accountOptions,
-        optionsRef.current.expenseCategoryOptions
+        optionsRef.current.categoryOptions
       ),
     createFormValues: createTransactionFormValues,
     validate: (values) => validateTransactionValues(values, optionsRef.current),
@@ -94,8 +90,7 @@ export function useTransactionEditor({
       categoryId: resolveCategoryOnTypeChange(
         current.categoryId,
         type,
-        incomeCategoryOptions,
-        expenseCategoryOptions
+        categoryOptions
       ),
     }))
     dialog.setErrors({})

@@ -40,7 +40,6 @@ export function CategoriesSection({
     return data.categories.all.map((cat: PageData["categories"]["all"][number]) => ({
       _id: cat._id,
       name: cat.name,
-      kind: cat.kind,
       color: cat.color,
       icon: cat.icon,
       archived: cat.archived,
@@ -76,8 +75,7 @@ export function CategoriesSection({
                 </EmptyMedia>
                 <EmptyTitle>Add your first category</EmptyTitle>
                 <EmptyDescription>
-                  Create income and expense categories to organize your
-                  transactions and budgets.
+                  Create categories to organize your transactions and budgets.
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>

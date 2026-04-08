@@ -54,13 +54,9 @@ export function RecurringSelectFields({
     })
   }
 
-  const categoryReferenceOptions = allCategoryOptions.filter(
-    (category) => category.kind === values.type
-  )
-
   const getCategoryActions = (query: string) => {
     return getCreateOrRestoreActions({
-      options: categoryReferenceOptions,
+      options: allCategoryOptions,
       query,
       createKey: "create-category",
       unarchiveKey: "unarchive-category",
@@ -90,15 +86,15 @@ export function RecurringSelectFields({
 
       <ReferenceComboboxField
         id="recurring-category"
-        label={values.type === "income" ? "Income category" : "Expense category"}
+        label="Category"
         value={resolveValidOption(values.categoryId, categoryOptions)}
         options={categoryOptions.map((category) => ({
           value: category._id,
           label: category.name,
         }))}
         error={errors.categoryId}
-        placeholder={`Search or create a ${values.type} category`}
-        emptyMessage={`No ${values.type} categories found.`}
+        placeholder="Search or create a category"
+        emptyMessage="No categories found."
         onValueChange={(nextValue) => onValueChange("categoryId", nextValue)}
         getActions={getCategoryActions}
       />

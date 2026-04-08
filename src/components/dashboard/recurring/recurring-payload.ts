@@ -16,31 +16,22 @@ import { toAmountInput, todayInputValue } from "@/lib/money"
 
 export type RecurringEditorOptions = {
   accountOptions: Array<RecurringAccountOption>
-  incomeCategoryOptions: Array<RecurringCategoryOption>
-  expenseCategoryOptions: Array<RecurringCategoryOption>
+  categoryOptions: Array<RecurringCategoryOption>
 }
 
 export function createRecurringDefaults(
   accountOptions: Array<RecurringAccountOption>,
-  incomeCategoryOptions: Array<RecurringCategoryOption>,
-  expenseCategoryOptions: Array<RecurringCategoryOption>
+  categoryOptions: Array<RecurringCategoryOption>
 ): RecurringFormValues {
-  const type = getDefaultRecurringType(
-    incomeCategoryOptions,
-    expenseCategoryOptions
-  )
-  const categoryOptions = getCategoryOptions(
-    type,
-    incomeCategoryOptions,
-    expenseCategoryOptions
-  )
+  const type = getDefaultRecurringType(categoryOptions)
+  const validCategoryOptions = getCategoryOptions(type, categoryOptions)
   const today = todayInputValue()
 
   return {
     type,
     amount: "0",
     accountId: getFirstOptionId(accountOptions),
-    categoryId: getFirstOptionId(categoryOptions),
+    categoryId: getFirstOptionId(validCategoryOptions),
     frequency: "monthly",
     description: "",
     startDate: today,
@@ -67,26 +58,19 @@ export function createRecurringFormValues(
 
 export function validateRecurringValues(
   values: RecurringFormValues,
-  {
-    accountOptions,
-    incomeCategoryOptions,
-    expenseCategoryOptions,
-  }: RecurringEditorOptions
+  { accountOptions, categoryOptions }: RecurringEditorOptions
 ): RecurringFieldErrors {
   const errors: RecurringFieldErrors = {}
-  const categoryOptions = getCategoryOptions(
-    values.type,
-    incomeCategoryOptions,
-    expenseCategoryOptions
-  )
+  const validCategoryOptions = getCategoryOptions(values.type, categoryOptions)
 
   if (!resolveValidOption(values.accountId, accountOptions)) {
     errors.accountId =
       "Add at least one active account before scheduling a recurring item."
   }
 
-  if (!resolveValidOption(values.categoryId, categoryOptions)) {
-    errors.categoryId = `Create at least one ${values.type} category in Settings before saving this recurring item.`
+  if (!resolveValidOption(values.categoryId, validCategoryOptions)) {
+    errors.categoryId =
+      "Create at least one category in Settings before saving this recurring item."
   }
 
   if (Number(values.amount || "0") <= 0) {
@@ -117,17 +101,9 @@ export function validateRecurringValues(
 
 export function buildRecurringPayload(
   values: RecurringFormValues,
-  {
-    accountOptions,
-    incomeCategoryOptions,
-    expenseCategoryOptions,
-  }: RecurringEditorOptions
+  { accountOptions, categoryOptions }: RecurringEditorOptions
 ) {
-  const categoryOptions = getCategoryOptions(
-    values.type,
-    incomeCategoryOptions,
-    expenseCategoryOptions
-  )
+  const validCategoryOptions = getCategoryOptions(values.type, categoryOptions)
 
   return {
     type: values.type,
@@ -138,7 +114,7 @@ export function buildRecurringPayload(
     ) as Id<"accounts">,
     categoryId: resolveValidOption(
       values.categoryId,
-      categoryOptions
+      validCategoryOptions
     ) as Id<"categories">,
     description: values.description.trim(),
     frequency: values.frequency,

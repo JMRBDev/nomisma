@@ -32,7 +32,6 @@ export function useCategoryManager({
     createDefaults: createDefaultCategoryValues,
     createFormValues: (category) => ({
       name: category.name,
-      kind: category.kind,
       ...resolveCategoryAppearance(category),
     }),
     validate: validateCategoryValues,

@@ -40,29 +40,21 @@ export function useRecurringDialog(data: RecurringData | null | undefined) {
   >(null)
 
   const accountOptions = data?.accounts.active ?? []
-  const incomeCategoryOptions = data?.categories.activeIncome ?? []
-  const expenseCategoryOptions = data?.categories.activeExpense ?? []
+  const categoryOptions = data?.categories.active ?? []
   const editorOptions = {
     accountOptions,
-    incomeCategoryOptions,
-    expenseCategoryOptions,
+    categoryOptions,
   }
 
   const dialog = useFormDialog({
-    createDefaults: () =>
-      createRecurringDefaults(
-        accountOptions,
-        incomeCategoryOptions,
-        expenseCategoryOptions
-      ),
+    createDefaults: () => createRecurringDefaults(accountOptions, categoryOptions),
     createFormValues: createRecurringFormValues,
     validate: (values) => validateRecurringValues(values, editorOptions),
     onSubmit: async (values) => {
       if (!data) return
       const payload = buildRecurringPayload(values, {
         accountOptions: data.accounts.active,
-        incomeCategoryOptions: data.categories.activeIncome,
-        expenseCategoryOptions: data.categories.activeExpense,
+        categoryOptions: data.categories.active,
       })
       const editingId = editingRuleIdRef.current
       if (editingId)
@@ -85,8 +77,7 @@ export function useRecurringDialog(data: RecurringData | null | undefined) {
       categoryId: resolveCategoryOnTypeChange(
         current.categoryId,
         value,
-        incomeCategoryOptions,
-        expenseCategoryOptions
+        categoryOptions
       ),
     }))
   }
@@ -121,8 +112,7 @@ export function useRecurringDialog(data: RecurringData | null | undefined) {
     dialog,
     pendingRuleId,
     accountOptions,
-    incomeCategoryOptions,
-    expenseCategoryOptions,
+    categoryOptions,
     handleClearDateFilter,
     handleTypeChange,
     handleConfirm,

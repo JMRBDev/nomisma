@@ -15,36 +15,19 @@ export function resolveValidOption<T extends HasId>(
   return getFirstOptionId(options)
 }
 
-export function getCategoryOptions<
-  TIncome extends HasId,
-  TExpense extends HasId,
->(
+export function getCategoryOptions<TCategory extends HasId>(
   type: "income" | "expense" | "transfer",
-  incomeCategoryOptions: Array<TIncome>,
-  expenseCategoryOptions: Array<TExpense>
-): Array<TIncome> | Array<TExpense> {
-  if (type === "income") {
-    return incomeCategoryOptions
-  }
-
-  if (type === "expense") {
-    return expenseCategoryOptions
-  }
-
-  return []
+  categoryOptions: Array<TCategory>
+): Array<TCategory> {
+  return type === "transfer" ? [] : categoryOptions
 }
 
 export function resolveCategoryOnTypeChange(
   currentCategoryId: string,
   newType: "income" | "expense" | "transfer",
-  incomeCategoryOptions: Array<HasId>,
-  expenseCategoryOptions: Array<HasId>
+  categoryOptions: Array<HasId>
 ): string {
   if (newType === "transfer") return ""
-  const options = getCategoryOptions(
-    newType,
-    incomeCategoryOptions,
-    expenseCategoryOptions
-  )
+  const options = getCategoryOptions(newType, categoryOptions)
   return resolveValidOption(currentCategoryId, options)
 }

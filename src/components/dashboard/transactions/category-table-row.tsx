@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils"
 export type CategoryTableRowData = {
   _id: Id<"categories">
   name: string
-  kind: "income" | "expense"
   color?: string | null
   icon?: string | null
   archived: boolean
@@ -34,17 +33,6 @@ export function CategoryTableRow({
             <CategoryIconAvatar icon={category.icon} color={category.color} />
             <span className="font-medium">{category.name}</span>
           </div>
-        </TableCell>
-      )}
-      {isColumnVisible("kind") && (
-        <TableCell>
-          <span
-            className={cn(
-              category.kind === "income" ? "text-success" : "text-destructive"
-            )}
-          >
-            {category.kind === "income" ? "Income" : "Expense"}
-          </span>
         </TableCell>
       )}
       {isColumnVisible("status") && (

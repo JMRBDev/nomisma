@@ -20,13 +20,11 @@ export function useCategoryReferenceActions() {
 
   const handleCreateCategory = (
     name: string,
-    kind: "income" | "expense",
     onSelect: (categoryId: string) => void
   ) => {
     onSelectRef.current = onSelect
     manager.dialog.openCreateDialog({
       name,
-      kind,
     })
   }
 
@@ -49,4 +47,3 @@ export function useCategoryReferenceActions() {
     handleUnarchiveCategory,
   }
 }
-

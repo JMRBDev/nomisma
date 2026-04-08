@@ -21,8 +21,7 @@ export function TransactionFormFields({
   errors,
   accountOptions,
   allAccountOptions,
-  incomeCategoryOptions,
-  expenseCategoryOptions,
+  categoryOptions,
   allCategoryOptions,
   onValueChange,
   onTypeChange,
@@ -32,11 +31,7 @@ export function TransactionFormFields({
   onCreateCategory,
   onUnarchiveCategory,
 }: TransactionFormFieldsProps) {
-  const categoryOptions = getCategoryOptions(
-    values.type,
-    incomeCategoryOptions,
-    expenseCategoryOptions
-  )
+  const resolvedCategoryOptions = getCategoryOptions(values.type, categoryOptions)
   return (
     <FieldGroup>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -108,7 +103,7 @@ export function TransactionFormFields({
         errors={errors}
         accountOptions={accountOptions}
         allAccountOptions={allAccountOptions}
-        categoryOptions={categoryOptions}
+        categoryOptions={resolvedCategoryOptions}
         allCategoryOptions={allCategoryOptions}
         onValueChange={onValueChange}
         onAccountChange={onAccountChange}

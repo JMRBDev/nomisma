@@ -23,8 +23,7 @@ export function TransactionFormDialog({
   pending,
   accountOptions,
   allAccountOptions,
-  incomeCategoryOptions,
-  expenseCategoryOptions,
+  categoryOptions,
   allCategoryOptions,
   onValueChange,
   onTypeChange,
@@ -45,8 +44,7 @@ export function TransactionFormDialog({
   pending: boolean
   accountOptions: Array<AccountOption>
   allAccountOptions: Array<AccountOption>
-  incomeCategoryOptions: Array<CategoryOption>
-  expenseCategoryOptions: Array<CategoryOption>
+  categoryOptions: Array<CategoryOption>
   allCategoryOptions: Array<CategoryOption>
   onValueChange: (name: keyof TransactionFormValues, value: string) => void
   onTypeChange: (value: TransactionType) => void
@@ -62,11 +60,7 @@ export function TransactionFormDialog({
   onCreateCategory: (name: string) => void
   onUnarchiveCategory: (categoryId: string) => void
 }) {
-  const categoryOptions = getCategoryOptions(
-    values.type,
-    incomeCategoryOptions,
-    expenseCategoryOptions
-  )
+  const resolvedCategoryOptions = getCategoryOptions(values.type, categoryOptions)
 
   return (
     <DashboardFormDialog
@@ -81,8 +75,7 @@ export function TransactionFormDialog({
           errors={errors}
           accountOptions={accountOptions}
           allAccountOptions={allAccountOptions}
-          incomeCategoryOptions={incomeCategoryOptions}
-          expenseCategoryOptions={expenseCategoryOptions}
+          categoryOptions={categoryOptions}
           allCategoryOptions={allCategoryOptions}
           onValueChange={onValueChange}
           onTypeChange={onTypeChange}
@@ -93,10 +86,10 @@ export function TransactionFormDialog({
           onUnarchiveCategory={onUnarchiveCategory}
         />
 
-        {values.type !== "transfer" && categoryOptions.length === 0 ? (
+        {values.type !== "transfer" && resolvedCategoryOptions.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            You can create a {values.type} category directly from the category
-            field if you need a new one.
+            You can create a category directly from the category field if you
+            need a new one.
           </p>
         ) : null}
 

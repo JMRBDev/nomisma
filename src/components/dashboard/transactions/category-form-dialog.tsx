@@ -12,17 +12,10 @@ import {
 import { FormErrorMessage } from "@/components/form-error-message"
 import {
   Field,
-  FieldGroup,
   FieldLabel,
   FieldTitle,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
-
-const categoryKindOptions = [
-  { label: "Expense", value: "expense" },
-  { label: "Income", value: "income" },
-]
 
 export function CategoryFormDialog({
   open,
@@ -36,7 +29,6 @@ export function CategoryFormDialog({
   title,
   description,
   submitLabel,
-  kindDisabled,
   onValueChange,
 }: {
   open: boolean
@@ -50,7 +42,6 @@ export function CategoryFormDialog({
   title?: string
   description?: string
   submitLabel?: string
-  kindDisabled?: boolean
   onValueChange: (name: keyof CategoryFormValues, value: string) => void
 }) {
   return (
@@ -66,57 +57,30 @@ export function CategoryFormDialog({
       }
     >
       <form className="space-y-4" onSubmit={onSubmit}>
-        <FieldGroup>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field>
-              <FieldLabel htmlFor="category-name">
-                <FieldTitle>Name and Appearance</FieldTitle>
-              </FieldLabel>
+        <Field>
+          <FieldLabel htmlFor="category-name">
+            <FieldTitle>Name and Appearance</FieldTitle>
+          </FieldLabel>
 
-              <div className="flex gap-2 items-center">
-                <AppearancePicker
-                  colorValue={values.color}
-                  iconValue={values.icon}
-                  onColorChange={(value) => onValueChange("color", value)}
-                  onIconChange={(value) => onValueChange("icon", value)}
-                  icons={CATEGORY_ICON_OPTIONS}
-                  iconMap={CATEGORY_ICON_MAP}
-                  entityName="category"
-                />
-                <Input
-                  id="category-name"
-                  placeholder="e.g. Groceries, Salary"
-                  value={values.name}
-                  onChange={(event) => onValueChange("name", event.target.value)}
-                />
-              </div>
-              <FormErrorMessage error={errors.name} />
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="category-kind">
-                <FieldTitle>Type</FieldTitle>
-              </FieldLabel>
-              <NativeSelect
-                id="category-kind"
-                value={values.kind}
-                onChange={(event) =>
-                  onValueChange(
-                    "kind",
-                    event.target.value as "income" | "expense"
-                  )
-                }
-                disabled={kindDisabled ?? isEditing}
-              >
-                {categoryKindOptions.map((option) => (
-                  <NativeSelectOption key={option.value} value={option.value}>
-                    {option.label}
-                  </NativeSelectOption>
-                ))}
-              </NativeSelect>
-            </Field>
+          <div className="flex gap-2 items-center">
+            <AppearancePicker
+              colorValue={values.color}
+              iconValue={values.icon}
+              onColorChange={(value) => onValueChange("color", value)}
+              onIconChange={(value) => onValueChange("icon", value)}
+              icons={CATEGORY_ICON_OPTIONS}
+              iconMap={CATEGORY_ICON_MAP}
+              entityName="category"
+            />
+            <Input
+              id="category-name"
+              placeholder="e.g. Groceries, Salary"
+              value={values.name}
+              onChange={(event) => onValueChange("name", event.target.value)}
+            />
           </div>
-        </FieldGroup>
+          <FormErrorMessage error={errors.name} />
+        </Field>
 
         <DashboardFormActions
           pending={pending}

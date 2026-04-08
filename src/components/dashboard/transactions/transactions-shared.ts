@@ -77,10 +77,7 @@ export const DEFAULT_FILTER_VALUES: TransactionFilterValues = {
   categoryId: ALL_FILTER_VALUE,
 }
 
-export const getCategoryOptions = getCategoryOptionsGeneric<
-  CategoryOption,
-  CategoryOption
->
+export const getCategoryOptions = getCategoryOptionsGeneric<CategoryOption>
 
 export const resolveValidOption = resolveValidOptionGeneric
 

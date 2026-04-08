@@ -54,13 +54,9 @@ export function TransactionSelectFields({
     })
   }
 
-  const categoryReferenceOptions = allCategoryOptions.filter(
-    (category) => category.kind === values.type
-  )
-
   const getCategoryActions = (query: string) => {
     return getCreateOrRestoreActions({
-      options: categoryReferenceOptions,
+      options: allCategoryOptions,
       query,
       createKey: "create-category",
       unarchiveKey: "unarchive-category",
@@ -117,8 +113,8 @@ export function TransactionSelectFields({
             label: category.name,
           }))}
           error={errors.categoryId}
-          placeholder={`Search or create a ${values.type} category`}
-          emptyMessage={`No ${values.type} categories found.`}
+          placeholder="Search or create a category"
+          emptyMessage="No categories found."
           onValueChange={(nextValue) => onValueChange("categoryId", nextValue)}
           getActions={getCategoryActions}
         />

@@ -34,12 +34,10 @@ export function TransactionsPage() {
   const accountOptions = data.accounts.active
   const allAccountOptions = [...data.accounts.active, ...data.accounts.archived]
   const allCategoryOptions = data.categories.all
-  const incomeCategoryOptions = data.categories.activeIncome
-  const expenseCategoryOptions = data.categories.activeExpense
+  const categoryOptions = data.categories.active
   const transactionEditor = useTransactionEditor({
     accountOptions,
-    incomeCategoryOptions,
-    expenseCategoryOptions,
+    categoryOptions,
     onCreateTransaction: (payload) => createTx(payload),
     onUpdateTransaction: (id, payload) =>
       updateTx({ transactionId: id, ...payload }),
@@ -121,8 +119,7 @@ export function TransactionsPage() {
         pending={transactionEditor.pending}
         accountOptions={accountOptions}
         allAccountOptions={allAccountOptions}
-        incomeCategoryOptions={incomeCategoryOptions}
-        expenseCategoryOptions={expenseCategoryOptions}
+        categoryOptions={categoryOptions}
         allCategoryOptions={allCategoryOptions}
         onValueChange={transactionEditor.handleValueChange}
         onTypeChange={transactionEditor.handleTypeChange}
