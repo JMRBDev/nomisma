@@ -6,12 +6,9 @@ export const Route = createFileRoute("/_authenticated/dashboard/budgets")({
   staticData: {
     breadcrumb: "Budgets",
   },
-  loader: ({ context }) => {
-    if (typeof document === "undefined") {
-      return null
-    }
-
-    return context.queryClient.ensureQueryData(getBudgetsPageDataQueryOptions())
-  },
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(
+      getBudgetsPageDataQueryOptions(context.calendarContext)
+    ),
   component: BudgetsPage,
 })

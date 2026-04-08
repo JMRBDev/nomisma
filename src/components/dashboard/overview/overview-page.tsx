@@ -16,9 +16,8 @@ import { useDateFilter } from "@/hooks/use-date-filter"
 export function OverviewPage() {
   const { hasDateFilter, filterLabel, dateRange, dateFilter } = useDateFilter()
   const activityLabel = hasDateFilter ? filterLabel : "the current month"
-  const { data } = useOverviewData(dateRange)
-  const isLoading = !data
-  const currency = data?.settings?.baseCurrency
+  const data = useOverviewData(dateRange).data!
+  const currency = data.settings?.baseCurrency
   const isSingleMonth =
     !hasDateFilter ||
     dateFilter.fromDate.slice(0, 7) === dateFilter.toDate.slice(0, 7)
@@ -26,18 +25,16 @@ export function OverviewPage() {
     <DashboardPageSection>
       <DashboardPageHeader title="Overview" />
       <OverviewSummaryCards
-        loading={isLoading}
-        currentMoney={data?.overview.currentMoney}
-        income={data?.overview.income}
-        expenses={data?.overview.expenses}
-        net={data?.overview.net}
-        hasAccounts={data?.hasAccounts}
+        currentMoney={data.overview.currentMoney}
+        income={data.overview.income}
+        expenses={data.overview.expenses}
+        net={data.overview.net}
+        hasAccounts={data.hasAccounts}
         currency={currency}
         activityLabel={activityLabel}
       />
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(340px,1fr)]">
         <OverviewPanelCard
-          loading={isLoading}
           title="Recent transactions"
           description={
             hasDateFilter
@@ -53,60 +50,56 @@ export function OverviewPage() {
             </Button>
           }
         >
-          {!isLoading &&
-            (data.overview.recentTransactions.length > 0 ? (
-              <TransactionsTable
-                transactions={data.overview.recentTransactions}
-                currency={currency}
-                columnVisibilityStorageKey="nomisma-table-columns:overview-recent-transactions"
-                defaultPageSize={5}
-                showBreakdown={false}
-              />
-            ) : (
-              <FilteredResultsEmptyState
-                title={
-                  hasDateFilter
-                    ? "No transactions in this date filter"
-                    : "No transactions yet"
-                }
-                description={
-                  hasDateFilter
-                    ? "Pick another day or range from the header to inspect a different slice of activity."
-                    : "Add your first transaction to build a usable activity history."
-                }
-                icon={hasDateFilter ? FunnelIcon : ReceiptTextIcon}
-                action={
-                  hasDateFilter ? null : (
-                    <Button asChild>
-                      <Link to="/dashboard/transactions" search={(previous) => previous}>
-                        Open transactions
-                        <ArrowRightIcon />
-                      </Link>
-                    </Button>
-                  )
-                }
-              />
-            ))}
+          {data.overview.recentTransactions.length > 0 ? (
+            <TransactionsTable
+              transactions={data.overview.recentTransactions}
+              currency={currency}
+              columnVisibilityStorageKey="nomisma-table-columns:overview-recent-transactions"
+              defaultPageSize={5}
+              showBreakdown={false}
+            />
+          ) : (
+            <FilteredResultsEmptyState
+              title={
+                hasDateFilter
+                  ? "No transactions in this date filter"
+                  : "No transactions yet"
+              }
+              description={
+                hasDateFilter
+                  ? "Pick another day or range from the header to inspect a different slice of activity."
+                  : "Add your first transaction to build a usable activity history."
+              }
+              icon={hasDateFilter ? FunnelIcon : ReceiptTextIcon}
+              action={
+                hasDateFilter ? null : (
+                  <Button asChild>
+                    <Link to="/dashboard/transactions" search={(previous) => previous}>
+                      Open transactions
+                      <ArrowRightIcon />
+                    </Link>
+                  </Button>
+                )
+              }
+            />
+          )}
         </OverviewPanelCard>
         <div className="grid gap-4">
           <OverviewPanelCard
-            loading={isLoading}
             title="Alerts"
             description="Things that need attention or are worth checking."
           >
-            {!isLoading &&
-              (data.overview.alerts.length > 0 ? (
-                <OverviewAlerts alerts={data.overview.alerts} />
-              ) : (
-                <FilteredResultsEmptyState
-                  title="No alerts right now"
-                  description="Your dashboard is clear. New budget or recurring issues will show up here."
-                  icon={CheckCircle2Icon}
-                />
-              ))}
+            {data.overview.alerts.length > 0 ? (
+              <OverviewAlerts alerts={data.overview.alerts} />
+            ) : (
+              <FilteredResultsEmptyState
+                title="No alerts right now"
+                description="Your dashboard is clear. New budget or recurring issues will show up here."
+                icon={CheckCircle2Icon}
+              />
+            )}
           </OverviewPanelCard>
           <OverviewPanelCard
-            loading={isLoading}
             title="Upcoming recurring"
             description="The next recurring items scheduled to hit your accounts."
             action={
@@ -118,27 +111,25 @@ export function OverviewPage() {
               </Button>
             }
           >
-            {!isLoading &&
-              (data.overview.upcomingRecurring.length > 0 ? (
-                <RecurringTable
-                  recurringItems={data.overview.upcomingRecurring}
-                  currency={currency}
-                  columnVisibilityStorageKey="nomisma-table-columns:overview-upcoming-recurring"
-                  defaultPageSize={5}
-                />
-              ) : (
-                <FilteredResultsEmptyState
-                  title="No recurring items yet"
-                  description="Add recurring income or bills so future cash movement is visible here."
-                  icon={RepeatIcon}
-                />
-              ))}
+            {data.overview.upcomingRecurring.length > 0 ? (
+              <RecurringTable
+                recurringItems={data.overview.upcomingRecurring}
+                currency={currency}
+                columnVisibilityStorageKey="nomisma-table-columns:overview-upcoming-recurring"
+                defaultPageSize={5}
+              />
+            ) : (
+              <FilteredResultsEmptyState
+                title="No recurring items yet"
+                description="Add recurring income or bills so future cash movement is visible here."
+                icon={RepeatIcon}
+              />
+            )}
           </OverviewPanelCard>
         </div>
       </div>
       <OverviewChartsRow
-        isLoading={isLoading}
-        data={data!}
+        data={data}
         currency={currency}
         hasDateFilter={hasDateFilter}
         filterLabel={filterLabel}

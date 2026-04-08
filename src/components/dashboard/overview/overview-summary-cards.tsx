@@ -15,7 +15,6 @@ export function OverviewSummaryCards({
   hasAccounts = false,
   currency,
   activityLabel = "the current month",
-  loading,
 }: {
   currentMoney?: number
   income?: number
@@ -24,18 +23,7 @@ export function OverviewSummaryCards({
   hasAccounts?: boolean
   currency?: string | null
   activityLabel?: string
-  loading?: boolean
 }) {
-  if (loading) {
-    return (
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <OverviewMetricCard key={i} title="" loading />
-        ))}
-      </div>
-    )
-  }
-
   const netToneClassName = net < 0 ? "text-destructive" : "text-success"
 
   return (

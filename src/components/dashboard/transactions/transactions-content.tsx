@@ -2,7 +2,6 @@ import { ReceiptTextIcon } from "lucide-react"
 import type { TransactionRecord } from "@/components/dashboard/transactions/transactions-shared"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
 import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
 import { PrerequisiteEmptyState } from "@/components/prerequisite-empty-state"
@@ -10,7 +9,6 @@ import { TransactionsEmptyState } from "@/components/dashboard/transactions/tran
 import { TransactionsTable } from "@/components/dashboard/transactions/transactions-table"
 
 type TransactionsContentProps = {
-  isLoading: boolean
   accountOptions: Array<unknown>
   filteredTransactions: Array<TransactionRecord>
   currency: string | undefined
@@ -30,7 +28,6 @@ type TransactionsContentProps = {
 }
 
 export function TransactionsContent({
-  isLoading,
   accountOptions,
   filteredTransactions,
   currency,
@@ -43,22 +40,6 @@ export function TransactionsContent({
   onDeleteTransaction,
   deleteDialogProps,
 }: TransactionsContentProps) {
-  if (isLoading) {
-    return (
-      <Card>
-        <CardContent>
-          <div className="space-y-3">
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-3/4" />
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
-
   if (accountOptions.length === 0) {
     return (
       <PrerequisiteEmptyState

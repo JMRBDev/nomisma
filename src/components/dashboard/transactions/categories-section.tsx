@@ -4,7 +4,6 @@ import type { CategoryTableRow } from "@/components/dashboard/transactions/categ
 import type { useTransactionsPageData } from "@/hooks/use-money-dashboard"
 import { Button } from "@/components/ui/button"
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
 import { CategoryFormDialog } from "@/components/dashboard/transactions/category-form-dialog"
 import { CategoriesTable } from "@/components/dashboard/transactions/categories-table"
 import {
@@ -20,17 +19,14 @@ import { useCategoryManager } from "@/hooks/use-category-manager"
 type PageData = NonNullable<ReturnType<typeof useTransactionsPageData>["data"]>
 
 export function CategoriesSection({
-  isLoading,
   data,
 }: {
-  isLoading: boolean
-  data: PageData | undefined
+  data: PageData
 }) {
   const { dialog: categoryDialog, toggleCategoryArchived } =
     useCategoryManager()
 
   const categoryRows = useMemo<Array<CategoryTableRow>>(() => {
-    if (!data) return []
     const txCounts = new Map<string, number>()
     for (const tx of data.transactions) {
       if (tx.categoryId) {
@@ -61,7 +57,6 @@ export function CategoriesSection({
               size="sm"
               variant="outline"
               onClick={categoryDialog.openCreateDialog}
-              disabled={isLoading}
             >
               Add category
               <PlusIcon />
@@ -69,13 +64,7 @@ export function CategoriesSection({
           </CardAction>
         </CardHeader>
         <CardContent>
-          {isLoading ? (
-            <div className="space-y-3">
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-          ) : categoryRows.length === 0 ? (
+          {categoryRows.length === 0 ? (
             <Empty className="border-border/60 bg-card/70">
               <EmptyHeader>
                 <EmptyMedia variant="icon">
@@ -98,7 +87,7 @@ export function CategoriesSection({
             <CategoriesTable
               categories={categoryRows}
               onEdit={(category) => {
-                const source = data?.categories.all.find(
+                const source = data.categories.all.find(
                   (item) => item._id === category._id
                 )
                 if (source) {

@@ -7,10 +7,8 @@ import { RecurringSummaryCards } from "@/components/dashboard/recurring/recurrin
 import { RecurringTable } from "@/components/dashboard/recurring/recurring-table"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
 
 interface RecurringContentProps {
-  isLoading: boolean
   hasRecurringItems: boolean
   recurringItems: Array<RecurringRecord>
   overdueCount: number
@@ -31,7 +29,6 @@ interface RecurringContentProps {
 }
 
 export function RecurringContent({
-  isLoading,
   hasRecurringItems,
   recurringItems,
   overdueCount,
@@ -50,11 +47,10 @@ export function RecurringContent({
   onClearDateFilter,
   onAddRecurring,
 }: RecurringContentProps) {
-  if (isLoading || hasRecurringItems) {
+  if (hasRecurringItems) {
     return (
       <>
         <RecurringSummaryCards
-          isLoading={isLoading}
           recurringItems={recurringItems}
           overdueCount={overdueCount}
           dueSoonCount={dueSoonCount}
@@ -62,14 +58,7 @@ export function RecurringContent({
         />
         <Card>
           <CardContent>
-            {isLoading ? (
-              <div className="space-y-3">
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-3/4" />
-              </div>
-            ) : visibleRecurringItems.length > 0 ? (
+            {visibleRecurringItems.length > 0 ? (
               <RecurringTable
                 recurringItems={visibleRecurringItems}
                 currency={currency}

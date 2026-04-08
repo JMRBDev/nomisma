@@ -7,19 +7,38 @@ import {
 } from "@tanstack/react-router"
 import * as React from "react"
 import { createServerFn } from "@tanstack/react-start"
+import { getCookie, getRequestHeader } from "@tanstack/react-start/server"
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react"
 import type { ConvexQueryClient } from "@convex-dev/react-query"
 import type { QueryClient } from "@tanstack/react-query"
+import { BrowserCalendarSync } from "@/components/browser-calendar-sync"
 import { authClient } from "@/lib/auth-client"
 import { getToken } from "@/lib/auth-server"
+import {
+  BROWSER_LOCALE_COOKIE_NAME,
+  BROWSER_TIME_ZONE_COOKIE_NAME,
+  getBrowserCalendarBootstrapScript,
+  resolveBrowserCalendarContext,
+} from "@/lib/browser-calendar"
 import { APP_NAME } from "@/lib/money"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 
 import appCss from "@/styles/globals.css?url"
 
-const getAuth = createServerFn({ method: "GET" }).handler(async () => {
-  return await getToken()
+const getRequestState = createServerFn({ method: "GET" }).handler(async () => {
+  const token = await getToken()
+  const calendarContext = resolveBrowserCalendarContext({
+    timeZone: getCookie(BROWSER_TIME_ZONE_COOKIE_NAME),
+    locale:
+      getCookie(BROWSER_LOCALE_COOKIE_NAME) ??
+      getRequestHeader("accept-language"),
+  })
+
+  return {
+    token,
+    calendarContext,
+  }
 })
 
 export const Route = createRootRouteWithContext<{
@@ -58,7 +77,7 @@ export const Route = createRootRouteWithContext<{
     ],
   }),
   beforeLoad: async (ctx) => {
-    const token = await getAuth()
+    const { token, calendarContext } = await getRequestState()
 
     if (token) {
       ctx.context.convexQueryClient.convexClient.setAuth(() =>
@@ -70,6 +89,7 @@ export const Route = createRootRouteWithContext<{
     return {
       isAuthenticated: !!token,
       token,
+      calendarContext,
     }
   },
   component: RootComponent,
@@ -85,6 +105,7 @@ function RootComponent() {
       initialToken={context.token}
     >
       <RootDocument>
+        <BrowserCalendarSync calendarContext={context.calendarContext} />
         <Outlet />
       </RootDocument>
     </ConvexBetterAuthProvider>
@@ -98,6 +119,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{document.documentElement.setAttribute('data-color-theme',localStorage.getItem('nomisma-color-theme')||'zinc')}catch(e){}})()`,
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: getBrowserCalendarBootstrapScript(),
           }}
         />
         <HeadContent />

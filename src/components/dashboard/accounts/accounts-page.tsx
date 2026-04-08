@@ -16,7 +16,7 @@ import { useAccountEditor } from "@/hooks/use-account-editor"
 import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog"
 
 export function AccountsPage() {
-  const { data } = useAccountsPageData()
+  const data = useAccountsPageData().data!
   const createAccount = useConvexMutation(api.accounts.createAccount)
   const updateAccount = useConvexMutation(api.accounts.updateAccount)
   const toggleArchived = useConvexMutation(api.accounts.toggleAccountArchived)
@@ -43,9 +43,9 @@ export function AccountsPage() {
     }),
   })
 
-  const active = data?.accounts.active ?? []
-  const archived = data?.accounts.archived ?? []
-  const currency = data?.settings?.baseCurrency
+  const active = data.accounts.active
+  const archived = data.accounts.archived
+  const currency = data.settings?.baseCurrency
   const totalBalance = useMemo(
     () => active.reduce((s, a) => s + a.currentBalance, 0),
     [active]
@@ -59,7 +59,6 @@ export function AccountsPage() {
     [active]
   )
   const hasAny = active.length > 0 || archived.length > 0
-  const isLoading = !data
 
   const handleArchiveConfirm = async () => {
     if (!confirmArchiveId) return
@@ -86,7 +85,7 @@ export function AccountsPage() {
         title="Accounts"
         action={
           <DashboardPageActions>
-            <Button onClick={creator.openDialog} disabled={isLoading}>
+            <Button onClick={creator.openDialog}>
               Add account
               <PlusIcon />
             </Button>
@@ -94,7 +93,6 @@ export function AccountsPage() {
         }
       />
       <AccountsContent
-        isLoading={isLoading}
         activeAccounts={active}
         archivedAccounts={archived}
         currency={currency}

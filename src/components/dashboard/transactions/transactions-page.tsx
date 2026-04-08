@@ -27,16 +27,16 @@ import { useDeleteConfirmation } from "@/hooks/use-delete-confirmation"
 
 export function TransactionsPage() {
   const { hasDateFilter, filterLabel, dateRange } = useDateFilter()
-  const { data } = useTransactionsPageData()
+  const data = useTransactionsPageData().data!
   const createTx = useConvexMutation(api.transactions.createTransaction)
   const updateTx = useConvexMutation(api.transactions.updateTransaction)
   const deleteTx = useConvexMutation(api.transactions.deleteTransaction)
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false)
   const [filters, setFilters] = useState(DEFAULT_FILTER_VALUES)
-  const accountOptions = data?.accounts.active ?? []
-  const allCategoryOptions = data?.categories.all ?? []
-  const incomeCategoryOptions = data?.categories.activeIncome ?? []
-  const expenseCategoryOptions = data?.categories.activeExpense ?? []
+  const accountOptions = data.accounts.active
+  const allCategoryOptions = data.categories.all
+  const incomeCategoryOptions = data.categories.activeIncome
+  const expenseCategoryOptions = data.categories.activeExpense
   const transactionEditor = useTransactionEditor({
     accountOptions,
     incomeCategoryOptions,
@@ -54,11 +54,10 @@ export function TransactionsPage() {
     dateRange,
     filters,
     hasDateFilter,
-    transactions: data?.transactions ?? [],
+    transactions: data.transactions,
   })
   const filterCount = useMemo(() => countActiveFilters(filters), [filters])
   const hasActiveFilters = filterCount > 0 || searchFilter.hasSearchFilters
-  const isLoading = !data
   const handleFilterChange = (
     name: keyof TransactionFilterValues,
     value: string
@@ -80,7 +79,7 @@ export function TransactionsPage() {
             />
             <Button
               onClick={transactionEditor.openCreateDialog}
-              disabled={isLoading || accountOptions.length === 0}
+              disabled={accountOptions.length === 0}
             >
               Add transaction
               <PlusIcon />
@@ -89,10 +88,9 @@ export function TransactionsPage() {
         }
       />
       <TransactionsContent
-        isLoading={isLoading}
         accountOptions={accountOptions}
         filteredTransactions={searchFilter.filteredTransactions}
-        currency={data?.settings?.baseCurrency}
+        currency={data.settings?.baseCurrency}
         hasActiveFilters={hasActiveFilters}
         hasDateFilter={hasDateFilter}
         filterLabel={filterLabel}
@@ -102,7 +100,7 @@ export function TransactionsPage() {
         onDeleteTransaction={deleteConfirmation.requestDelete}
         deleteDialogProps={deleteConfirmation.dialogProps}
       />
-      <CategoriesSection isLoading={isLoading} data={data} />
+      <CategoriesSection data={data} />
       <TransactionFiltersSheet
         open={filtersSheetOpen}
         onOpenChange={setFiltersSheetOpen}

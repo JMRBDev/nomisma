@@ -18,7 +18,6 @@ import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-heade
 import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useFormDialog } from "@/hooks/use-form-dialog"
 import { useBudgetsPageData } from "@/hooks/use-money-dashboard"
 import { formatMonthLabel } from "@/lib/money"
@@ -26,7 +25,7 @@ import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog"
 import { useDeleteConfirmation } from "@/hooks/use-delete-confirmation"
 
 export function BudgetsPage() {
-  const { data } = useBudgetsPageData()
+  const data = useBudgetsPageData().data!
   const upsertBudget = useConvexMutation(api.budgets.upsertBudget)
   const deleteBudgetMutation = useConvexMutation(api.budgets.deleteBudget)
   const [pendingBudgetId, setPendingBudgetId] = useState<
@@ -34,14 +33,13 @@ export function BudgetsPage() {
   >(null)
   const dialog = useFormDialog({
     createDefaults: () => {
-      const categoryOptions = data?.categories.activeExpense ?? []
+      const categoryOptions = data.categories.activeExpense
       return createBudgetDefaults(categoryOptions)
     },
     createFormValues: createBudgetFormValues,
     validate: (values) =>
-      validateBudgetValues(values, data?.categories.activeExpense ?? []),
+      validateBudgetValues(values, data.categories.activeExpense),
     onSubmit: async (values) => {
-      if (!data) return
       await upsertBudget(buildBudgetPayload(values, data.budgets.currentMonth))
     },
   })
@@ -59,11 +57,10 @@ export function BudgetsPage() {
     },
     errorMessage: "Unable to delete the budget.",
   })
-  const isLoading = !data
-  const categoryOptions = data?.categories.activeExpense ?? []
-  const budgets = data?.budgets.items ?? []
-  const currency = data?.settings?.baseCurrency
-  const monthLabel = data ? formatMonthLabel(data.budgets.currentMonth) : ""
+  const categoryOptions = data.categories.activeExpense
+  const budgets = data.budgets.items
+  const currency = data.settings?.baseCurrency
+  const monthLabel = formatMonthLabel(data.budgets.currentMonth)
   const overBudgetCount = budgets.filter((b) => b.status === "over").length
   const nearBudgetCount = budgets.filter((b) => b.status === "near").length
   return (
@@ -72,17 +69,16 @@ export function BudgetsPage() {
         title="Budgets"
         action={
           <DashboardPageActions>
-            <Button onClick={dialog.openCreateDialog} disabled={isLoading}>
+            <Button onClick={dialog.openCreateDialog}>
               Add budget
               <PlusIcon />
             </Button>
           </DashboardPageActions>
         }
       />
-      {isLoading || budgets.length > 0 ? (
+      {budgets.length > 0 ? (
         <>
           <BudgetsSummaryCards
-            isLoading={isLoading}
             budgets={budgets}
             data={data}
             currency={currency}
@@ -92,22 +88,13 @@ export function BudgetsPage() {
           />
           <Card>
             <CardContent>
-              {isLoading ? (
-                <div className="space-y-3">
-                  <Skeleton className="h-10 w-full" />
-                  <Skeleton className="h-10 w-full" />
-                  <Skeleton className="h-10 w-full" />
-                  <Skeleton className="h-10 w-3/4" />
-                </div>
-              ) : (
-                <BudgetsTable
-                  budgets={budgets}
-                  currency={currency}
-                  pendingBudgetId={pendingBudgetId}
-                  onEdit={dialog.openEditDialog}
-                  onDelete={deleteConfirmation.requestDelete}
-                />
-              )}
+              <BudgetsTable
+                budgets={budgets}
+                currency={currency}
+                pendingBudgetId={pendingBudgetId}
+                onEdit={dialog.openEditDialog}
+                onDelete={deleteConfirmation.requestDelete}
+              />
             </CardContent>
           </Card>
         </>

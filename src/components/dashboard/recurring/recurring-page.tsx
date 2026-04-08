@@ -6,13 +6,14 @@ import { RecurringContent } from "@/components/dashboard/recurring/recurring-con
 import { RecurringFormDialog } from "@/components/dashboard/recurring/recurring-form-dialog"
 import { useRecurringDialog } from "@/components/dashboard/recurring/use-recurring-dialog"
 import { Button } from "@/components/ui/button"
+import { useCalendarContext } from "@/hooks/use-calendar-context"
 import { useRecurringPageData } from "@/hooks/use-money-dashboard"
-import { todayInputValue } from "@/lib/money"
 import { useDateFilter } from "@/hooks/use-date-filter"
 
 export function RecurringPage() {
   const { hasDateFilter, filterLabel, dateRange } = useDateFilter()
-  const { data } = useRecurringPageData()
+  const calendarContext = useCalendarContext()
+  const data = useRecurringPageData().data!
   const {
     dialog,
     pendingRuleId,
@@ -27,21 +28,19 @@ export function RecurringPage() {
     handleDialogClose,
   } = useRecurringDialog(data)
 
-  const isLoading = !data
-  const recurringItems = data?.recurring.all ?? []
+  const recurringItems = data.recurring.all
   const visibleRecurringItems = recurringItems.filter((item) => {
     if (dateRange.startDate && item.nextDueDate < dateRange.startDate)
       return false
     if (dateRange.endDate && item.nextDueDate > dateRange.endDate) return false
     return true
   })
-  const currency = data?.settings?.baseCurrency
-  const today = todayInputValue()
-  const hasRecurringItems = !isLoading && recurringItems.length > 0
+  const currency = data.settings?.baseCurrency
+  const today = calendarContext.today
+  const hasRecurringItems = recurringItems.length > 0
   const hasCategoryOptions =
     incomeCategoryOptions.length > 0 || expenseCategoryOptions.length > 0
-  const createDisabled =
-    isLoading || accountOptions.length === 0 || !hasCategoryOptions
+  const createDisabled = accountOptions.length === 0 || !hasCategoryOptions
 
   return (
     <DashboardPageSection>
@@ -57,11 +56,10 @@ export function RecurringPage() {
         }
       />
       <RecurringContent
-        isLoading={isLoading}
         hasRecurringItems={hasRecurringItems}
         recurringItems={recurringItems}
-        overdueCount={data?.recurring.overdue.length ?? 0}
-        dueSoonCount={data?.recurring.dueSoon.length ?? 0}
+        overdueCount={data.recurring.overdue.length}
+        dueSoonCount={data.recurring.dueSoon.length}
         visibleRecurringItems={visibleRecurringItems}
         currency={currency}
         pendingRuleId={pendingRuleId}

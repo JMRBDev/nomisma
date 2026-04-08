@@ -3,11 +3,9 @@ import { AccountsEmptyState } from "@/components/dashboard/accounts/accounts-emp
 import { AccountsTable } from "@/components/dashboard/accounts/accounts-table"
 import { DashboardSummaryCard } from "@/components/dashboard/dashboard-summary-card"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
 import { formatCurrency } from "@/lib/money"
 
 interface AccountsContentProps {
-  isLoading: boolean
   activeAccounts: Array<AccountRecord>
   archivedAccounts: Array<AccountRecord>
   currency: string | undefined
@@ -21,7 +19,6 @@ interface AccountsContentProps {
 }
 
 export function AccountsContent({
-  isLoading,
   activeAccounts,
   archivedAccounts,
   currency,
@@ -33,39 +30,23 @@ export function AccountsContent({
   onEdit,
   onToggleArchived,
 }: AccountsContentProps) {
-  if (isLoading || hasAnyAccounts) {
+  if (hasAnyAccounts) {
     return (
       <>
         <div className="grid gap-4 md:grid-cols-2">
           <DashboardSummaryCard
-            loading={isLoading}
             title="Active balance"
             value={formatCurrency(totalBalance, currency)}
             description={`${activeAccounts.length} active account${activeAccounts.length === 1 ? "" : "s"}`}
           />
           <DashboardSummaryCard
-            loading={isLoading}
             title="Included in totals"
             value={formatCurrency(includedBalance, currency)}
             description="Balances that count toward dashboard totals"
           />
         </div>
 
-        {isLoading ? (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">Active accounts</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-3/4" />
-              </div>
-            </CardContent>
-          </Card>
-        ) : activeAccounts.length > 0 ? (
+        {activeAccounts.length > 0 ? (
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Active accounts</CardTitle>
@@ -89,7 +70,7 @@ export function AccountsContent({
           />
         )}
 
-        {!isLoading && archivedAccounts.length > 0 ? (
+        {archivedAccounts.length > 0 ? (
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Archived accounts</CardTitle>

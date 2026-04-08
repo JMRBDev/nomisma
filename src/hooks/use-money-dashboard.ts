@@ -6,14 +6,16 @@ import {
   getOverviewDataQueryOptions,
   getRecurringPageDataQueryOptions,
   getTransactionsPageDataQueryOptions,
-  getUserSettingsQueryOptions,
 } from "@/lib/dashboard-query-options"
+import { useCalendarContext } from "@/hooks/use-calendar-context"
 
 export function useOverviewData(args?: {
   startDate?: string
   endDate?: string
 }) {
-  return useQuery(getOverviewDataQueryOptions(args))
+  const calendarContext = useCalendarContext()
+
+  return useQuery(getOverviewDataQueryOptions(calendarContext, args))
 }
 
 export function useAccountsPageData() {
@@ -25,22 +27,23 @@ export function useTransactionsPageData() {
 }
 
 export function useBudgetsPageData() {
-  return useQuery(getBudgetsPageDataQueryOptions())
+  const calendarContext = useCalendarContext()
+
+  return useQuery(getBudgetsPageDataQueryOptions(calendarContext))
 }
 
 export function useRecurringPageData() {
-  return useQuery(getRecurringPageDataQueryOptions())
-}
+  const calendarContext = useCalendarContext()
 
-export function useUserSettings() {
-  return useQuery(getUserSettingsQueryOptions())
+  return useQuery(getRecurringPageDataQueryOptions(calendarContext))
 }
 
 export function useGlobalSearch(query: string) {
   const normalizedQuery = query.trim()
+  const calendarContext = useCalendarContext()
 
   return useQuery({
-    ...getGlobalSearchQueryOptions(query),
+    ...getGlobalSearchQueryOptions(query, calendarContext),
     enabled: normalizedQuery.length >= 2,
     placeholderData: (previousData) => previousData,
   })

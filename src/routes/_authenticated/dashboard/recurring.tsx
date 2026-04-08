@@ -6,14 +6,9 @@ export const Route = createFileRoute("/_authenticated/dashboard/recurring")({
   staticData: {
     breadcrumb: "Recurring",
   },
-  loader: ({ context }) => {
-    if (typeof document === "undefined") {
-      return null
-    }
-
-    return context.queryClient.ensureQueryData(
-      getRecurringPageDataQueryOptions()
-    )
-  },
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(
+      getRecurringPageDataQueryOptions(context.calendarContext)
+    ),
   component: RecurringPage,
 })

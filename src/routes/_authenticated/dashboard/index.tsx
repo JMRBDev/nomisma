@@ -11,12 +11,9 @@ export const Route = createFileRoute("/_authenticated/dashboard/")({
     breadcrumb: "Overview",
   },
   loaderDeps: ({ search }) => getOverviewDateFilterQuery(resolveOverviewDateFilterValues(search)),
-  loader: async ({ context, deps }) => {
-    if (typeof document === "undefined") {
-      return null
-    }
-
-    return context.queryClient.ensureQueryData(getOverviewDataQueryOptions(deps))
-  },
+  loader: ({ context, deps }) =>
+    context.queryClient.ensureQueryData(
+      getOverviewDataQueryOptions(context.calendarContext, deps)
+    ),
   component: OverviewPage,
 })
