@@ -1,23 +1,24 @@
-import { buildAccountSummaries } from "./read_models_accounts"
 import { buildBudgetStatuses } from "./read_models_budgets"
 import { buildRecurringItems } from "./read_models_recurring"
 import { buildMappedTransactions } from "./read_models_transactions"
 import { resolveSelectedDateRange } from "./overview_comparison"
 import {
+  getBudgetsByUserIdMonth,
+  getRecentTransactionsByUserId,
+  getTransactionsByUserIdDateRange,
+  getTransactionsByUserIdMonth,
+  getTransactionsByUserIdQuery,
+} from "./overview_queries"
+import {
   getAccountsByUserId,
-  getBudgetsByUserId,
   getCategoriesByUserId,
   getRecurringRulesByUserId,
   getResolvedSettings,
-  getTransactionsByUserId,
   requireUser,
 } from "./queries"
-import {
-  getCalendarMonthRange,
-  getCurrentCalendarMonth,
-  inRange,
-  toDayKey,
-} from "./dates"
+import { getCalendarMonthRange, getCurrentCalendarMonth, toDayKey } from "./dates"
+import { applyTransactionToBalances } from "./balances"
+import type { Id } from "../_generated/dataModel"
 import type { QueryCtx } from "../_generated/server"
 
 export async function fetchOverviewData(
@@ -32,38 +33,73 @@ export async function fetchOverviewData(
   const user = await requireUser(ctx)
   const now = new Date()
   const today = args.today ?? toDayKey(now)
+  const currentMonth = args.currentMonth ?? getCurrentCalendarMonth(now)
+  const currentMonthRange = getCalendarMonthRange(currentMonth)
+  const selectedDateRange = resolveSelectedDateRange({
+    startDate: args.startDate,
+    endDate: args.endDate,
+    defaultDateRange: currentMonthRange,
+  })
+  const selectedRangeMatchesCurrentMonth =
+    selectedDateRange.startDate === currentMonthRange.start &&
+    selectedDateRange.endDate === currentMonthRange.end
+  const currentMonthTransactionsPromise = getTransactionsByUserIdMonth(
+    ctx,
+    user._id,
+    currentMonth
+  )
+  const selectedRangeTransactionsPromise = selectedRangeMatchesCurrentMonth
+    ? currentMonthTransactionsPromise
+    : getTransactionsByUserIdDateRange(
+        ctx,
+        user._id,
+        selectedDateRange.startDate,
+        selectedDateRange.endDate
+      )
+  const recentTransactionsPromise = selectedDateRange.isFiltered
+    ? selectedRangeTransactionsPromise
+    : getRecentTransactionsByUserId(ctx, user._id, 8)
   const [
     { settings, settingsDoc },
     accounts,
     categories,
-    transactions,
-    budgets,
+    selectedRangeTransactions,
+    currentMonthTransactions,
+    recentTransactions,
+    currentMonthBudgets,
     recurringRules,
   ] = await Promise.all([
     getResolvedSettings(ctx, user._id),
     getAccountsByUserId(ctx, user._id),
     getCategoriesByUserId(ctx, user._id),
-    getTransactionsByUserId(ctx, user._id),
-    getBudgetsByUserId(ctx, user._id),
+    selectedRangeTransactionsPromise,
+    currentMonthTransactionsPromise,
+    recentTransactionsPromise,
+    getBudgetsByUserIdMonth(ctx, user._id, currentMonth),
     getRecurringRulesByUserId(ctx, user._id),
   ])
-
-  const currentMonth = args.currentMonth ?? getCurrentCalendarMonth(now)
-  const selectedDateRange = resolveSelectedDateRange({
-    startDate: args.startDate,
-    endDate: args.endDate,
-    defaultDateRange: getCalendarMonthRange(currentMonth),
-  })
+  const balances = new Map<Id<"accounts">, number>(
+    accounts.map((account) => [account._id, account.openingBalance])
+  )
+  let uncategorizedCount = 0
+  for await (const transaction of getTransactionsByUserIdQuery(ctx, user._id)) {
+    if (transaction.status !== "posted") continue
+    applyTransactionToBalances(balances, transaction)
+    if (transaction.type !== "transfer" && !transaction.categoryId) {
+      uncategorizedCount += 1
+    }
+  }
   const dashboardTransactions = buildMappedTransactions(
     accounts,
     categories,
-    transactions
+    selectedRangeTransactions
   )
-  const accountSummaries = buildAccountSummaries(
-    accounts,
-    transactions,
-    dashboardTransactions
-  )
+  const currentMonthDashboardTransactions = selectedRangeMatchesCurrentMonth
+    ? dashboardTransactions
+    : buildMappedTransactions(accounts, categories, currentMonthTransactions)
+  const recentDashboardTransactions = selectedDateRange.isFiltered
+    ? dashboardTransactions.slice(0, 8)
+    : buildMappedTransactions(accounts, categories, recentTransactions)
   const recurring = buildRecurringItems(
     recurringRules,
     accounts,
@@ -71,42 +107,37 @@ export async function fetchOverviewData(
     today
   )
   const budgetsView = buildBudgetStatuses(
-    budgets,
+    currentMonthBudgets,
     categories,
-    dashboardTransactions,
+    currentMonthDashboardTransactions,
     currentMonth
   )
-
-  const posted = dashboardTransactions.filter(
-    (t) =>
-      t.status === "posted" &&
-      inRange(t.date, selectedDateRange.startDate, selectedDateRange.endDate)
+  const postedTransactions = dashboardTransactions.filter(
+    (transaction) => transaction.status === "posted"
   )
-  const income = posted
-    .filter((t) => t.type === "income")
-    .reduce((total, t) => total + t.amount, 0)
-  const expenses = posted
-    .filter((t) => t.type === "expense")
-    .reduce((total, t) => total + t.amount, 0)
-  const currentMoney = accountSummaries
-    .filter((a) => !a.archived && a.includeInTotals)
-    .reduce((total, a) => total + a.currentBalance, 0)
-  const hasAccounts = accountSummaries.some((a) => !a.archived)
-  const uncategorizedCount = dashboardTransactions.filter(
-    (t) => t.type !== "transfer" && t.status === "posted" && !t.categoryId
-  ).length
-
+  const income = postedTransactions
+    .filter((transaction) => transaction.type === "income")
+    .reduce((total, transaction) => total + transaction.amount, 0)
+  const expenses = postedTransactions
+    .filter((transaction) => transaction.type === "expense")
+    .reduce((total, transaction) => total + transaction.amount, 0)
+  const currentMoney = accounts
+    .filter((account) => !account.archived && account.includeInTotals)
+    .reduce(
+      (total, account) =>
+        total + (balances.get(account._id) ?? account.openingBalance),
+      0
+    )
+  const hasAccounts = accounts.some((account) => !account.archived)
   return {
     settings,
     settingsDoc,
     currentMonth,
     selectedDateRange,
     dashboardTransactions,
-    accountSummaries,
+    recentTransactions: recentDashboardTransactions,
     recurring,
     budgetsView,
-    accounts,
-    categories,
     income,
     expenses,
     currentMoney,

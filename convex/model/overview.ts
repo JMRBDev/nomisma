@@ -6,7 +6,6 @@ import {
 import { buildIncomeExpensesComparison } from "./overview_comparison"
 import { buildOverviewAlerts } from "./overview_alerts"
 import { fetchOverviewData } from "./overview_data"
-import { inRange } from "./dates"
 import type { QueryCtx } from "../_generated/server"
 
 export async function getOverviewData(
@@ -42,17 +41,7 @@ export async function getOverviewData(
         hasSettings: Boolean(d.settingsDoc),
         today: d.today,
       }),
-      recentTransactions: d.selectedDateRange.isFiltered
-        ? d.dashboardTransactions
-            .filter((t) =>
-              inRange(
-                t.date,
-                d.selectedDateRange.startDate,
-                d.selectedDateRange.endDate
-              )
-            )
-            .slice(0, 8)
-        : d.dashboardTransactions.slice(0, 8),
+      recentTransactions: d.recentTransactions,
       upcomingRecurring: d.recurring.all.slice(0, 8),
       dailySpending: buildDailySpending(
         d.dashboardTransactions,
