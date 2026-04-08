@@ -19,9 +19,12 @@ import type { QueryCtx } from "../_generated/server"
 export { createRecurringRule, updateRecurringRule } from "./recurring_mutations"
 export { toggleRecurringRule, confirmRecurringRule } from "./recurring_actions"
 
-export async function getRecurringPageData(ctx: QueryCtx) {
+export async function getRecurringPageData(
+  ctx: QueryCtx,
+  args: { today?: string }
+) {
   const user = await requireUser(ctx)
-  const today = toDayKey(new Date())
+  const today = args.today ?? toDayKey(new Date())
   const [{ settings }, accounts, categories, transactions, recurringRules] =
     await Promise.all([
       getResolvedSettings(ctx, user._id),

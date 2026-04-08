@@ -26,6 +26,7 @@ export async function getGlobalSearchResults(
   ctx: QueryCtx,
   args: {
     query: string
+    currentMonth?: string
   }
 ) {
   const normalizedQuery = normalizeSearchQuery(args.query)
@@ -75,7 +76,12 @@ export async function getGlobalSearchResults(
         .join(" • "),
     })),
     accounts: buildAccountsResults(accounts, normalizedQuery),
-    budgets: buildBudgetResults(budgets, categories, normalizedQuery),
+    budgets: buildBudgetResults(
+      budgets,
+      categories,
+      normalizedQuery,
+      args.currentMonth
+    ),
     recurring: buildRecurringResults(
       recurringRules,
       accounts,

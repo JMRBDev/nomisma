@@ -3,8 +3,10 @@ import { mutation, query } from "./_generated/server"
 import * as Budgets from "./model/budgets"
 
 export const getBudgetsPageData = query({
-  args: {},
-  handler: (ctx) => Budgets.getBudgetsPageData(ctx),
+  args: {
+    currentMonth: v.optional(v.string()),
+  },
+  handler: (ctx, args) => Budgets.getBudgetsPageData(ctx, args),
 })
 
 export const upsertBudget = mutation({

@@ -15,7 +15,10 @@ import {
 import { getCurrentCalendarMonth } from "./dates"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
 
-export async function getBudgetsPageData(ctx: QueryCtx) {
+export async function getBudgetsPageData(
+  ctx: QueryCtx,
+  args: { currentMonth?: string }
+) {
   const user = await requireUser(ctx)
   const now = new Date()
   const [{ settings }, accounts, categories, transactions, budgets] =
@@ -27,7 +30,7 @@ export async function getBudgetsPageData(ctx: QueryCtx) {
       getBudgetsByUserId(ctx, user._id),
     ])
 
-  const currentMonth = getCurrentCalendarMonth(now)
+  const currentMonth = args.currentMonth ?? getCurrentCalendarMonth(now)
   const dashboardTransactions = buildMappedTransactions(
     accounts,
     categories,

@@ -1,5 +1,9 @@
 import type { RecurringRuleDoc } from "./types"
 
+function padNumber(value: number) {
+  return value.toString().padStart(2, "0")
+}
+
 export function monthKeyFromDate(date: string) {
   return date.slice(0, 7)
 }
@@ -10,7 +14,11 @@ function parseDayKey(dayKey: string) {
 }
 
 export function toDayKey(date: Date) {
-  return date.toISOString().slice(0, 10)
+  return [
+    date.getUTCFullYear(),
+    padNumber(date.getUTCMonth() + 1),
+    padNumber(date.getUTCDate()),
+  ].join("-")
 }
 
 export function addDays(dayKey: string, days: number) {
@@ -34,19 +42,28 @@ export function addFrequency(
 }
 
 export function getCurrentCalendarMonth(now: Date) {
-  return now.toISOString().slice(0, 7)
+  return `${now.getUTCFullYear()}-${padNumber(now.getUTCMonth() + 1)}`
+}
+
+export function getCalendarMonthRange(monthKey: string) {
+  const [year, month] = monthKey.split("-").map(Number)
+  const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate()
+
+  return {
+    start: `${monthKey}-01`,
+    end: `${monthKey}-${padNumber(lastDay)}`,
+  }
 }
 
 export function getCurrentCalendarMonthRange(now: Date) {
-  const year = now.getUTCFullYear()
-  const month = now.getUTCMonth()
-  const start = new Date(Date.UTC(year, month, 1))
-  const end = new Date(Date.UTC(year, month + 1, 0))
+  return getCalendarMonthRange(getCurrentCalendarMonth(now))
+}
 
-  return {
-    start: toDayKey(start),
-    end: toDayKey(end),
-  }
+export function dayKeyDistance(startDayKey: string, endDayKey: string) {
+  return Math.round(
+    (parseDayKey(endDayKey).getTime() - parseDayKey(startDayKey).getTime()) /
+      86400000
+  )
 }
 
 export function inRange(dayKey: string, start: string, end: string) {

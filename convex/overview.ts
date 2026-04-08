@@ -6,6 +6,8 @@ export const getOverviewData = query({
   args: {
     startDate: v.optional(v.string()),
     endDate: v.optional(v.string()),
+    today: v.optional(v.string()),
+    currentMonth: v.optional(v.string()),
   },
   handler: (ctx, args) => Overview.getOverviewData(ctx, args),
 })

@@ -4,8 +4,10 @@ import * as Recurring from "./model/recurring"
 import { categoryKindValidator, recurringFrequencyValidator } from "./schema"
 
 export const getRecurringPageData = query({
-  args: {},
-  handler: (ctx) => Recurring.getRecurringPageData(ctx),
+  args: {
+    today: v.optional(v.string()),
+  },
+  handler: (ctx, args) => Recurring.getRecurringPageData(ctx, args),
 })
 
 export const createRecurringRule = mutation({

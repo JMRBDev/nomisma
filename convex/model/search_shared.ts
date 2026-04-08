@@ -54,9 +54,9 @@ export function buildAccountsResults(
 export function buildBudgetResults(
   budgets: Awaited<ReturnType<typeof getBudgetsByUserId>>,
   categories: Awaited<ReturnType<typeof getCategoriesByUserId>>,
-  query: string
+  query: string,
+  currentMonth: string = getCurrentCalendarMonth(new Date())
 ) {
-  const currentMonth = getCurrentCalendarMonth(new Date())
   const categoryMap = new Map(
     categories.map((category) => [category._id, category])
   )

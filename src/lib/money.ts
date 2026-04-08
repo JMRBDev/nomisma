@@ -1,5 +1,10 @@
-import { format } from "date-fns"
 import { getCurrencyLocale } from "@/lib/currency"
+import {
+  formatDayKeyLabel,
+  formatMonthKeyLabel,
+  toDayKey,
+  toMonthKey,
+} from "@/lib/date-keys"
 
 export const APP_NAME = "Nomisma"
 
@@ -64,11 +69,11 @@ export function formatSignedAmount(
 }
 
 export function formatMonthLabel(month: string) {
-  return format(new Date(`${month}-01T00:00:00Z`), "LLLL yyyy")
+  return formatMonthKeyLabel(month)
 }
 
 export function formatDateLabel(date: string) {
-  return format(new Date(`${date}T00:00:00Z`), "MMM d, yyyy")
+  return formatDayKeyLabel(date)
 }
 
 export function toAmountInput(value: number) {
@@ -97,10 +102,16 @@ export function capitalizeFirstLetter(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
-export function todayInputValue() {
-  return new Date().toISOString().slice(0, 10)
+export function todayInputValue(
+  referenceDate: Date = new Date(),
+  timeZone?: string
+) {
+  return toDayKey(referenceDate, timeZone)
 }
 
-export function currentMonthInputValue() {
-  return new Date().toISOString().slice(0, 7)
+export function currentMonthInputValue(
+  referenceDate: Date = new Date(),
+  timeZone?: string
+) {
+  return toMonthKey(referenceDate, timeZone)
 }

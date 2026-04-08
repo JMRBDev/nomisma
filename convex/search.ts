@@ -5,6 +5,7 @@ import { getGlobalSearchResults as getGlobalSearchResultsModel } from "./model/s
 export const getGlobalSearchResults = query({
   args: {
     query: v.string(),
+    currentMonth: v.optional(v.string()),
   },
   handler: (ctx, args) => getGlobalSearchResultsModel(ctx, args),
 })

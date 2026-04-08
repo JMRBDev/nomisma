@@ -1,4 +1,4 @@
-import { addDays, inRange } from "./dates"
+import { addDays, dayKeyDistance, inRange } from "./dates"
 import type { MappedTransaction } from "./read_models_transactions"
 
 type DashboardTransactions = Array<MappedTransaction>
@@ -39,10 +39,7 @@ export function buildIncomeExpensesComparison(
     }
     let key: string
     if (sameMonth) {
-      const diffMs =
-        new Date(`${t.date}T00:00:00Z`).getTime() -
-        new Date(`${dateRange.startDate}T00:00:00Z`).getTime()
-      const diffDays = Math.round(diffMs / 86400000)
+      const diffDays = dayKeyDistance(dateRange.startDate, t.date)
       key = addDays(dateRange.startDate, Math.floor(diffDays / 7) * 7)
     } else {
       key = t.date.slice(0, 7)

@@ -11,7 +11,12 @@ import type { QueryCtx } from "../_generated/server"
 
 export async function getOverviewData(
   ctx: QueryCtx,
-  args: { startDate?: string; endDate?: string }
+  args: {
+    startDate?: string
+    endDate?: string
+    today?: string
+    currentMonth?: string
+  }
 ) {
   const d = await fetchOverviewData(ctx, args)
   return {

@@ -13,8 +13,8 @@ import {
   requireUser,
 } from "./queries"
 import {
+  getCalendarMonthRange,
   getCurrentCalendarMonth,
-  getCurrentCalendarMonthRange,
   inRange,
   toDayKey,
 } from "./dates"
@@ -22,11 +22,16 @@ import type { QueryCtx } from "../_generated/server"
 
 export async function fetchOverviewData(
   ctx: QueryCtx,
-  args: { startDate?: string; endDate?: string }
+  args: {
+    startDate?: string
+    endDate?: string
+    today?: string
+    currentMonth?: string
+  }
 ) {
   const user = await requireUser(ctx)
   const now = new Date()
-  const today = toDayKey(now)
+  const today = args.today ?? toDayKey(now)
   const [
     { settings, settingsDoc },
     accounts,
@@ -43,11 +48,11 @@ export async function fetchOverviewData(
     getRecurringRulesByUserId(ctx, user._id),
   ])
 
-  const currentMonth = getCurrentCalendarMonth(now)
+  const currentMonth = args.currentMonth ?? getCurrentCalendarMonth(now)
   const selectedDateRange = resolveSelectedDateRange({
     startDate: args.startDate,
     endDate: args.endDate,
-    defaultDateRange: getCurrentCalendarMonthRange(now),
+    defaultDateRange: getCalendarMonthRange(currentMonth),
   })
   const dashboardTransactions = buildMappedTransactions(
     accounts,
