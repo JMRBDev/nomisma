@@ -32,3 +32,15 @@ export function useSettingsPageData() {
 export function useUserSettings() {
   return useQuery(convexQuery(api.settings.getUserSettings, {}))
 }
+
+export function useGlobalSearch(query: string) {
+  const normalizedQuery = query.trim()
+
+  return useQuery({
+    ...convexQuery(api.search.getGlobalSearchResults, {
+      query: normalizedQuery,
+    }),
+    enabled: normalizedQuery.length >= 2,
+    placeholderData: (previousData) => previousData,
+  })
+}

@@ -33,6 +33,8 @@ import type * as model_read_models_transactions from "../model/read_models_trans
 import type * as model_recurring from "../model/recurring.js";
 import type * as model_recurring_actions from "../model/recurring_actions.js";
 import type * as model_recurring_mutations from "../model/recurring_mutations.js";
+import type * as model_search from "../model/search.js";
+import type * as model_search_shared from "../model/search_shared.js";
 import type * as model_settings from "../model/settings.js";
 import type * as model_shared from "../model/shared.js";
 import type * as model_transaction_delete from "../model/transaction_delete.js";
@@ -41,6 +43,7 @@ import type * as model_transactions from "../model/transactions.js";
 import type * as model_types from "../model/types.js";
 import type * as overview from "../overview.js";
 import type * as recurring from "../recurring.js";
+import type * as search from "../search.js";
 import type * as settings from "../settings.js";
 import type * as transactions from "../transactions.js";
 
@@ -76,6 +79,8 @@ declare const fullApi: ApiFromModules<{
   "model/recurring": typeof model_recurring;
   "model/recurring_actions": typeof model_recurring_actions;
   "model/recurring_mutations": typeof model_recurring_mutations;
+  "model/search": typeof model_search;
+  "model/search_shared": typeof model_search_shared;
   "model/settings": typeof model_settings;
   "model/shared": typeof model_shared;
   "model/transaction_delete": typeof model_transaction_delete;
@@ -84,6 +89,7 @@ declare const fullApi: ApiFromModules<{
   "model/types": typeof model_types;
   overview: typeof overview;
   recurring: typeof recurring;
+  search: typeof search;
   settings: typeof settings;
   transactions: typeof transactions;
 }>;

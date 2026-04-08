@@ -1,8 +1,13 @@
-import { useMemo, useState } from "react"
+import { useDeferredValue, useMemo, useState } from "react"
 import { useNavigate } from "@tanstack/react-router"
 import { SearchIcon } from "lucide-react"
-import type { LucideIcon } from "lucide-react"
+import type { SearchItem } from "@/components/dashboard/dashboard-search-shared"
+import {
+  buildEntitySearchItems,
+  buildPageSearchItems,
+} from "@/components/dashboard/dashboard-search-shared"
 import { useMountEffect } from "@/hooks/use-mount-effect"
+import { useGlobalSearch } from "@/hooks/use-money-dashboard"
 import { Button } from "@/components/ui/button"
 import {
   Command,
@@ -14,35 +19,9 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command"
-import { mainNavItems, secondaryNavItems } from "@/lib/dashboard-nav"
-
-type SearchItem = {
-  group: string
-  icon: LucideIcon
-  id: string
-  onSelect: () => void
-  title: string
-  value: string
-}
 
 function contains(value: string, query: string) {
   return value.toLowerCase().includes(query)
-}
-
-function buildSearchItems(navigate: ReturnType<typeof useNavigate>) {
-  return [...mainNavItems, ...secondaryNavItems].map((item) => ({
-    group: "Pages",
-    icon: item.icon,
-    id: `page-${item.label.toLowerCase()}`,
-    onSelect: () => {
-      void navigate({
-        to: item.to,
-        search: (previous) => previous,
-      })
-    },
-    title: item.label,
-    value: item.searchTerms,
-  }))
 }
 
 export function DashboardSearch() {
@@ -50,6 +29,9 @@ export function DashboardSearch() {
   const [query, setQuery] = useState("")
   const navigate = useNavigate()
   const normalizedQuery = query.trim().toLowerCase()
+  const deferredQuery = useDeferredValue(query)
+  const deferredNormalizedQuery = deferredQuery.trim().toLowerCase()
+  const { data: searchResults, isFetching } = useGlobalSearch(deferredQuery)
 
   useMountEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -67,11 +49,15 @@ export function DashboardSearch() {
   })
 
   const items = useMemo<Array<SearchItem>>(
-    () =>
-      buildSearchItems(navigate).filter(
+    () => [
+      ...buildPageSearchItems(navigate).filter(
         (item) => !normalizedQuery || contains(item.value, normalizedQuery)
       ),
-    [navigate, normalizedQuery]
+      ...(searchResults
+        ? buildEntitySearchItems(navigate, searchResults)
+        : []),
+    ],
+    [navigate, normalizedQuery, searchResults]
   )
 
   const grouped = useMemo(() => {
@@ -85,6 +71,12 @@ export function DashboardSearch() {
 
     return [...byGroup.entries()]
   }, [items])
+
+  const emptyLabel = !normalizedQuery
+    ? "Search pages or type at least 2 characters to search your data."
+    : deferredNormalizedQuery !== normalizedQuery || isFetching
+      ? "Searching..."
+      : "No results found."
 
   return (
     <>
@@ -100,18 +92,23 @@ export function DashboardSearch() {
 
       <CommandDialog
         open={open}
-        onOpenChange={setOpen}
+        onOpenChange={(nextOpen) => {
+          setOpen(nextOpen)
+          if (!nextOpen) {
+            setQuery("")
+          }
+        }}
         title="Dashboard search"
-        description="Search the available dashboard pages."
+        description="Search pages, transactions, and other dashboard entities."
       >
-        <Command shouldFilter>
+        <Command shouldFilter={false}>
           <CommandInput
             value={query}
             onValueChange={setQuery}
-            placeholder="Search overview, budgets, recurring..."
+            placeholder="Search pages, transactions, accounts..."
           />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandEmpty>{emptyLabel}</CommandEmpty>
             {grouped.map(([group, groupItems], index) => (
               <div key={group}>
                 {index > 0 ? <CommandSeparator /> : null}
@@ -126,7 +123,14 @@ export function DashboardSearch() {
                       }}
                     >
                       <item.icon className="size-4" />
-                      <span>{item.title}</span>
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate">{item.title}</div>
+                        {item.subtitle ? (
+                          <div className="text-muted-foreground truncate text-xs">
+                            {item.subtitle}
+                          </div>
+                        ) : null}
+                      </div>
                     </CommandItem>
                   ))}
                 </CommandGroup>

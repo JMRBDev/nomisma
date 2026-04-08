@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
-import { useNavigate } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react"
 import { api } from "../../../../convex/_generated/api"
 import type {
@@ -10,8 +9,8 @@ import type {
 import {
   DEFAULT_FILTER_VALUES,
   countActiveFilters,
-  filterTransactions,
 } from "@/components/dashboard/transactions/transactions-shared"
+import { useTransactionSearchFilter } from "@/components/dashboard/transactions/transactions-page-shared"
 import { DashboardFilterButton } from "@/components/dashboard/dashboard-filter-button"
 import { DashboardPageActions } from "@/components/dashboard/dashboard-page-actions"
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
@@ -27,7 +26,6 @@ import { useDateFilter } from "@/hooks/use-date-filter"
 import { useDeleteConfirmation } from "@/hooks/use-delete-confirmation"
 
 export function TransactionsPage() {
-  const navigate = useNavigate()
   const { hasDateFilter, filterLabel, dateRange } = useDateFilter()
   const { data } = useTransactionsPageData()
   const createTx = useConvexMutation(api.transactions.createTransaction)
@@ -52,20 +50,14 @@ export function TransactionsPage() {
     onConfirm: (id) => deleteTx({ transactionId: id }),
     errorMessage: "Unable to delete the transaction.",
   })
-  const filteredTransactions = useMemo(
-    () =>
-      filterTransactions(
-        (data?.transactions ?? []).filter((t) => {
-          if (dateRange.startDate && t.date < dateRange.startDate) return false
-          if (dateRange.endDate && t.date > dateRange.endDate) return false
-          return true
-        }),
-        filters
-      ),
-    [data?.transactions, dateRange.endDate, dateRange.startDate, filters]
-  )
+  const searchFilter = useTransactionSearchFilter({
+    dateRange,
+    filters,
+    hasDateFilter,
+    transactions: data?.transactions ?? [],
+  })
   const filterCount = useMemo(() => countActiveFilters(filters), [filters])
-  const hasActiveFilters = filterCount > 0 || hasDateFilter
+  const hasActiveFilters = filterCount > 0 || searchFilter.hasSearchFilters
   const isLoading = !data
   const handleFilterChange = (
     name: keyof TransactionFilterValues,
@@ -73,12 +65,7 @@ export function TransactionsPage() {
   ) => setFilters((current) => ({ ...current, [name]: value }))
   const handleClearFilters = () => {
     setFilters(DEFAULT_FILTER_VALUES)
-    if (hasDateFilter) {
-      void navigate({
-        to: ".",
-        search: (prev) => ({ ...prev, from: undefined, to: undefined }),
-      })
-    }
+    searchFilter.clearSearchFilters()
   }
 
   return (
@@ -104,7 +91,7 @@ export function TransactionsPage() {
       <TransactionsContent
         isLoading={isLoading}
         accountOptions={accountOptions}
-        filteredTransactions={filteredTransactions}
+        filteredTransactions={searchFilter.filteredTransactions}
         currency={data?.settings?.baseCurrency}
         hasActiveFilters={hasActiveFilters}
         hasDateFilter={hasDateFilter}
@@ -123,7 +110,7 @@ export function TransactionsPage() {
         onChange={handleFilterChange}
         onReset={() => setFilters(DEFAULT_FILTER_VALUES)}
         activeFilterCount={filterCount}
-        matchCount={filteredTransactions.length}
+        matchCount={searchFilter.filteredTransactions.length}
         accountOptions={accountOptions}
         categoryOptions={allCategoryOptions}
       />

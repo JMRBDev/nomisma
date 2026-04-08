@@ -93,7 +93,11 @@ export default defineSchema({
     .index("by_userId_date", ["userId", "date"])
     .index("by_userId_month", ["userId", "month"])
     .index("by_accountId_date", ["accountId", "date"])
-    .index("by_recurringRuleId", ["recurringRuleId"]),
+    .index("by_recurringRuleId", ["recurringRuleId"])
+    .searchIndex("search_description", {
+      searchField: "description",
+      filterFields: ["userId"],
+    }),
 
   budgets: defineTable({
     userId: v.string(),
