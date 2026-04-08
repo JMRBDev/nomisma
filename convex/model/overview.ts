@@ -38,7 +38,6 @@ export async function getOverviewData(
         recurringItems: d.recurring.all,
         uncategorizedCount: d.uncategorizedCount,
         hasAccounts: d.hasAccounts,
-        hasSettings: Boolean(d.settingsDoc),
         today: d.today,
       }),
       recentTransactions: d.recentTransactions,

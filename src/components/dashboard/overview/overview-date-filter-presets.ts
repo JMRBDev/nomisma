@@ -13,6 +13,7 @@ import type {
 } from "@/components/dashboard/overview/overview-date-filter"
 import { toWeekStartsOnDayIndex } from "@/components/dashboard/settings/settings-shared"
 import { toOverviewDayKey } from "@/components/dashboard/overview/overview-date-filter"
+import { DEFAULT_WEEK_STARTS_ON } from "../../../../shared/settings"
 
 function createOverviewDateFilterValues(
   startDate: Date,
@@ -26,7 +27,7 @@ function createOverviewDateFilterValues(
 
 export function getOverviewDateFilterPresets(
   referenceDate: Date = new Date(),
-  weekStartsOn: WeekStartsOnPreference = "sunday"
+  weekStartsOn: WeekStartsOnPreference = DEFAULT_WEEK_STARTS_ON
 ): Array<OverviewDateFilterPreset> {
   const previousDay = addDays(referenceDate, -1)
   const previousWeek = addDays(referenceDate, -7)

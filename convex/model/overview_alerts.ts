@@ -15,7 +15,6 @@ export function buildOverviewAlerts(args: {
   }>
   uncategorizedCount: number
   hasAccounts: boolean
-  hasSettings: boolean
   today: string
 }) {
   const alerts = [
@@ -73,14 +72,6 @@ export function buildOverviewAlerts(args: {
       kind: "default" as const,
       title: "Add your first account",
       description: "Start with the place where your money lives today.",
-    })
-  }
-
-  if (!args.hasSettings) {
-    alerts.unshift({
-      kind: "default" as const,
-      title: "Choose your base currency",
-      description: "Set your currency before you rely on totals.",
     })
   }
 

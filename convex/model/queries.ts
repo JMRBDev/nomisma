@@ -1,4 +1,5 @@
 import { ConvexError } from "convex/values"
+import { resolveUserSettings } from "../../shared/settings"
 import { authComponent } from "../auth"
 import type { Id } from "../_generated/dataModel"
 import type { MoneyCtx } from "./types"
@@ -19,7 +20,7 @@ export async function getResolvedSettings(ctx: MoneyCtx, userId: string) {
 
   return {
     settingsDoc,
-    settings: settingsDoc ?? null,
+    settings: resolveUserSettings(settingsDoc),
   }
 }
 

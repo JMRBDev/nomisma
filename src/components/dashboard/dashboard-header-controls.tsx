@@ -15,6 +15,7 @@ import { OverviewDateFilterSheet } from "@/components/dashboard/overview/overvie
 import { DashboardSearch } from "@/components/dashboard/dashboard-search"
 import { Button } from "@/components/ui/button"
 import { getUserSettingsQueryOptions } from "@/lib/dashboard-query-options"
+import { DEFAULT_WEEK_STARTS_ON } from "../../../shared/settings"
 
 const dashboardRouteApi = getRouteApi("/_authenticated/dashboard")
 
@@ -25,7 +26,7 @@ function OverviewDateFilterControl() {
   const appliedValues = resolveOverviewDateFilterValues(appliedSearch)
   const appliedActive = hasOverviewDateFilter(appliedValues)
   const filterLabel = getOverviewDateFilterLabel(appliedValues)
-  const weekStartsOn = userSettings.settings?.weekStartsOn ?? "sunday"
+  const weekStartsOn = userSettings.settings?.weekStartsOn ?? DEFAULT_WEEK_STARTS_ON
   const [open, setOpen] = useState(false)
   const [draft, setDraft] = useState<OverviewDateFilterValues>(appliedValues)
   const draftActive = hasOverviewDateFilter(draft)

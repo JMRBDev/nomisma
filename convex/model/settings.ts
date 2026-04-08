@@ -1,4 +1,5 @@
 import { ConvexError } from "convex/values"
+import type { WeekStartsOnPreference } from "../../shared/settings"
 import { groupCategories } from "./read_models_categories"
 import {
   getAccountsByUserId,
@@ -40,7 +41,7 @@ export async function upsertSettings(
   ctx: MutationCtx,
   args: {
     baseCurrency: string
-    weekStartsOn: "sunday" | "monday"
+    weekStartsOn: WeekStartsOnPreference
   }
 ) {
   const user = await requireUser(ctx)

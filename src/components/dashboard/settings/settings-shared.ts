@@ -1,11 +1,16 @@
 import { CURRENCY_OPTIONS } from "@/lib/currency"
+import {
+  resolveUserSettings,
+  type UserSettingsLike,
+  type WeekStartsOnPreference,
+} from "../../../../shared/settings"
 
 export type SettingsFormValues = {
   baseCurrency: string
   weekStartsOn: WeekStartsOnPreference
 }
 
-export type WeekStartsOnPreference = "sunday" | "monday"
+export type { WeekStartsOnPreference } from "../../../../shared/settings"
 
 export const defaultCurrencyOptions = CURRENCY_OPTIONS
 
@@ -15,15 +20,9 @@ export const weekStartsOnOptions = [
 ] as const
 
 export function createSettingsFormValues(
-  settings?: {
-    baseCurrency?: string | null
-    weekStartsOn?: WeekStartsOnPreference | null
-  } | null
+  settings?: UserSettingsLike | null
 ): SettingsFormValues {
-  return {
-    baseCurrency: settings?.baseCurrency ?? "USD",
-    weekStartsOn: settings?.weekStartsOn ?? "sunday",
-  }
+  return resolveUserSettings(settings)
 }
 
 export function toWeekStartsOnDayIndex(
