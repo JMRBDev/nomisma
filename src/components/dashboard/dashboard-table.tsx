@@ -8,8 +8,7 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
+  DropdownMenuGroup,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { DataTablePagination } from "@/components/ui/data-table-pagination"
@@ -83,7 +82,6 @@ export function DashboardTable({
           pageSize={table.pageSize}
           pageSizeOptions={table.pageSizeOptions}
           totalPages={table.totalPages}
-          totalItems={table.totalItems}
           onPageChange={table.setPage}
           onPageSizeChange={table.setPageSize}
         />
@@ -97,23 +95,21 @@ export function DashboardTable({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Shown columns</DropdownMenuLabel>
-              <DropdownMenuLabel className="pt-0">
-                Required columns stay visible.
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {table.columns.map((column) => (
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  checked={table.isColumnVisible(column.id)}
-                  disabled={column.alwaysVisible}
-                  onCheckedChange={(checked) =>
-                    table.setColumnVisibility(column.id, checked === true)
-                  }
-                >
-                  {column.header}
-                </DropdownMenuCheckboxItem>
-              ))}
+              <DropdownMenuGroup>
+                {table.columns.map((column) => (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    checked={table.isColumnVisible(column.id)}
+                    disabled={column.alwaysVisible}
+                    onSelect={(event) => event.preventDefault()}
+                    onCheckedChange={(checked) =>
+                      table.setColumnVisibility(column.id, checked === true)
+                    }
+                  >
+                    {column.header}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
         ) : null}

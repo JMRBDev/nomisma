@@ -4,8 +4,6 @@ import {
   PaginationEllipsis,
   PaginationItem,
   PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
 } from "@/components/ui/pagination"
 import {
   Select,
@@ -15,13 +13,14 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
+import { Separator } from "./separator"
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 
 export function DataTablePagination({
   page,
   pageSize,
   pageSizeOptions,
   totalPages,
-  totalItems,
   onPageChange,
   onPageSizeChange,
 }: {
@@ -29,76 +28,83 @@ export function DataTablePagination({
   pageSize: number
   pageSizeOptions: Array<number>
   totalPages: number
-  totalItems: number
   onPageChange: (page: number) => void
   onPageSizeChange: (pageSize: number) => void
 }) {
   const pages = generatePages(page, totalPages)
 
   return (
-    <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <span>
-          {totalItems} result{totalItems !== 1 ? "s" : ""}
-        </span>
-        <span className="text-border">|</span>
-        <Select
-          value={String(pageSize)}
-          onValueChange={(v) => onPageSizeChange(Number(v))}
+    <div className="flex gap-2 pt-4 items-center justify-between">
+      <Select
+        value={String(pageSize)}
+        onValueChange={(v) => onPageSizeChange(Number(v))}
+      >
+        <SelectTrigger
+          size="sm"
         >
-          <SelectTrigger
-            size="sm"
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {pageSizeOptions.map((size) => (
-              <SelectItem key={size} value={String(size)}>
-                {size} per page
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {pageSizeOptions.map((size) => (
+            <SelectItem key={size} value={String(size)}>
+              {size} / page
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
       {totalPages > 1 && (
-        <Pagination className="mx-0 w-auto justify-end">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => onPageChange(Math.max(1, page - 1))}
-                className={cn(
-                  page <= 1 && "pointer-events-none opacity-50"
-                )}
-              />
-            </PaginationItem>
-            {pages.map((p, i) =>
-              p === "ellipsis" ? (
-                <PaginationItem key={`ellipsis-${i}`}>
-                  <PaginationEllipsis />
-                </PaginationItem>
-              ) : (
-                <PaginationItem key={p}>
-                  <PaginationLink
-                    isActive={p === page}
-                    onClick={() => onPageChange(p as number)}
-                    className="cursor-pointer"
-                  >
-                    {p}
-                  </PaginationLink>
-                </PaginationItem>
-              ),
-            )}
-            <PaginationItem>
-              <PaginationNext
-                onClick={() => onPageChange(Math.min(totalPages, page + 1))}
-                className={cn(
-                  page >= totalPages && "pointer-events-none opacity-50"
-                )}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+        <>
+          <Separator orientation="vertical" />
+          <Pagination className="-ml-2">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationLink
+                  aria-label="Go to previous page"
+                  size="icon-sm"
+                  aria-disabled={page <= 1}
+                  className={cn({
+                    "pointer-events-none opacity-50": page <= 1
+                  })}
+                  onClick={() => onPageChange(Math.max(1, page - 1))}
+                >
+                  <ChevronLeftIcon data-icon="inline-start" />
+                </PaginationLink>
+              </PaginationItem>
+
+              {pages.map((p, i) =>
+                p === "ellipsis" ? (
+                  <PaginationItem key={`ellipsis-${i}`}>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                ) : (
+                  <PaginationItem key={p}>
+                    <PaginationLink
+                      size="sm"
+                      isActive={p === page}
+                      onClick={() => onPageChange(p as number)}
+                    >
+                      {p}
+                    </PaginationLink>
+                  </PaginationItem>
+                ),
+              )}
+              <PaginationItem>
+                <PaginationLink
+                  aria-label="Go to next page"
+                  size="icon-sm"
+                  aria-disabled={page >= totalPages}
+                  className={cn({
+                    "pointer-events-none opacity-50": page >= totalPages
+                  })}
+                  onClick={() => onPageChange(Math.min(totalPages, page + 1))}
+                >
+                  <ChevronRightIcon data-icon="inline-end" />
+                </PaginationLink>
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </>
       )}
     </div>
   )
