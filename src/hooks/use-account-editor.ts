@@ -5,6 +5,7 @@ import type {
 } from "@/components/dashboard/accounts/accounts-shared"
 import {
   buildAccountPayload,
+  createDefaultAccountValues,
   validateAccountValues,
 } from "@/components/dashboard/accounts/accounts-shared"
 import { useFormDialog } from "@/hooks/use-form-dialog"
@@ -24,14 +25,7 @@ export function useAccountEditor({
     AccountFieldErrors,
     AccountRecord
   >({
-    createDefaults: () => ({
-      name: "",
-      type: "checking",
-      openingBalance: "0",
-      includeInTotals: true,
-      color: "",
-      icon: "",
-    }),
+    createDefaults: createDefaultAccountValues,
     createFormValues,
     validate: validateAccountValues,
     onSubmit: async (values) => {

@@ -3,6 +3,7 @@ import {
   getAccountNameConflicts,
   normalizeEntityName,
 } from "./account_name_conflicts"
+import { requireEntityAppearance } from "./entity_appearance"
 import { buildMappedTransactions } from "./read_models_transactions"
 import {
   buildAccountSummaries,
@@ -51,12 +52,13 @@ export async function createAccount(
     type: "checking" | "savings" | "cash" | "wallet"
     openingBalance: number
     includeInTotals: boolean
-    color?: string
-    icon?: string
+    color: string
+    icon: string
   }
 ) {
   const user = await requireUser(ctx)
   const name = args.name.trim()
+  const appearance = requireEntityAppearance(args, "Account")
   if (!name) {
     throw new ConvexError("Account name is required.")
   }
@@ -78,8 +80,8 @@ export async function createAccount(
     openingBalance: args.openingBalance,
     includeInTotals: args.includeInTotals,
     archived: false,
-    color: args.color?.trim() || undefined,
-    icon: args.icon?.trim() || undefined,
+    color: appearance.color,
+    icon: appearance.icon,
     createdAt: timestamp,
     updatedAt: timestamp,
   })
@@ -122,13 +124,14 @@ export async function updateAccount(
     name: string
     type: "checking" | "savings" | "cash" | "wallet"
     includeInTotals: boolean
-    color?: string
-    icon?: string
+    color: string
+    icon: string
   }
 ) {
   const user = await requireUser(ctx)
   const account = await getOwnedAccount(ctx, user._id, args.accountId)
   const name = args.name.trim()
+  const appearance = requireEntityAppearance(args, "Account")
   if (!name) {
     throw new ConvexError("Account name is required.")
   }
@@ -150,8 +153,8 @@ export async function updateAccount(
     name,
     type: args.type,
     includeInTotals: args.includeInTotals,
-    color: args.color?.trim() || undefined,
-    icon: args.icon?.trim() || undefined,
+    color: appearance.color,
+    icon: appearance.icon,
     updatedAt: Date.now(),
   })
 }

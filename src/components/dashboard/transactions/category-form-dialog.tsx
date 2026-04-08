@@ -113,6 +113,7 @@ export function CategoryFormDialog({
                 onChange={(value) => onValueChange("color", value)}
                 entityName="category"
               />
+              <FormErrorMessage error={errors.color} />
             </Field>
 
             <Field>
@@ -125,6 +126,7 @@ export function CategoryFormDialog({
                 colorValue={values.color}
                 entityName="category"
               />
+              <FormErrorMessage error={errors.icon} />
             </Field>
           </div>
         </FieldGroup>

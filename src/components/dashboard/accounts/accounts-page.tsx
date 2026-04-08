@@ -4,7 +4,10 @@ import { useConvexMutation } from "@convex-dev/react-query"
 import { PlusIcon } from "lucide-react"
 import { toast } from "sonner"
 import { api } from "../../../../convex/_generated/api"
-import type { AccountRecord } from "@/components/dashboard/accounts/accounts-shared"
+import {
+  resolveAccountAppearance,
+  type AccountRecord,
+} from "@/components/dashboard/accounts/accounts-shared"
 import { AccountFormDialog } from "@/components/dashboard/accounts/account-form-dialog"
 import { AccountsContent } from "@/components/dashboard/accounts/accounts-content"
 import { DashboardPageActions } from "@/components/dashboard/dashboard-page-actions"
@@ -40,8 +43,7 @@ export function AccountsPage() {
       type: a.type,
       openingBalance: a.openingBalance.toString(),
       includeInTotals: a.includeInTotals,
-      color: a.color ?? "",
-      icon: a.icon ?? "",
+      ...resolveAccountAppearance(a),
     }),
   })
 

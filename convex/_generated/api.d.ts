@@ -19,6 +19,7 @@ import type * as model_balances from "../model/balances.js";
 import type * as model_budgets from "../model/budgets.js";
 import type * as model_categories from "../model/categories.js";
 import type * as model_dates from "../model/dates.js";
+import type * as model_entity_appearance from "../model/entity_appearance.js";
 import type * as model_overview from "../model/overview.js";
 import type * as model_overview_alerts from "../model/overview_alerts.js";
 import type * as model_overview_comparison from "../model/overview_comparison.js";
@@ -67,6 +68,7 @@ declare const fullApi: ApiFromModules<{
   "model/budgets": typeof model_budgets;
   "model/categories": typeof model_categories;
   "model/dates": typeof model_dates;
+  "model/entity_appearance": typeof model_entity_appearance;
   "model/overview": typeof model_overview;
   "model/overview_alerts": typeof model_overview_alerts;
   "model/overview_comparison": typeof model_overview_comparison;

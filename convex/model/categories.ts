@@ -1,4 +1,5 @@
 import { ConvexError } from "convex/values"
+import { requireEntityAppearance } from "./entity_appearance"
 import { getCategoriesByUserId, getOwnedCategory, requireUser } from "./queries"
 import type { MutationCtx } from "../_generated/server"
 
@@ -23,10 +24,7 @@ async function getCategoryNameConflicts(
       return false
     }
 
-    if (
-      args.excludedCategoryId &&
-      category._id === args.excludedCategoryId
-    ) {
+    if (args.excludedCategoryId && category._id === args.excludedCategoryId) {
       return false
     }
 
@@ -39,13 +37,14 @@ export async function createCategory(
   args: {
     kind: "income" | "expense"
     name: string
-    color?: string
-    icon?: string
+    color: string
+    icon: string
   }
 ) {
   const user = await requireUser(ctx)
 
   const name = args.name.trim()
+  const appearance = requireEntityAppearance(args, "Category")
   if (!name) {
     throw new ConvexError("Category name is required.")
   }
@@ -67,8 +66,8 @@ export async function createCategory(
     userId: user._id,
     kind: args.kind,
     name,
-    color: args.color?.trim() || undefined,
-    icon: args.icon?.trim() || undefined,
+    color: appearance.color,
+    icon: appearance.icon,
     archived: false,
     createdAt: timestamp,
     updatedAt: timestamp,
@@ -80,13 +79,14 @@ export async function updateCategory(
   args: {
     categoryId: Parameters<typeof getOwnedCategory>[2]
     name: string
-    color?: string
-    icon?: string
+    color: string
+    icon: string
   }
 ) {
   const user = await requireUser(ctx)
   const category = await getOwnedCategory(ctx, user._id, args.categoryId)
   const name = args.name.trim()
+  const appearance = requireEntityAppearance(args, "Category")
 
   if (!name) {
     throw new ConvexError("Category name is required.")
@@ -108,8 +108,8 @@ export async function updateCategory(
 
   await ctx.db.patch(category._id, {
     name,
-    color: args.color?.trim() || undefined,
-    icon: args.icon?.trim() || undefined,
+    color: appearance.color,
+    icon: appearance.icon,
     updatedAt: Date.now(),
   })
 }

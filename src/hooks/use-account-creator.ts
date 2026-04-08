@@ -3,8 +3,8 @@ import type {
   AccountFormValues,
 } from "@/components/dashboard/accounts/accounts-shared"
 import {
-  DEFAULT_ACCOUNT_VALUES,
   buildAccountPayload,
+  createDefaultAccountValues,
   validateAccountValues,
 } from "@/components/dashboard/accounts/accounts-shared"
 import { useFormDialog } from "@/hooks/use-form-dialog"
@@ -19,7 +19,7 @@ export function useAccountCreator({
   onCreateSuccess?: (accountId: string) => Promise<unknown> | unknown
 }) {
   const dialog = useFormDialog<AccountFormValues, AccountFieldErrors>({
-    createDefaults: () => DEFAULT_ACCOUNT_VALUES,
+    createDefaults: createDefaultAccountValues,
     validate: validateAccountValues,
     onSubmit: async (values) => {
       return onCreateAccount(buildAccountPayload(values))

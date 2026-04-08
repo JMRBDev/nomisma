@@ -99,6 +99,7 @@ export function AccountFormFields({
             onChange={(value) => onValueChange("color", value)}
             entityName="account"
           />
+          <FormErrorMessage error={errors.color} />
         </Field>
 
         <Field>
@@ -111,6 +112,7 @@ export function AccountFormFields({
             colorValue={values.color}
             entityName="account"
           />
+          <FormErrorMessage error={errors.icon} />
         </Field>
       </div>
 

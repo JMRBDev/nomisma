@@ -14,8 +14,8 @@ export const createAccount = mutation({
     type: accountTypeValidator,
     openingBalance: v.number(),
     includeInTotals: v.boolean(),
-    color: v.optional(v.string()),
-    icon: v.optional(v.string()),
+    color: v.string(),
+    icon: v.string(),
   },
   handler: (ctx, args) => Accounts.createAccount(ctx, args),
 })
@@ -34,8 +34,8 @@ export const updateAccount = mutation({
     name: v.string(),
     type: accountTypeValidator,
     includeInTotals: v.boolean(),
-    color: v.optional(v.string()),
-    icon: v.optional(v.string()),
+    color: v.string(),
+    icon: v.string(),
   },
   handler: (ctx, args) => Accounts.updateAccount(ctx, args),
 })

@@ -7,8 +7,8 @@ export const createCategory = mutation({
   args: {
     kind: categoryKindValidator,
     name: v.string(),
-    color: v.optional(v.string()),
-    icon: v.optional(v.string()),
+    color: v.string(),
+    icon: v.string(),
   },
   handler: (ctx, args) => Categories.createCategory(ctx, args),
 })
@@ -17,8 +17,8 @@ export const updateCategory = mutation({
   args: {
     categoryId: v.id("categories"),
     name: v.string(),
-    color: v.optional(v.string()),
-    icon: v.optional(v.string()),
+    color: v.string(),
+    icon: v.string(),
   },
   handler: (ctx, args) => Categories.updateCategory(ctx, args),
 })

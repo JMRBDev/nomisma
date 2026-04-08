@@ -9,6 +9,8 @@ import {
 import { getRouteApi } from "@tanstack/react-router"
 import type { LucideIcon } from "lucide-react"
 import type { IconOption } from "@/components/icon-picker"
+import { COLOR_OPTIONS } from "@/components/picker-shared"
+import { pickRandomItem } from "@/lib/random"
 
 const transactionsRouteApi = getRouteApi(
   "/_authenticated/dashboard/transactions"
@@ -25,7 +27,9 @@ export type CategoryFormValues = {
   icon: string
 }
 
-export type CategoryFieldErrors = Partial<Record<"name", string>>
+export type CategoryFieldErrors = Partial<
+  Record<"name" | "color" | "icon", string>
+>
 
 export const CATEGORY_ICON_OPTIONS: Array<IconOption> = [
   { name: "shopping-cart", label: "Shopping", icon: ShoppingCartIcon },
@@ -43,11 +47,31 @@ export const CATEGORY_ICON_MAP = CATEGORY_ICON_OPTIONS.reduce<
   return map
 }, {})
 
-export const DEFAULT_CATEGORY_VALUES: CategoryFormValues = {
-  name: "",
-  kind: "expense",
-  color: "",
-  icon: "",
+export function createRandomCategoryAppearance() {
+  return {
+    color: pickRandomItem(COLOR_OPTIONS).value,
+    icon: pickRandomItem(CATEGORY_ICON_OPTIONS).name,
+  }
+}
+
+export function resolveCategoryAppearance(values: {
+  color?: string | null
+  icon?: string | null
+}) {
+  const defaults = createRandomCategoryAppearance()
+
+  return {
+    color: values.color?.trim() || defaults.color,
+    icon: values.icon?.trim() || defaults.icon,
+  }
+}
+
+export function createDefaultCategoryValues(): CategoryFormValues {
+  return {
+    name: "",
+    kind: "expense",
+    ...createRandomCategoryAppearance(),
+  }
 }
 
 export function validateCategoryValues(
@@ -59,14 +83,24 @@ export function validateCategoryValues(
     errors.name = "Category name is required."
   }
 
+  if (!values.color.trim()) {
+    errors.color = "Category color is required."
+  }
+
+  if (!values.icon.trim()) {
+    errors.icon = "Category icon is required."
+  }
+
   return errors
 }
 
 export function buildCategoryPayload(values: CategoryFormValues) {
+  const appearance = resolveCategoryAppearance(values)
+
   return {
     name: values.name.trim(),
     kind: values.kind,
-    color: values.color.trim() || undefined,
-    icon: values.icon.trim() || undefined,
+    color: appearance.color,
+    icon: appearance.icon,
   }
 }

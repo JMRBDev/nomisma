@@ -9,7 +9,9 @@ import {
 import { getRouteApi } from "@tanstack/react-router"
 import type { LucideIcon } from "lucide-react"
 import type { IconOption } from "@/components/icon-picker"
+import { COLOR_OPTIONS } from "@/components/picker-shared"
 import { accountTypeOptions } from "@/lib/money"
+import { pickRandomItem } from "@/lib/random"
 
 const accountsRouteApi = getRouteApi("/_authenticated/dashboard/accounts")
 
@@ -44,16 +46,36 @@ export type AccountFormValues = {
 }
 
 export type AccountFieldErrors = Partial<
-  Record<"name" | "openingBalance", string>
+  Record<"name" | "openingBalance" | "color" | "icon", string>
 >
 
-export const DEFAULT_ACCOUNT_VALUES: AccountFormValues = {
-  name: "",
-  type: "checking",
-  openingBalance: "0",
-  includeInTotals: true,
-  color: "",
-  icon: "",
+export function createRandomAccountAppearance() {
+  return {
+    color: pickRandomItem(COLOR_OPTIONS).value,
+    icon: pickRandomItem(ACCOUNT_ICON_OPTIONS).name,
+  }
+}
+
+export function resolveAccountAppearance(values: {
+  color?: string | null
+  icon?: string | null
+}) {
+  const defaults = createRandomAccountAppearance()
+
+  return {
+    color: values.color?.trim() || defaults.color,
+    icon: values.icon?.trim() || defaults.icon,
+  }
+}
+
+export function createDefaultAccountValues(): AccountFormValues {
+  return {
+    name: "",
+    type: "checking",
+    openingBalance: "0",
+    includeInTotals: true,
+    ...createRandomAccountAppearance(),
+  }
 }
 
 export function getAccountTypeLabel(type: AccountType) {
@@ -79,16 +101,26 @@ export function validateAccountValues(
     errors.openingBalance = "Opening balance cannot be negative."
   }
 
+  if (!values.color.trim()) {
+    errors.color = "Account color is required."
+  }
+
+  if (!values.icon.trim()) {
+    errors.icon = "Account icon is required."
+  }
+
   return errors
 }
 
 export function buildAccountPayload(values: AccountFormValues) {
+  const appearance = resolveAccountAppearance(values)
+
   return {
     name: values.name.trim(),
     type: values.type,
     openingBalance: Number(values.openingBalance || "0"),
     includeInTotals: values.includeInTotals,
-    color: values.color.trim() || undefined,
-    icon: values.icon.trim() || undefined,
+    color: appearance.color,
+    icon: appearance.icon,
   }
 }

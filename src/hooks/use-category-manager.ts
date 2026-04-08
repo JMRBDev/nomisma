@@ -6,8 +6,9 @@ import type {
   CategoryRecord,
 } from "@/components/dashboard/transactions/categories-shared"
 import {
-  DEFAULT_CATEGORY_VALUES,
   buildCategoryPayload,
+  createDefaultCategoryValues,
+  resolveCategoryAppearance,
   validateCategoryValues,
 } from "@/components/dashboard/transactions/categories-shared"
 import { useFormDialog } from "@/hooks/use-form-dialog"
@@ -28,24 +29,25 @@ export function useCategoryManager({
     CategoryFieldErrors,
     CategoryRecord
   >({
-    createDefaults: () => ({ ...DEFAULT_CATEGORY_VALUES }),
+    createDefaults: createDefaultCategoryValues,
     createFormValues: (category) => ({
       name: category.name,
       kind: category.kind,
-      color: category.color ?? "",
-      icon: category.icon ?? "",
+      ...resolveCategoryAppearance(category),
     }),
     validate: validateCategoryValues,
     onSubmit: async (values) => {
+      const payload = buildCategoryPayload(values)
+
       if (dialog.isEditing && dialog.editingEntity) {
         await updateCategory({
           categoryId: dialog.editingEntity._id,
-          name: values.name.trim(),
-          color: values.color.trim() || undefined,
-          icon: values.icon.trim() || undefined,
+          name: payload.name,
+          color: payload.color,
+          icon: payload.icon,
         })
       } else {
-        return createCategory(buildCategoryPayload(values))
+        return createCategory(payload)
       }
     },
     onSubmitSuccess: async (result) => {
