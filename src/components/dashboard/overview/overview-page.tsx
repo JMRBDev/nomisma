@@ -1,11 +1,5 @@
 import { Link } from "@tanstack/react-router"
-import {
-  ArrowRightIcon,
-  CheckCircle2Icon,
-  FunnelIcon,
-  ReceiptTextIcon,
-  RepeatIcon,
-} from "lucide-react"
+import { ArrowRightIcon, CheckCircle2Icon, FunnelIcon, ReceiptTextIcon, RepeatIcon } from "lucide-react"
 import { OverviewAlerts } from "@/components/dashboard/overview/overview-alerts"
 import { OverviewChartsRow } from "@/components/dashboard/overview/overview-charts-row"
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
@@ -52,10 +46,7 @@ export function OverviewPage() {
           }
           action={
             <Button asChild size="sm" variant="outline">
-              <Link
-                to="/dashboard/transactions"
-                search={(previous) => previous}
-              >
+              <Link to="/dashboard/transactions" search={(previous) => previous}>
                 View all
                 <ArrowRightIcon />
               </Link>
@@ -87,10 +78,7 @@ export function OverviewPage() {
                 action={
                   hasDateFilter ? null : (
                     <Button asChild>
-                      <Link
-                        to="/dashboard/transactions"
-                        search={(previous) => previous}
-                      >
+                      <Link to="/dashboard/transactions" search={(previous) => previous}>
                         Open transactions
                         <ArrowRightIcon />
                       </Link>

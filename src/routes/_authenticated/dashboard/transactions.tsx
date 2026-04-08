@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { TransactionsPage } from "@/components/dashboard/transactions/transactions-page"
+import { getTransactionsPageDataQueryOptions } from "@/lib/dashboard-query-options"
 
 function parseTransactionsSearch(search: Record<string, unknown>) {
   if (typeof search.transactionId === "string") {
@@ -16,5 +17,7 @@ export const Route = createFileRoute("/_authenticated/dashboard/transactions")({
     breadcrumb: "Transactions",
   },
   validateSearch: parseTransactionsSearch,
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(getTransactionsPageDataQueryOptions()),
   component: TransactionsPage,
 })

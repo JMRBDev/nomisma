@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
+import { useRouter } from "@tanstack/react-router"
 import { api } from "../../../../convex/_generated/api"
 import type { SettingsFormValues } from "@/components/dashboard/settings/settings-shared"
 import { FormErrorMessage } from "@/components/form-error-message"
@@ -23,6 +24,7 @@ export function SettingsForm({
 }: {
   initialValues: SettingsFormValues
 }) {
+  const router = useRouter()
   const upsertSettings = useConvexMutation(api.settings.upsertSettings)
   const [values, setValues] = useState(initialValues)
   const [savedValues, setSavedValues] = useState(initialValues)
@@ -69,6 +71,7 @@ export function SettingsForm({
         weekStartsOn: values.weekStartsOn,
       })
       setSavedValues(values)
+      await router.invalidate()
     } catch (error) {
       setFormError(
         error instanceof Error ? error.message : "Could not save settings."

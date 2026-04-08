@@ -1,68 +1,46 @@
-import { convexQuery } from "@convex-dev/react-query"
 import { useQuery } from "@tanstack/react-query"
-import { api } from "../../convex/_generated/api"
-import { getCurrentCalendarContext } from "@/lib/date-keys"
+import {
+  getAccountsPageDataQueryOptions,
+  getBudgetsPageDataQueryOptions,
+  getGlobalSearchQueryOptions,
+  getOverviewDataQueryOptions,
+  getRecurringPageDataQueryOptions,
+  getTransactionsPageDataQueryOptions,
+  getUserSettingsQueryOptions,
+} from "@/lib/dashboard-query-options"
 
 export function useOverviewData(args?: {
   startDate?: string
   endDate?: string
 }) {
-  const calendar = getCurrentCalendarContext()
-
-  return useQuery(
-    convexQuery(api.overview.getOverviewData, {
-      ...args,
-      today: calendar.today,
-      currentMonth: calendar.currentMonth,
-    })
-  )
+  return useQuery(getOverviewDataQueryOptions(args))
 }
 
 export function useAccountsPageData() {
-  return useQuery(convexQuery(api.accounts.getAccountsPageData, {}))
+  return useQuery(getAccountsPageDataQueryOptions())
 }
 
 export function useTransactionsPageData() {
-  return useQuery(convexQuery(api.transactions.getTransactionsPageData, {}))
+  return useQuery(getTransactionsPageDataQueryOptions())
 }
 
 export function useBudgetsPageData() {
-  const calendar = getCurrentCalendarContext()
-
-  return useQuery(
-    convexQuery(api.budgets.getBudgetsPageData, {
-      currentMonth: calendar.currentMonth,
-    })
-  )
+  return useQuery(getBudgetsPageDataQueryOptions())
 }
 
 export function useRecurringPageData() {
-  const calendar = getCurrentCalendarContext()
-
-  return useQuery(
-    convexQuery(api.recurring.getRecurringPageData, {
-      today: calendar.today,
-    })
-  )
-}
-
-export function useSettingsPageData() {
-  return useQuery(convexQuery(api.settings.getSettingsPageData, {}))
+  return useQuery(getRecurringPageDataQueryOptions())
 }
 
 export function useUserSettings() {
-  return useQuery(convexQuery(api.settings.getUserSettings, {}))
+  return useQuery(getUserSettingsQueryOptions())
 }
 
 export function useGlobalSearch(query: string) {
   const normalizedQuery = query.trim()
-  const calendar = getCurrentCalendarContext()
 
   return useQuery({
-    ...convexQuery(api.search.getGlobalSearchResults, {
-      query: normalizedQuery,
-      currentMonth: calendar.currentMonth,
-    }),
+    ...getGlobalSearchQueryOptions(query),
     enabled: normalizedQuery.length >= 2,
     placeholderData: (previousData) => previousData,
   })

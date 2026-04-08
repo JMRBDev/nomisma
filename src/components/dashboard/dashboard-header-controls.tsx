@@ -13,18 +13,17 @@ import {
 import { OverviewDateFilterSheet } from "@/components/dashboard/overview/overview-date-filter-sheet"
 import { DashboardSearch } from "@/components/dashboard/dashboard-search"
 import { Button } from "@/components/ui/button"
-import { useUserSettings } from "@/hooks/use-money-dashboard"
 
 const dashboardRouteApi = getRouteApi("/_authenticated/dashboard")
 
 function OverviewDateFilterControl() {
-  const { data } = useUserSettings()
+  const { userSettings } = dashboardRouteApi.useRouteContext()
   const navigate = useNavigate()
   const appliedSearch = dashboardRouteApi.useSearch()
   const appliedValues = resolveOverviewDateFilterValues(appliedSearch)
   const appliedActive = hasOverviewDateFilter(appliedValues)
   const filterLabel = getOverviewDateFilterLabel(appliedValues)
-  const weekStartsOn = data?.settings?.weekStartsOn ?? "sunday"
+  const weekStartsOn = userSettings.settings?.weekStartsOn ?? "sunday"
   const [open, setOpen] = useState(false)
   const [draft, setDraft] = useState<OverviewDateFilterValues>(appliedValues)
   const draftActive = hasOverviewDateFilter(draft)

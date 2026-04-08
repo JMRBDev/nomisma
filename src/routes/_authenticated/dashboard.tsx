@@ -1,12 +1,22 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router"
 import { parseOverviewDateFilterSearch } from "@/components/dashboard/overview/overview-date-filter"
 import { AppShell } from "@/components/app-shell"
+import { getUserSettingsQueryOptions } from "@/lib/dashboard-query-options"
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   staticData: {
     breadcrumb: "Overview",
   },
   validateSearch: parseOverviewDateFilterSearch,
+  beforeLoad: async ({ context }) => {
+    const userSettings = await context.queryClient.ensureQueryData(
+      getUserSettingsQueryOptions()
+    )
+
+    return {
+      userSettings,
+    }
+  },
   component: DashboardLayout,
 })
 
