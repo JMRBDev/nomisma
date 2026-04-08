@@ -9,7 +9,7 @@ import type { OverviewData } from "@/components/dashboard/overview/overview-shar
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
 import { OverviewPanelCard } from "@/components/dashboard/overview/overview-panel-card"
 import { OverviewTopSpendingCategoriesList } from "@/components/dashboard/overview/overview-top-spending-categories-list"
-import { OverviewUpcomingRecurringTable } from "@/components/dashboard/overview/overview-upcoming-recurring-table"
+import { RecurringTable } from "@/components/dashboard/recurring/recurring-table"
 import { Button } from "@/components/ui/button"
 
 interface OverviewMiddleRowProps {
@@ -85,9 +85,11 @@ export function OverviewMiddleRow({
       >
         {!isLoading &&
           (data.overview.upcomingRecurring.length > 0 ? (
-            <OverviewUpcomingRecurringTable
+            <RecurringTable
               recurringItems={data.overview.upcomingRecurring}
               currency={currency}
+              columnVisibilityStorageKey="nomisma-table-columns:overview-upcoming-recurring"
+              defaultPageSize={5}
             />
           ) : (
             <FilteredResultsEmptyState

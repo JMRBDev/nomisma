@@ -35,13 +35,19 @@ export function RecurringTableRow({
   item: RecurringRecord
   currency?: string | null
   pendingRuleId: RecurringRecord["_id"] | null
-  today: string
+  today?: string
   isColumnVisible: (columnId: string) => boolean
-  onConfirm: (ruleId: RecurringRecord["_id"]) => void
-  onEdit: (rule: RecurringRecord) => void
-  onToggle: (ruleId: RecurringRecord["_id"], active: boolean) => void
+  onConfirm?: (ruleId: RecurringRecord["_id"]) => void
+  onEdit?: (rule: RecurringRecord) => void
+  onToggle?: (ruleId: RecurringRecord["_id"], active: boolean) => void
 }) {
-  const canConfirm = canConfirmRecurringItem(item, today)
+  const showActions =
+    isColumnVisible("actions") &&
+    today !== undefined &&
+    onConfirm !== undefined &&
+    onEdit !== undefined &&
+    onToggle !== undefined
+  const canConfirm = showActions ? canConfirmRecurringItem(item, today) : false
   const pending = pendingRuleId === item._id
 
   return (
@@ -96,7 +102,7 @@ export function RecurringTableRow({
           {formatSignedAmount(item.amount, currency, item.type)}
         </TableCell>
       )}
-      {isColumnVisible("actions") && (
+      {showActions && (
         <TableCell>
           <DashboardTableActions
             actions={[

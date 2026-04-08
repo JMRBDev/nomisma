@@ -21,7 +21,7 @@ const SORT_ACCESSORS: Record<
 
 const COLUMN_VISIBILITY_STORAGE_KEY = "nomisma-table-columns:recurring"
 
-const COLUMNS: Array<DashboardTableColumn> = [
+const BASE_COLUMNS: Array<DashboardTableColumn> = [
   {
     id: "nextDueDate",
     column: "nextDueDate",
@@ -45,37 +45,50 @@ const COLUMNS: Array<DashboardTableColumn> = [
     className: "text-right",
     alwaysVisible: true,
   },
-  {
-    id: "actions",
-    header: "Actions",
-    className: "text-right",
-    alwaysVisible: true,
-  },
 ]
+
+const ACTIONS_COLUMN: DashboardTableColumn = {
+  id: "actions",
+  header: "Actions",
+  className: "text-right",
+  alwaysVisible: true,
+}
 
 export function RecurringTable({
   recurringItems,
   currency,
-  pendingRuleId,
+  pendingRuleId = null,
   today,
   onConfirm,
   onEdit,
   onToggle,
+  columnVisibilityStorageKey = COLUMN_VISIBILITY_STORAGE_KEY,
+  defaultPageSize,
+  showBreakdown = true,
 }: {
   recurringItems: Array<RecurringRecord>
   currency?: string | null
-  pendingRuleId: RecurringRecord["_id"] | null
-  today: string
-  onConfirm: (ruleId: RecurringRecord["_id"]) => void
-  onEdit: (rule: RecurringRecord) => void
-  onToggle: (ruleId: RecurringRecord["_id"], active: boolean) => void
+  pendingRuleId?: RecurringRecord["_id"] | null
+  today?: string
+  onConfirm?: (ruleId: RecurringRecord["_id"]) => void
+  onEdit?: (rule: RecurringRecord) => void
+  onToggle?: (ruleId: RecurringRecord["_id"], active: boolean) => void
+  columnVisibilityStorageKey?: string
+  defaultPageSize?: number
+  showBreakdown?: boolean
 }) {
+  const showActions = Boolean(today && onConfirm && onEdit && onToggle)
+  const columns = showActions
+    ? [...BASE_COLUMNS, ACTIONS_COLUMN]
+    : BASE_COLUMNS
+
   const table = useDataTable({
     data: recurringItems,
-    columns: COLUMNS,
-    columnVisibilityStorageKey: COLUMN_VISIBILITY_STORAGE_KEY,
+    columns,
+    columnVisibilityStorageKey,
     sortAccessors: SORT_ACCESSORS,
     defaultSort: { column: "nextDueDate", direction: "asc" },
+    defaultPageSize,
   })
 
   const aggregates = useMemo(() => {
@@ -96,6 +109,7 @@ export function RecurringTable({
           aggregates={aggregates}
           currency={currency}
           columnCount={table.visibleColumns.length}
+          showBreakdown={showBreakdown}
         />
       }
     >

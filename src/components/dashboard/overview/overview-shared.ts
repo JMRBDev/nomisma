@@ -9,5 +9,3 @@ export type OverviewTopSpendingCategory =
   OverviewData["overview"]["topSpendingCategories"][number]
 export type OverviewRecentTransactionRecord =
   OverviewData["overview"]["recentTransactions"][number]
-export type OverviewUpcomingRecurringRecord =
-  OverviewData["overview"]["upcomingRecurring"][number]
