@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 import type { AccountRecord } from "@/components/dashboard/accounts/accounts-shared"
+import type { DashboardTableColumn } from "@/components/dashboard/dashboard-table-columns"
 import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { AccountsTableRow } from "@/components/dashboard/accounts/accounts-table-row"
 import { TableCell, TableRow } from "@/components/ui/table"
@@ -13,12 +14,25 @@ const SORT_ACCESSORS: Record<string, (row: AccountRecord) => string | number> =
     currentBalance: (row) => row.currentBalance,
   }
 
-const COLUMNS = [
-  { column: "name", header: "Account" },
-  { column: "type", header: "Type" },
-  { header: "Totals", className: "text-center" },
-  { column: "currentBalance", header: "Current", className: "text-right" },
-  { header: "Actions", className: "text-right" },
+const COLUMN_VISIBILITY_STORAGE_KEY = "nomisma-table-columns:accounts"
+
+const COLUMNS: Array<DashboardTableColumn> = [
+  { id: "name", column: "name", header: "Account", alwaysVisible: true },
+  { id: "type", column: "type", header: "Type" },
+  { id: "includeInTotals", header: "Totals", className: "text-center" },
+  {
+    id: "currentBalance",
+    column: "currentBalance",
+    header: "Current",
+    className: "text-right",
+    alwaysVisible: true,
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    className: "text-right",
+    alwaysVisible: true,
+  },
 ]
 
 export function AccountsTable({
@@ -41,6 +55,8 @@ export function AccountsTable({
 }) {
   const table = useDataTable({
     data: accounts,
+    columns: COLUMNS,
+    columnVisibilityStorageKey: COLUMN_VISIBILITY_STORAGE_KEY,
     sortAccessors: SORT_ACCESSORS,
   })
 
@@ -55,19 +71,22 @@ export function AccountsTable({
   return (
     <DashboardTable
       table={table}
-      columns={COLUMNS}
       footer={
         <TableRow>
-          <TableCell colSpan={3}>
+          <TableCell>
             <span className="text-muted-foreground">
               Total ({table.allSortedData.length} account
               {table.allSortedData.length !== 1 ? "s" : ""})
             </span>
           </TableCell>
-          <TableCell className="text-right font-medium">
-            {formatCurrency(aggregates.totalCurrent, currency)}
-          </TableCell>
-          <TableCell />
+          {table.isColumnVisible("type") && <TableCell />}
+          {table.isColumnVisible("includeInTotals") && <TableCell />}
+          {table.isColumnVisible("currentBalance") && (
+            <TableCell className="text-right font-medium">
+              {formatCurrency(aggregates.totalCurrent, currency)}
+            </TableCell>
+          )}
+          {table.isColumnVisible("actions") && <TableCell />}
         </TableRow>
       }
     >
@@ -78,6 +97,7 @@ export function AccountsTable({
           currency={currency}
           archived={archived}
           pendingAccountId={pendingAccountId}
+          isColumnVisible={table.isColumnVisible}
           onEdit={onEdit}
           onToggleArchived={onToggleArchived}
         />

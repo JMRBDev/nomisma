@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 import type { OverviewRecentTransactionRecord } from "@/components/dashboard/overview/overview-shared"
+import type { DashboardTableColumn } from "@/components/dashboard/dashboard-table-columns"
 import { AccountNameCell } from "@/components/dashboard/account-name-cell"
 import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { IncomeExpenseNetFooter } from "@/components/dashboard/income-expense-net-footer"
@@ -29,13 +30,27 @@ const SORT_ACCESSORS: Record<
   },
 }
 
-const COLUMNS = [
-  { column: "date", header: "Date" },
-  { column: "description", header: "Description" },
-  { column: "accountName", header: "Account" },
-  { column: "type", header: "Type" },
-  { column: "status", header: "Status" },
-  { column: "amount", header: "Amount", className: "text-right" },
+const COLUMN_VISIBILITY_STORAGE_KEY =
+  "nomisma-table-columns:overview-recent-transactions"
+
+const COLUMNS: Array<DashboardTableColumn> = [
+  { id: "date", column: "date", header: "Date", alwaysVisible: true },
+  {
+    id: "description",
+    column: "description",
+    header: "Description",
+    alwaysVisible: true,
+  },
+  { id: "accountName", column: "accountName", header: "Account" },
+  { id: "type", column: "type", header: "Type" },
+  { id: "status", column: "status", header: "Status" },
+  {
+    id: "amount",
+    column: "amount",
+    header: "Amount",
+    className: "text-right",
+    alwaysVisible: true,
+  },
 ]
 
 export function OverviewRecentTransactionsTable({
@@ -47,6 +62,8 @@ export function OverviewRecentTransactionsTable({
 }) {
   const table = useDataTable({
     data: transactions,
+    columns: COLUMNS,
+    columnVisibilityStorageKey: COLUMN_VISIBILITY_STORAGE_KEY,
     sortAccessors: SORT_ACCESSORS,
     defaultSort: { column: "date", direction: "desc" },
     defaultPageSize: 5,
@@ -65,56 +82,71 @@ export function OverviewRecentTransactionsTable({
   return (
     <DashboardTable
       table={table}
-      columns={COLUMNS}
       footer={
         <IncomeExpenseNetFooter
           aggregates={aggregates}
           currency={currency}
-          labelColSpan={5}
+          columnCount={table.visibleColumns.length}
           showBreakdown={false}
         />
       }
     >
       {table.data.map((transaction) => (
         <TableRow key={transaction._id}>
-          <TableCell>
-            <span className="text-muted-foreground">
-              {formatDateLabel(transaction.date)}
-            </span>
-          </TableCell>
-          <TableCell>
-            <div className="space-y-1">
-              <p className="font-medium">{transaction.description}</p>
-              <p className="text-xs text-muted-foreground">
-                {transaction.categoryName ?? "Transfer"}
-              </p>
-            </div>
-          </TableCell>
-          <TableCell>
-            <AccountNameCell
-              name={transaction.accountName}
-              icon={transaction.accountIcon}
-              color={transaction.accountColor}
-            />
-          </TableCell>
-          <TableCell>
-            <span className={cn(getTransactionTone(transaction.type))}>
-              {capitalizeFirstLetter(transaction.type)}
-            </span>
-          </TableCell>
-          <TableCell>
-            <span className="text-muted-foreground">
-              {capitalizeFirstLetter(transaction.status)}
-            </span>
-          </TableCell>
-          <TableCell
-            className={cn(
-              "text-right font-medium",
-              getTransactionTone(transaction.type)
-            )}
-          >
-            {formatSignedAmount(transaction.amount, currency, transaction.type)}
-          </TableCell>
+          {table.isColumnVisible("date") && (
+            <TableCell>
+              <span className="text-muted-foreground">
+                {formatDateLabel(transaction.date)}
+              </span>
+            </TableCell>
+          )}
+          {table.isColumnVisible("description") && (
+            <TableCell>
+              <div className="space-y-1">
+                <p className="font-medium">{transaction.description}</p>
+                <p className="text-xs text-muted-foreground">
+                  {transaction.categoryName ?? "Transfer"}
+                </p>
+              </div>
+            </TableCell>
+          )}
+          {table.isColumnVisible("accountName") && (
+            <TableCell>
+              <AccountNameCell
+                name={transaction.accountName}
+                icon={transaction.accountIcon}
+                color={transaction.accountColor}
+              />
+            </TableCell>
+          )}
+          {table.isColumnVisible("type") && (
+            <TableCell>
+              <span className={cn(getTransactionTone(transaction.type))}>
+                {capitalizeFirstLetter(transaction.type)}
+              </span>
+            </TableCell>
+          )}
+          {table.isColumnVisible("status") && (
+            <TableCell>
+              <span className="text-muted-foreground">
+                {capitalizeFirstLetter(transaction.status)}
+              </span>
+            </TableCell>
+          )}
+          {table.isColumnVisible("amount") && (
+            <TableCell
+              className={cn(
+                "text-right font-medium",
+                getTransactionTone(transaction.type)
+              )}
+            >
+              {formatSignedAmount(
+                transaction.amount,
+                currency,
+                transaction.type
+              )}
+            </TableCell>
+          )}
         </TableRow>
       ))}
     </DashboardTable>

@@ -18,6 +18,7 @@ export function AccountsTableRow({
   currency,
   archived,
   pendingAccountId,
+  isColumnVisible,
   onEdit,
   onToggleArchived,
 }: {
@@ -25,6 +26,7 @@ export function AccountsTableRow({
   currency?: string | null
   archived: boolean
   pendingAccountId?: AccountRecord["_id"] | null
+  isColumnVisible: (columnId: string) => boolean
   onEdit: (account: AccountRecord) => void
   onToggleArchived: (
     accountId: AccountRecord["_id"],
@@ -33,42 +35,52 @@ export function AccountsTableRow({
 }) {
   return (
     <TableRow>
-      <TableCell>
-        <div className="flex items-center gap-3">
-          <AccountIconAvatar icon={account.icon} color={account.color} />
-          <span className="font-medium">{account.name}</span>
-        </div>
-      </TableCell>
-      <TableCell>{getAccountTypeLabel(account.type)}</TableCell>
-      <TableCell className="text-center">
-        {archived ? (
-          <XIcon size={16} className="mx-auto text-muted-foreground" />
-        ) : account.includeInTotals ? (
-          <CheckIcon size={16} className="mx-auto text-emerald-400" />
-        ) : (
-          <XIcon size={16} className="mx-auto text-muted-foreground" />
-        )}
-      </TableCell>
-      <TableCell className="text-right font-medium">
-        {formatCurrency(account.currentBalance, currency)}
-      </TableCell>
-      <TableCell>
-        <DashboardTableActions>
-          <DashboardIconButton
-            onClick={() => onEdit(account)}
-            aria-label="Edit account"
-          >
-            <PencilIcon />
-          </DashboardIconButton>
-          <DashboardIconButton
-            onClick={() => onToggleArchived(account._id, !archived)}
-            disabled={pendingAccountId === account._id}
-            aria-label={archived ? "Restore account" : "Archive account"}
-          >
-            {archived ? <ArchiveRestoreIcon /> : <ArchiveIcon />}
-          </DashboardIconButton>
-        </DashboardTableActions>
-      </TableCell>
+      {isColumnVisible("name") && (
+        <TableCell>
+          <div className="flex items-center gap-3">
+            <AccountIconAvatar icon={account.icon} color={account.color} />
+            <span className="font-medium">{account.name}</span>
+          </div>
+        </TableCell>
+      )}
+      {isColumnVisible("type") && (
+        <TableCell>{getAccountTypeLabel(account.type)}</TableCell>
+      )}
+      {isColumnVisible("includeInTotals") && (
+        <TableCell className="text-center">
+          {archived ? (
+            <XIcon size={16} className="mx-auto text-muted-foreground" />
+          ) : account.includeInTotals ? (
+            <CheckIcon size={16} className="mx-auto text-emerald-400" />
+          ) : (
+            <XIcon size={16} className="mx-auto text-muted-foreground" />
+          )}
+        </TableCell>
+      )}
+      {isColumnVisible("currentBalance") && (
+        <TableCell className="text-right font-medium">
+          {formatCurrency(account.currentBalance, currency)}
+        </TableCell>
+      )}
+      {isColumnVisible("actions") && (
+        <TableCell>
+          <DashboardTableActions>
+            <DashboardIconButton
+              onClick={() => onEdit(account)}
+              aria-label="Edit account"
+            >
+              <PencilIcon />
+            </DashboardIconButton>
+            <DashboardIconButton
+              onClick={() => onToggleArchived(account._id, !archived)}
+              disabled={pendingAccountId === account._id}
+              aria-label={archived ? "Restore account" : "Archive account"}
+            >
+              {archived ? <ArchiveRestoreIcon /> : <ArchiveIcon />}
+            </DashboardIconButton>
+          </DashboardTableActions>
+        </TableCell>
+      )}
     </TableRow>
   )
 }

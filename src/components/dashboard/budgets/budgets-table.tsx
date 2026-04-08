@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 import type { BudgetRecord } from "@/components/dashboard/budgets/budgets-shared"
+import type { DashboardTableColumn } from "@/components/dashboard/dashboard-table-columns"
 import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { BudgetsTableRow } from "@/components/dashboard/budgets/budgets-table-row"
 import { TableCell, TableRow } from "@/components/ui/table"
@@ -15,13 +16,36 @@ const SORT_ACCESSORS: Record<string, (row: BudgetRecord) => string | number> = {
   status: (row) => row.status,
 }
 
-const COLUMNS = [
-  { column: "categoryName", header: "Budget" },
-  { column: "limitAmount", header: "Planned", className: "text-right" },
-  { column: "spent", header: "Spent", className: "text-right" },
-  { column: "remaining", header: "Remaining", className: "text-right" },
-  { column: "status", header: "Status" },
-  { header: "Actions", className: "text-right" },
+const COLUMN_VISIBILITY_STORAGE_KEY = "nomisma-table-columns:budgets"
+
+const COLUMNS: Array<DashboardTableColumn> = [
+  {
+    id: "categoryName",
+    column: "categoryName",
+    header: "Budget",
+    alwaysVisible: true,
+  },
+  {
+    id: "limitAmount",
+    column: "limitAmount",
+    header: "Planned",
+    className: "text-right",
+  },
+  { id: "spent", column: "spent", header: "Spent", className: "text-right" },
+  {
+    id: "remaining",
+    column: "remaining",
+    header: "Remaining",
+    className: "text-right",
+    alwaysVisible: true,
+  },
+  { id: "status", column: "status", header: "Status" },
+  {
+    id: "actions",
+    header: "Actions",
+    className: "text-right",
+    alwaysVisible: true,
+  },
 ]
 
 export function BudgetsTable({
@@ -39,6 +63,8 @@ export function BudgetsTable({
 }) {
   const table = useDataTable({
     data: budgets,
+    columns: COLUMNS,
+    columnVisibilityStorageKey: COLUMN_VISIBILITY_STORAGE_KEY,
     sortAccessors: SORT_ACCESSORS,
   })
 
@@ -58,7 +84,6 @@ export function BudgetsTable({
   return (
     <DashboardTable
       table={table}
-      columns={COLUMNS}
       footer={
         <TableRow>
           <TableCell>
@@ -67,23 +92,30 @@ export function BudgetsTable({
               {table.allSortedData.length !== 1 ? "s" : ""})
             </span>
           </TableCell>
-          <TableCell className="text-right font-medium">
-            {formatCurrency(aggregates.totalPlanned, currency)}
-          </TableCell>
-          <TableCell className="text-right font-medium">
-            {formatCurrency(aggregates.totalSpent, currency)}
-          </TableCell>
-          <TableCell
-            className={cn(
-              "text-right font-medium",
-              aggregates.totalRemaining < 0
-                ? "text-destructive"
-                : "text-emerald-400"
-            )}
-          >
-            {formatCurrency(aggregates.totalRemaining, currency)}
-          </TableCell>
-          <TableCell colSpan={2} />
+          {table.isColumnVisible("limitAmount") && (
+            <TableCell className="text-right font-medium">
+              {formatCurrency(aggregates.totalPlanned, currency)}
+            </TableCell>
+          )}
+          {table.isColumnVisible("spent") && (
+            <TableCell className="text-right font-medium">
+              {formatCurrency(aggregates.totalSpent, currency)}
+            </TableCell>
+          )}
+          {table.isColumnVisible("remaining") && (
+            <TableCell
+              className={cn(
+                "text-right font-medium",
+                aggregates.totalRemaining < 0
+                  ? "text-destructive"
+                  : "text-emerald-400"
+              )}
+            >
+              {formatCurrency(aggregates.totalRemaining, currency)}
+            </TableCell>
+          )}
+          {table.isColumnVisible("status") && <TableCell />}
+          {table.isColumnVisible("actions") && <TableCell />}
         </TableRow>
       }
     >
@@ -93,6 +125,7 @@ export function BudgetsTable({
           budget={budget}
           currency={currency}
           pending={pendingBudgetId === budget._id}
+          isColumnVisible={table.isColumnVisible}
           onEdit={onEdit}
           onDelete={onDelete}
         />

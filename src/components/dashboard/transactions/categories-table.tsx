@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 import { ArchiveIcon, ArchiveRestoreIcon, PencilIcon } from "lucide-react"
 import type { Id } from "../../../../convex/_generated/dataModel"
+import type { DashboardTableColumn } from "@/components/dashboard/dashboard-table-columns"
 import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { DashboardIconButton } from "@/components/dashboard/dashboard-icon-button"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
@@ -25,16 +26,25 @@ const SORT_ACCESSORS: Record<
   transactionCount: (row) => row.transactionCount,
 }
 
-const COLUMNS = [
-  { column: "name", header: "Name" },
-  { column: "kind", header: "Type" },
-  { header: "Status" },
+const COLUMN_VISIBILITY_STORAGE_KEY = "nomisma-table-columns:categories"
+
+const COLUMNS: Array<DashboardTableColumn> = [
+  { id: "name", column: "name", header: "Name", alwaysVisible: true },
+  { id: "kind", column: "kind", header: "Type" },
+  { id: "status", header: "Status" },
   {
+    id: "transactionCount",
     column: "transactionCount",
     header: "Transactions",
     className: "text-right",
+    alwaysVisible: true,
   },
-  { header: "Actions", className: "text-right" },
+  {
+    id: "actions",
+    header: "Actions",
+    className: "text-right",
+    alwaysVisible: true,
+  },
 ]
 
 export function CategoriesTable({
@@ -48,6 +58,8 @@ export function CategoriesTable({
 }) {
   const table = useDataTable({
     data: categories,
+    columns: COLUMNS,
+    columnVisibilityStorageKey: COLUMN_VISIBILITY_STORAGE_KEY,
     sortAccessors: SORT_ACCESSORS,
     defaultSort: { column: "kind", direction: "asc" },
   })
@@ -64,64 +76,79 @@ export function CategoriesTable({
   return (
     <DashboardTable
       table={table}
-      columns={COLUMNS}
       footer={
         <TableRow>
-          <TableCell colSpan={3}>
+          <TableCell>
             <span className="text-muted-foreground">
               {aggregates.activeCount} active ·{" "}
               {table.allSortedData.length - aggregates.activeCount} archived
             </span>
           </TableCell>
-          <TableCell className="text-right font-medium">
-            {aggregates.totalUsage}
-          </TableCell>
-          <TableCell />
+          {table.isColumnVisible("kind") && <TableCell />}
+          {table.isColumnVisible("status") && <TableCell />}
+          {table.isColumnVisible("transactionCount") && (
+            <TableCell className="text-right font-medium">
+              {aggregates.totalUsage}
+            </TableCell>
+          )}
+          {table.isColumnVisible("actions") && <TableCell />}
         </TableRow>
       }
     >
       {table.data.map((category) => (
         <TableRow key={category._id}>
-          <TableCell className="font-medium">{category.name}</TableCell>
-          <TableCell>
-            <span
-              className={cn(
-                category.kind === "income"
-                  ? "text-emerald-400"
-                  : "text-rose-300"
-              )}
-            >
-              {category.kind === "income" ? "Income" : "Expense"}
-            </span>
-          </TableCell>
-          <TableCell>
-            <span className={cn(category.archived && "text-muted-foreground")}>
-              {category.archived ? "Archived" : "Active"}
-            </span>
-          </TableCell>
-          <TableCell className="text-right">
-            {category.transactionCount}
-          </TableCell>
-          <TableCell>
-            <DashboardTableActions>
-              <DashboardIconButton
-                onClick={() => onEdit(category)}
-                aria-label="Edit category"
+          {table.isColumnVisible("name") && (
+            <TableCell className="font-medium">{category.name}</TableCell>
+          )}
+          {table.isColumnVisible("kind") && (
+            <TableCell>
+              <span
+                className={cn(
+                  category.kind === "income"
+                    ? "text-emerald-400"
+                    : "text-rose-300"
+                )}
               >
-                <PencilIcon />
-              </DashboardIconButton>
-              <DashboardIconButton
-                onClick={() =>
-                  onToggleArchived(category._id, !category.archived)
-                }
-                aria-label={
-                  category.archived ? "Restore category" : "Archive category"
-                }
+                {category.kind === "income" ? "Income" : "Expense"}
+              </span>
+            </TableCell>
+          )}
+          {table.isColumnVisible("status") && (
+            <TableCell>
+              <span
+                className={cn(category.archived && "text-muted-foreground")}
               >
-                {category.archived ? <ArchiveRestoreIcon /> : <ArchiveIcon />}
-              </DashboardIconButton>
-            </DashboardTableActions>
-          </TableCell>
+                {category.archived ? "Archived" : "Active"}
+              </span>
+            </TableCell>
+          )}
+          {table.isColumnVisible("transactionCount") && (
+            <TableCell className="text-right">
+              {category.transactionCount}
+            </TableCell>
+          )}
+          {table.isColumnVisible("actions") && (
+            <TableCell>
+              <DashboardTableActions>
+                <DashboardIconButton
+                  onClick={() => onEdit(category)}
+                  aria-label="Edit category"
+                >
+                  <PencilIcon />
+                </DashboardIconButton>
+                <DashboardIconButton
+                  onClick={() =>
+                    onToggleArchived(category._id, !category.archived)
+                  }
+                  aria-label={
+                    category.archived ? "Restore category" : "Archive category"
+                  }
+                >
+                  {category.archived ? <ArchiveRestoreIcon /> : <ArchiveIcon />}
+                </DashboardIconButton>
+              </DashboardTableActions>
+            </TableCell>
+          )}
         </TableRow>
       ))}
     </DashboardTable>

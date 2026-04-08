@@ -1,20 +1,10 @@
 import { useMemo } from "react"
-import { PencilIcon, Trash2Icon } from "lucide-react"
 import type { TransactionRecord } from "@/components/dashboard/transactions/transactions-shared"
-import { AccountNameCell } from "@/components/dashboard/account-name-cell"
+import type { DashboardTableColumn } from "@/components/dashboard/dashboard-table-columns"
 import { DashboardTable } from "@/components/dashboard/dashboard-table"
-import { DashboardIconButton } from "@/components/dashboard/dashboard-icon-button"
-import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { IncomeExpenseNetFooter } from "@/components/dashboard/income-expense-net-footer"
-import { TableCell, TableRow } from "@/components/ui/table"
+import { TransactionsTableRow } from "@/components/dashboard/transactions/transactions-table-row"
 import { useDataTable } from "@/hooks/use-data-table"
-import {
-  capitalizeFirstLetter,
-  formatDateLabel,
-  formatSignedAmount,
-  getTransactionTone,
-} from "@/lib/money"
-import { cn } from "@/lib/utils"
 
 const SORT_ACCESSORS: Record<
   string,
@@ -33,15 +23,33 @@ const SORT_ACCESSORS: Record<
   },
 }
 
-const COLUMNS = [
-  { column: "date", header: "Date" },
-  { column: "description", header: "Description" },
-  { column: "accountName", header: "Account" },
-  { column: "categoryName", header: "Category" },
-  { column: "type", header: "Type" },
-  { column: "status", header: "Status" },
-  { column: "amount", header: "Amount", className: "text-right" },
-  { header: "Actions", className: "text-right" },
+const COLUMN_VISIBILITY_STORAGE_KEY = "nomisma-table-columns:transactions"
+
+const COLUMNS: Array<DashboardTableColumn> = [
+  { id: "date", column: "date", header: "Date", alwaysVisible: true },
+  {
+    id: "description",
+    column: "description",
+    header: "Description",
+    alwaysVisible: true,
+  },
+  { id: "accountName", column: "accountName", header: "Account" },
+  { id: "categoryName", column: "categoryName", header: "Category" },
+  { id: "type", column: "type", header: "Type" },
+  { id: "status", column: "status", header: "Status" },
+  {
+    id: "amount",
+    column: "amount",
+    header: "Amount",
+    className: "text-right",
+    alwaysVisible: true,
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    className: "text-right",
+    alwaysVisible: true,
+  },
 ]
 
 export function TransactionsTable({
@@ -57,6 +65,8 @@ export function TransactionsTable({
 }) {
   const table = useDataTable({
     data: transactions,
+    columns: COLUMNS,
+    columnVisibilityStorageKey: COLUMN_VISIBILITY_STORAGE_KEY,
     sortAccessors: SORT_ACCESSORS,
     defaultSort: { column: "date", direction: "desc" },
   })
@@ -74,74 +84,23 @@ export function TransactionsTable({
   return (
     <DashboardTable
       table={table}
-      columns={COLUMNS}
       footer={
         <IncomeExpenseNetFooter
           aggregates={aggregates}
           currency={currency}
-          labelColSpan={6}
-          trailingColSpan={2}
+          columnCount={table.visibleColumns.length}
         />
       }
     >
       {table.data.map((transaction) => (
-        <TableRow key={transaction._id}>
-          <TableCell>
-            <span className="text-muted-foreground">
-              {formatDateLabel(transaction.date)}
-            </span>
-          </TableCell>
-          <TableCell>
-            <p
-              className="max-w-xs truncate font-medium"
-              title={transaction.description}
-            >
-              {transaction.description}
-            </p>
-          </TableCell>
-          <TableCell>
-            <AccountNameCell
-              name={transaction.accountName}
-              icon={transaction.accountIcon}
-              color={transaction.accountColor}
-            />
-          </TableCell>
-          <TableCell>{transaction.categoryName ?? "Transfer"}</TableCell>
-          <TableCell>
-            <span className={cn(getTransactionTone(transaction.type))}>
-              {capitalizeFirstLetter(transaction.type)}
-            </span>
-          </TableCell>
-          <TableCell>
-            <span className="text-muted-foreground">
-              {capitalizeFirstLetter(transaction.status)}
-            </span>
-          </TableCell>
-          <TableCell
-            className={cn(
-              "text-right font-medium",
-              getTransactionTone(transaction.type)
-            )}
-          >
-            {formatSignedAmount(transaction.amount, currency, transaction.type)}
-          </TableCell>
-          <TableCell>
-            <DashboardTableActions>
-              <DashboardIconButton
-                onClick={() => onEdit(transaction)}
-                aria-label="Edit transaction"
-              >
-                <PencilIcon />
-              </DashboardIconButton>
-              <DashboardIconButton
-                onClick={() => onDelete(transaction._id)}
-                aria-label="Delete transaction"
-              >
-                <Trash2Icon />
-              </DashboardIconButton>
-            </DashboardTableActions>
-          </TableCell>
-        </TableRow>
+        <TransactionsTableRow
+          key={transaction._id}
+          transaction={transaction}
+          currency={currency}
+          isColumnVisible={table.isColumnVisible}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
       ))}
     </DashboardTable>
   )

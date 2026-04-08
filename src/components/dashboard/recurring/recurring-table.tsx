@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 import type { RecurringRecord } from "@/components/dashboard/recurring/recurring-shared"
+import type { DashboardTableColumn } from "@/components/dashboard/dashboard-table-columns"
 import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { IncomeExpenseNetFooter } from "@/components/dashboard/income-expense-net-footer"
 import { RecurringTableRow } from "@/components/dashboard/recurring/recurring-table-row"
@@ -18,15 +19,38 @@ const SORT_ACCESSORS: Record<
   amount: (row) => (row.type === "income" ? row.amount : -row.amount),
 }
 
-const COLUMNS = [
-  { column: "nextDueDate", header: "Next due" },
-  { column: "description", header: "Description" },
-  { column: "accountName", header: "Account" },
-  { column: "categoryName", header: "Category" },
-  { column: "frequency", header: "Schedule" },
-  { column: "status", header: "Status" },
-  { column: "amount", header: "Amount", className: "text-right" },
-  { header: "Actions", className: "text-right" },
+const COLUMN_VISIBILITY_STORAGE_KEY = "nomisma-table-columns:recurring"
+
+const COLUMNS: Array<DashboardTableColumn> = [
+  {
+    id: "nextDueDate",
+    column: "nextDueDate",
+    header: "Next due",
+    alwaysVisible: true,
+  },
+  {
+    id: "description",
+    column: "description",
+    header: "Description",
+    alwaysVisible: true,
+  },
+  { id: "accountName", column: "accountName", header: "Account" },
+  { id: "categoryName", column: "categoryName", header: "Category" },
+  { id: "frequency", column: "frequency", header: "Schedule" },
+  { id: "status", column: "status", header: "Status" },
+  {
+    id: "amount",
+    column: "amount",
+    header: "Amount",
+    className: "text-right",
+    alwaysVisible: true,
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    className: "text-right",
+    alwaysVisible: true,
+  },
 ]
 
 export function RecurringTable({
@@ -48,6 +72,8 @@ export function RecurringTable({
 }) {
   const table = useDataTable({
     data: recurringItems,
+    columns: COLUMNS,
+    columnVisibilityStorageKey: COLUMN_VISIBILITY_STORAGE_KEY,
     sortAccessors: SORT_ACCESSORS,
     defaultSort: { column: "nextDueDate", direction: "asc" },
   })
@@ -65,13 +91,11 @@ export function RecurringTable({
   return (
     <DashboardTable
       table={table}
-      columns={COLUMNS}
       footer={
         <IncomeExpenseNetFooter
           aggregates={aggregates}
           currency={currency}
-          labelColSpan={6}
-          trailingColSpan={2}
+          columnCount={table.visibleColumns.length}
         />
       }
     >
@@ -82,6 +106,7 @@ export function RecurringTable({
           currency={currency}
           pendingRuleId={pendingRuleId}
           today={today}
+          isColumnVisible={table.isColumnVisible}
           onConfirm={onConfirm}
           onEdit={onEdit}
           onToggle={onToggle}

@@ -1,4 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
+import type { DashboardTableColumn } from "@/components/dashboard/dashboard-table-columns"
+import { useDataTableColumnVisibility } from "@/hooks/use-data-table-column-visibility"
+import { useDataTableSort } from "@/hooks/use-data-table-sort"
 
 export type SortState = {
   column: string
@@ -7,6 +10,8 @@ export type SortState = {
 
 export type DataTableOptions<T> = {
   data: Array<T>
+  columns?: Array<DashboardTableColumn>
+  columnVisibilityStorageKey?: string
   sortAccessors?: Record<string, (row: T) => string | number>
   defaultSort?: SortState
   defaultPageSize?: number
@@ -15,14 +20,20 @@ export type DataTableOptions<T> = {
 
 export function useDataTable<T>({
   data,
+  columns = [],
+  columnVisibilityStorageKey,
   sortAccessors = {},
   defaultSort = null,
   defaultPageSize = 10,
   pageSizeOptions = [5, 10, 20, 50],
 }: DataTableOptions<T>) {
-  const [sort, setSort] = useState<SortState>(defaultSort)
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(defaultPageSize)
+  const { sort, toggleSort } = useDataTableSort(
+    sortAccessors,
+    defaultSort,
+    columnVisibilityStorageKey
+  )
 
   const sortedData = useMemo(() => {
     if (!sort) return data
@@ -36,45 +47,41 @@ export function useDataTable<T>({
   }, [data, sort, sortAccessors])
 
   const totalPages = Math.max(1, Math.ceil(sortedData.length / pageSize))
+  const currentPage = Math.min(page, totalPages)
+  const columnVisibility = useDataTableColumnVisibility(
+    columns,
+    columnVisibilityStorageKey
+  )
 
   const paginatedData = useMemo(() => {
-    const start = (Math.min(page, totalPages) - 1) * pageSize
+    const start = (currentPage - 1) * pageSize
     return sortedData.slice(start, start + pageSize)
-  }, [sortedData, page, pageSize, totalPages])
-
-  const toggleSort = useCallback((column: string) => {
-    setPage(1)
-    setSort((current) => {
-      if (current?.column === column) {
-        if (current.direction === "asc") return { column, direction: "desc" }
-        return null
-      }
-      return { column, direction: "asc" }
-    })
-  }, [])
+  }, [currentPage, pageSize, sortedData])
 
   const handlePageSizeChange = useCallback((size: number) => {
     setPageSize(size)
     setPage(1)
   }, [])
 
-  useEffect(() => {
-    if (page > totalPages && totalPages > 0) {
-      setPage(totalPages)
-    }
-  }, [page, totalPages])
+  const handlePageChange = useCallback((nextPage: number) => {
+    setPage(Math.max(1, nextPage))
+  }, [])
 
   return {
     data: paginatedData,
+    ...columnVisibility,
     allSortedData: sortedData,
     sort,
-    toggleSort,
-    page,
+    toggleSort: (column: string) => {
+      setPage(1)
+      toggleSort(column)
+    },
+    page: currentPage,
     pageSize,
     pageSizeOptions,
     totalPages,
     totalItems: sortedData.length,
-    setPage,
+    setPage: handlePageChange,
     setPageSize: handlePageSizeChange,
   }
 }

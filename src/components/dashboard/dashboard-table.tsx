@@ -1,6 +1,17 @@
+import { SlidersHorizontalIcon } from "lucide-react"
 import type { ReactNode } from "react"
 import type { SortState } from "@/hooks/use-data-table"
+import type { DashboardTableColumn } from "@/components/dashboard/dashboard-table-columns"
+import { Button } from "@/components/ui/button"
 import { DataTableHead } from "@/components/ui/data-table-head"
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { DataTablePagination } from "@/components/ui/data-table-pagination"
 import {
   Table,
@@ -11,19 +22,17 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-type Column = {
-  column?: string
-  header: string
-  className?: string
-}
-
 export function DashboardTable({
   table,
-  columns,
   children,
   footer,
 }: {
   table: {
+    columns: Array<DashboardTableColumn>
+    visibleColumns: Array<DashboardTableColumn>
+    toggleableColumns: Array<DashboardTableColumn>
+    isColumnVisible: (columnId: string) => boolean
+    setColumnVisibility: (columnId: string, visible: boolean) => void
     sort: SortState
     toggleSort: (column: string) => void
     allSortedData: Array<unknown>
@@ -35,16 +44,46 @@ export function DashboardTable({
     setPage: (page: number) => void
     setPageSize: (size: number) => void
   }
-  columns: Array<Column>
   children: ReactNode
   footer?: ReactNode
 }) {
   return (
     <div>
+      {table.toggleableColumns.length > 0 && (
+        <div className="mb-3 flex justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" aria-label="Choose columns">
+                <SlidersHorizontalIcon />
+                Columns
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Shown columns</DropdownMenuLabel>
+              <DropdownMenuLabel className="pt-0">
+                Required columns stay visible.
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {table.columns.map((column) => (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  checked={table.isColumnVisible(column.id)}
+                  disabled={column.alwaysVisible}
+                  onCheckedChange={(checked) =>
+                    table.setColumnVisibility(column.id, checked === true)
+                  }
+                >
+                  {column.header}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
       <Table>
         <TableHeader>
           <TableRow>
-            {columns.map((col, i) =>
+            {table.visibleColumns.map((col) =>
               col.column ? (
                 <DataTableHead
                   key={col.column}
@@ -56,7 +95,7 @@ export function DashboardTable({
                   {col.header}
                 </DataTableHead>
               ) : (
-                <TableHead key={i} className={col.className}>
+                <TableHead key={col.id} className={col.className}>
                   {col.header}
                 </TableHead>
               )

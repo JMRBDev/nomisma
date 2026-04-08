@@ -5,19 +5,17 @@ import { cn } from "@/lib/utils"
 export function IncomeExpenseNetFooter({
   aggregates,
   currency,
-  labelColSpan,
-  trailingColSpan = 1,
+  columnCount,
   showBreakdown = true,
 }: {
   aggregates: { totalIncome: number; totalExpense: number; net: number }
   currency?: string | null
-  labelColSpan: number
-  trailingColSpan?: number
+  columnCount: number
   showBreakdown?: boolean
 }) {
   return (
     <TableRow>
-      <TableCell colSpan={labelColSpan}>
+      <TableCell colSpan={columnCount}>
         <span className="text-muted-foreground">
           {showBreakdown && (
             <>
@@ -43,7 +41,6 @@ export function IncomeExpenseNetFooter({
           </span>
         </span>
       </TableCell>
-      <TableCell colSpan={trailingColSpan} />
     </TableRow>
   )
 }
