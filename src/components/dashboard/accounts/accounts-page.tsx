@@ -4,19 +4,17 @@ import { useConvexMutation } from "@convex-dev/react-query"
 import { PlusIcon } from "lucide-react"
 import { toast } from "sonner"
 import { api } from "../../../../convex/_generated/api"
-import {
-  resolveAccountAppearance,
-  type AccountRecord,
-} from "@/components/dashboard/accounts/accounts-shared"
+import type { AccountRecord } from "@/components/dashboard/accounts/accounts-shared"
+import { resolveAccountAppearance } from "@/components/dashboard/accounts/accounts-shared"
 import { AccountFormDialog } from "@/components/dashboard/accounts/account-form-dialog"
 import { AccountsContent } from "@/components/dashboard/accounts/accounts-content"
 import { DashboardPageActions } from "@/components/dashboard/dashboard-page-actions"
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
 import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
+import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog"
 import { Button } from "@/components/ui/button"
 import { useAccountCreator } from "@/hooks/use-account-creator"
 import { useAccountEditor } from "@/hooks/use-account-editor"
-import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog"
 
 const accountsRouteApi = getRouteApi("/_authenticated/dashboard/accounts")
 

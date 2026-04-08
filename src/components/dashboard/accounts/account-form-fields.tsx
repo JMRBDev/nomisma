@@ -3,10 +3,12 @@ import type {
   AccountFormValues,
   AccountType,
 } from "@/components/dashboard/accounts/accounts-shared"
-import { ACCOUNT_ICON_OPTIONS } from "@/components/dashboard/accounts/accounts-shared"
-import { ColorPicker } from "@/components/color-picker"
+import { AppearancePicker } from "@/components/appearance-picker"
+import {
+  ACCOUNT_ICON_MAP,
+  ACCOUNT_ICON_OPTIONS,
+} from "@/components/dashboard/accounts/accounts-shared"
 import { FormErrorMessage } from "@/components/form-error-message"
-import { IconPicker } from "@/components/icon-picker"
 import {
   Field,
   FieldDescription,
@@ -39,15 +41,27 @@ export function AccountFormFields({
     <FieldGroup>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field>
-          <FieldLabel htmlFor="account-name">
-            <FieldTitle>Name</FieldTitle>
+          <FieldLabel htmlFor="category-name">
+            <FieldTitle>Name and Appearance</FieldTitle>
           </FieldLabel>
-          <Input
-            id="account-name"
-            value={values.name}
-            onChange={(event) => onValueChange("name", event.target.value)}
-            placeholder="Main checking"
-          />
+
+          <div className="flex gap-2 items-center">
+            <AppearancePicker
+              colorValue={values.color}
+              iconValue={values.icon}
+              onColorChange={(value) => onValueChange("color", value)}
+              onIconChange={(value) => onValueChange("icon", value)}
+              icons={ACCOUNT_ICON_OPTIONS}
+              iconMap={ACCOUNT_ICON_MAP}
+              entityName="account"
+            />
+            <Input
+              id="account-name"
+              value={values.name}
+              onChange={(event) => onValueChange("name", event.target.value)}
+              placeholder="Main checking"
+            />
+          </div>
           <FormErrorMessage error={errors.name} />
         </Field>
 
@@ -88,32 +102,6 @@ export function AccountFormFields({
             <FormErrorMessage error={errors.openingBalance} />
           </Field>
         )}
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field>
-          <FieldTitle>Color</FieldTitle>
-          <FieldDescription>Choose an account color.</FieldDescription>
-          <ColorPicker
-            value={values.color}
-            onChange={(value) => onValueChange("color", value)}
-            entityName="account"
-          />
-          <FormErrorMessage error={errors.color} />
-        </Field>
-
-        <Field>
-          <FieldTitle>Icon</FieldTitle>
-          <FieldDescription>Choose an account icon.</FieldDescription>
-          <IconPicker
-            value={values.icon}
-            onChange={(value) => onValueChange("icon", value)}
-            icons={ACCOUNT_ICON_OPTIONS}
-            colorValue={values.color}
-            entityName="account"
-          />
-          <FormErrorMessage error={errors.icon} />
-        </Field>
       </div>
 
       <Field orientation="responsive">

@@ -2,15 +2,16 @@ import type {
   CategoryFieldErrors,
   CategoryFormValues,
 } from "@/components/dashboard/transactions/categories-shared"
-import { ColorPicker } from "@/components/color-picker"
+import { AppearancePicker } from "@/components/appearance-picker"
 import { DashboardFormActions } from "@/components/dashboard/dashboard-form-actions"
 import { DashboardFormDialog } from "@/components/dashboard/dashboard-form-dialog"
-import { CATEGORY_ICON_OPTIONS } from "@/components/dashboard/transactions/categories-shared"
+import {
+  CATEGORY_ICON_MAP,
+  CATEGORY_ICON_OPTIONS,
+} from "@/components/dashboard/transactions/categories-shared"
 import { FormErrorMessage } from "@/components/form-error-message"
-import { IconPicker } from "@/components/icon-picker"
 import {
   Field,
-  FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldTitle,
@@ -69,14 +70,26 @@ export function CategoryFormDialog({
           <div className="grid gap-4 sm:grid-cols-2">
             <Field>
               <FieldLabel htmlFor="category-name">
-                <FieldTitle>Name</FieldTitle>
+                <FieldTitle>Name and Appearance</FieldTitle>
               </FieldLabel>
-              <Input
-                id="category-name"
-                placeholder="e.g. Groceries, Salary"
-                value={values.name}
-                onChange={(event) => onValueChange("name", event.target.value)}
-              />
+
+              <div className="flex gap-2 items-center">
+                <AppearancePicker
+                  colorValue={values.color}
+                  iconValue={values.icon}
+                  onColorChange={(value) => onValueChange("color", value)}
+                  onIconChange={(value) => onValueChange("icon", value)}
+                  icons={CATEGORY_ICON_OPTIONS}
+                  iconMap={CATEGORY_ICON_MAP}
+                  entityName="category"
+                />
+                <Input
+                  id="category-name"
+                  placeholder="e.g. Groceries, Salary"
+                  value={values.name}
+                  onChange={(event) => onValueChange("name", event.target.value)}
+                />
+              </div>
               <FormErrorMessage error={errors.name} />
             </Field>
 
@@ -101,32 +114,6 @@ export function CategoryFormDialog({
                   </NativeSelectOption>
                 ))}
               </NativeSelect>
-            </Field>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field>
-              <FieldTitle>Color</FieldTitle>
-              <FieldDescription>Choose a category color.</FieldDescription>
-              <ColorPicker
-                value={values.color}
-                onChange={(value) => onValueChange("color", value)}
-                entityName="category"
-              />
-              <FormErrorMessage error={errors.color} />
-            </Field>
-
-            <Field>
-              <FieldTitle>Icon</FieldTitle>
-              <FieldDescription>Choose a category icon.</FieldDescription>
-              <IconPicker
-                value={values.icon}
-                onChange={(value) => onValueChange("icon", value)}
-                icons={CATEGORY_ICON_OPTIONS}
-                colorValue={values.color}
-                entityName="category"
-              />
-              <FormErrorMessage error={errors.icon} />
             </Field>
           </div>
         </FieldGroup>

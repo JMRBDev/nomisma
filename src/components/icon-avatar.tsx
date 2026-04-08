@@ -6,10 +6,14 @@ export function IconAvatar({
   icon,
   color,
   iconMap,
+  className,
+  iconSize = 14,
 }: {
   icon?: string | null
   color?: string | null
   iconMap: Record<string, LucideIcon>
+  className?: string
+  iconSize?: number
 }) {
   const resolvedColor = color?.trim()
   const isHex = resolvedColor?.startsWith("#")
@@ -22,13 +26,14 @@ export function IconAvatar({
     <span
       className={cn(
         "flex shrink-0 items-center justify-center rounded-full border p-1.5",
-        !isHex && resolvedColor
+        !isHex && resolvedColor,
+        className
       )}
       style={isHex ? { backgroundColor: resolvedColor } : undefined}
     >
       {IconComponent ? (
         <IconComponent
-          size={14}
+          size={iconSize}
           style={{
             color: iconColor,
           }}

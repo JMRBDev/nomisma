@@ -1,4 +1,11 @@
+import type { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
+
+export type IconOption = {
+  name: string
+  label: string
+  icon: LucideIcon
+}
 
 export const COLOR_OPTIONS = [
   { label: "Amber", value: "bg-amber-600" },
@@ -17,9 +24,7 @@ export function isHexColor(value: string) {
 
 export function getPickerButtonClassName(selected: boolean) {
   return cn(
-    "relative flex size-9 items-center justify-center rounded-full border transition-colors",
-    selected
-      ? "border-ring shadow-sm ring-4 ring-ring/30"
-      : "border-border bg-background hover:border-foreground/15 hover:bg-accent/40"
+    "relative flex size-8 items-center justify-center rounded-full border transition-colors",
+    selected ? "border-ring ring-2 ring-border" : "bg-background"
   )
 }

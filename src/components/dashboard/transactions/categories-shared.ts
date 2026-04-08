@@ -8,7 +8,7 @@ import {
 } from "lucide-react"
 import { getRouteApi } from "@tanstack/react-router"
 import type { LucideIcon } from "lucide-react"
-import type { IconOption } from "@/components/icon-picker"
+import type { IconOption } from "@/components/picker-shared"
 import { COLOR_OPTIONS } from "@/components/picker-shared"
 import { pickRandomItem } from "@/lib/random"
 

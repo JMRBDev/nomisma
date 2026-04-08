@@ -1,8 +1,14 @@
 "use client"
 
-import { useDeferredValue, useLayoutEffect, useMemo, useRef, useState } from "react"
-import type { KeyboardEvent } from "react"
+import {
+  useDeferredValue,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import { toast } from "sonner"
+import type { KeyboardEvent } from "react"
 import type { ReferenceComboboxAction } from "@/lib/reference-entities"
 import type { ReferenceComboboxOption } from "@/components/dashboard/reference-combobox-field"
 import { normalizeEntityName } from "@/lib/reference-entities"
@@ -44,14 +50,14 @@ export function useReferenceAutocomplete({
     }
 
     return options.filter((option) =>
-      normalizeEntityName(`${option.label} ${option.searchText ?? ""}`).includes(
-        normalizedDeferredQuery
-      )
+      normalizeEntityName(
+        `${option.label} ${option.searchText ?? ""}`
+      ).includes(normalizedDeferredQuery)
     )
   }, [normalizedDeferredQuery, options])
 
   const actions = useMemo(
-    () => (query.trim() ? getActions?.(query) ?? [] : []),
+    () => (query.trim() ? (getActions?.(query) ?? []) : []),
     [getActions, query]
   )
 
@@ -118,7 +124,9 @@ export function useReferenceAutocomplete({
       const edge = event.key === "ArrowDown" ? 0 : itemCount - 1
 
       setActiveIndex((current) =>
-        current < 0 ? edge : Math.min(Math.max(current + step, 0), itemCount - 1)
+        current < 0
+          ? edge
+          : Math.min(Math.max(current + step, 0), itemCount - 1)
       )
       return
     }
