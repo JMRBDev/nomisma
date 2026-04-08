@@ -1,5 +1,5 @@
+import { getRouteApi } from "@tanstack/react-router"
 import type { Id } from "../../../../convex/_generated/dataModel"
-import type { useTransactionsPageData } from "@/hooks/use-money-dashboard"
 import type {
   transactionStatusOptions,
   transactionTypeOptions,
@@ -9,9 +9,11 @@ import {
   resolveValidOption as resolveValidOptionGeneric,
 } from "@/lib/form-helpers"
 
-type TransactionsData = NonNullable<
-  ReturnType<typeof useTransactionsPageData>["data"]
->
+const transactionsRouteApi = getRouteApi(
+  "/_authenticated/dashboard/transactions"
+)
+
+type TransactionsData = ReturnType<typeof transactionsRouteApi.useLoaderData>
 
 type TransactionMutationPayload = {
   type: TransactionType

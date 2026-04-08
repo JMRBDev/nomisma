@@ -1,8 +1,10 @@
+import { getRouteApi } from "@tanstack/react-router"
 import type { Id } from "../../../../convex/_generated/dataModel"
-import type { useBudgetsPageData } from "@/hooks/use-money-dashboard"
 import { toAmountInput } from "@/lib/money"
 
-type BudgetsData = NonNullable<ReturnType<typeof useBudgetsPageData>["data"]>
+const budgetsRouteApi = getRouteApi("/_authenticated/dashboard/budgets")
+
+type BudgetsData = ReturnType<typeof budgetsRouteApi.useLoaderData>
 
 export const TOTAL_BUDGET_VALUE = "total"
 

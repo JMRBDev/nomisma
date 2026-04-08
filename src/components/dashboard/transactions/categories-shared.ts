@@ -6,13 +6,15 @@ import {
   ShoppingCartIcon,
   UtensilsCrossedIcon,
 } from "lucide-react"
+import { getRouteApi } from "@tanstack/react-router"
 import type { LucideIcon } from "lucide-react"
 import type { IconOption } from "@/components/icon-picker"
-import type { useTransactionsPageData } from "@/hooks/use-money-dashboard"
 
-type TransactionsData = NonNullable<
-  ReturnType<typeof useTransactionsPageData>["data"]
->
+const transactionsRouteApi = getRouteApi(
+  "/_authenticated/dashboard/transactions"
+)
+
+type TransactionsData = ReturnType<typeof transactionsRouteApi.useLoaderData>
 
 export type CategoryRecord = TransactionsData["categories"]["all"][number]
 

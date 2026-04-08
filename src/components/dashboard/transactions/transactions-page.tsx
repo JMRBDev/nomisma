@@ -1,3 +1,4 @@
+import { getRouteApi } from "@tanstack/react-router"
 import { useMemo, useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { PlusIcon } from "lucide-react"
@@ -21,13 +22,16 @@ import { TransactionsContent } from "@/components/dashboard/transactions/transac
 import { CategoriesSection } from "@/components/dashboard/transactions/categories-section"
 import { useTransactionEditor } from "@/hooks/use-transaction-editor"
 import { Button } from "@/components/ui/button"
-import { useTransactionsPageData } from "@/hooks/use-money-dashboard"
 import { useDateFilter } from "@/hooks/use-date-filter"
 import { useDeleteConfirmation } from "@/hooks/use-delete-confirmation"
 
+const transactionsRouteApi = getRouteApi(
+  "/_authenticated/dashboard/transactions"
+)
+
 export function TransactionsPage() {
   const { hasDateFilter, filterLabel, dateRange } = useDateFilter()
-  const data = useTransactionsPageData().data!
+  const data = transactionsRouteApi.useLoaderData()
   const createTx = useConvexMutation(api.transactions.createTransaction)
   const updateTx = useConvexMutation(api.transactions.updateTransaction)
   const deleteTx = useConvexMutation(api.transactions.deleteTransaction)

@@ -6,12 +6,14 @@ import {
   ReceiptTextIcon,
   WalletIcon,
 } from "lucide-react"
+import { getRouteApi } from "@tanstack/react-router"
 import type { LucideIcon } from "lucide-react"
 import type { IconOption } from "@/components/icon-picker"
-import type { useAccountsPageData } from "@/hooks/use-money-dashboard"
 import { accountTypeOptions } from "@/lib/money"
 
-type AccountsData = NonNullable<ReturnType<typeof useAccountsPageData>["data"]>
+const accountsRouteApi = getRouteApi("/_authenticated/dashboard/accounts")
+
+type AccountsData = ReturnType<typeof accountsRouteApi.useLoaderData>
 
 export type AccountRecord = AccountsData["accounts"]["active"][number]
 export type AccountType = (typeof accountTypeOptions)[number]["value"]

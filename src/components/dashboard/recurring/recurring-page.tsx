@@ -1,3 +1,4 @@
+import { getRouteApi } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react"
 import { DashboardPageActions } from "@/components/dashboard/dashboard-page-actions"
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
@@ -7,13 +8,14 @@ import { RecurringFormDialog } from "@/components/dashboard/recurring/recurring-
 import { useRecurringDialog } from "@/components/dashboard/recurring/use-recurring-dialog"
 import { Button } from "@/components/ui/button"
 import { useCalendarContext } from "@/hooks/use-calendar-context"
-import { useRecurringPageData } from "@/hooks/use-money-dashboard"
 import { useDateFilter } from "@/hooks/use-date-filter"
+
+const recurringRouteApi = getRouteApi("/_authenticated/dashboard/recurring")
 
 export function RecurringPage() {
   const { hasDateFilter, filterLabel, dateRange } = useDateFilter()
   const calendarContext = useCalendarContext()
-  const data = useRecurringPageData().data!
+  const data = recurringRouteApi.useLoaderData()
   const {
     dialog,
     pendingRuleId,

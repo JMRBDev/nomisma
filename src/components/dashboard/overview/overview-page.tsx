@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router"
+import { Link, getRouteApi } from "@tanstack/react-router"
 import { ArrowRightIcon, CheckCircle2Icon, FunnelIcon, ReceiptTextIcon, RepeatIcon } from "lucide-react"
 import { OverviewAlerts } from "@/components/dashboard/overview/overview-alerts"
 import { OverviewChartsRow } from "@/components/dashboard/overview/overview-charts-row"
@@ -10,13 +10,14 @@ import { OverviewSummaryCards } from "@/components/dashboard/overview/overview-s
 import { RecurringTable } from "@/components/dashboard/recurring/recurring-table"
 import { TransactionsTable } from "@/components/dashboard/transactions/transactions-table"
 import { Button } from "@/components/ui/button"
-import { useOverviewData } from "@/hooks/use-money-dashboard"
 import { useDateFilter } from "@/hooks/use-date-filter"
 
+const overviewRouteApi = getRouteApi("/_authenticated/dashboard/")
+
 export function OverviewPage() {
-  const { hasDateFilter, filterLabel, dateRange, dateFilter } = useDateFilter()
+  const { hasDateFilter, filterLabel, dateFilter } = useDateFilter()
   const activityLabel = hasDateFilter ? filterLabel : "the current month"
-  const data = useOverviewData(dateRange).data!
+  const data = overviewRouteApi.useLoaderData()
   const currency = data.settings?.baseCurrency
   const isSingleMonth =
     !hasDateFilter ||

@@ -1,3 +1,4 @@
+import { getRouteApi } from "@tanstack/react-router"
 import { useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { PlusIcon } from "lucide-react"
@@ -19,13 +20,14 @@ import { DashboardPageSection } from "@/components/dashboard/dashboard-page-sect
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useFormDialog } from "@/hooks/use-form-dialog"
-import { useBudgetsPageData } from "@/hooks/use-money-dashboard"
 import { formatMonthLabel } from "@/lib/money"
 import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog"
 import { useDeleteConfirmation } from "@/hooks/use-delete-confirmation"
 
+const budgetsRouteApi = getRouteApi("/_authenticated/dashboard/budgets")
+
 export function BudgetsPage() {
-  const data = useBudgetsPageData().data!
+  const data = budgetsRouteApi.useLoaderData()
   const upsertBudget = useConvexMutation(api.budgets.upsertBudget)
   const deleteBudgetMutation = useConvexMutation(api.budgets.deleteBudget)
   const [pendingBudgetId, setPendingBudgetId] = useState<

@@ -1,13 +1,12 @@
 import { useRef, useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
-import { useNavigate } from "@tanstack/react-router"
+import { getRouteApi, useNavigate } from "@tanstack/react-router"
 import { api } from "../../../../convex/_generated/api"
 import type { Id } from "../../../../convex/_generated/dataModel"
 import type {
   RecurringRecord,
   RecurringType,
 } from "@/components/dashboard/recurring/recurring-shared"
-import type { useRecurringPageData } from "@/hooks/use-money-dashboard"
 import {
   buildRecurringPayload,
   createRecurringDefaults,
@@ -17,9 +16,9 @@ import {
 import { useFormDialog } from "@/hooks/use-form-dialog"
 import { resolveCategoryOnTypeChange } from "@/lib/form-helpers"
 
-type RecurringData = NonNullable<
-  ReturnType<typeof useRecurringPageData>["data"]
->
+const recurringRouteApi = getRouteApi("/_authenticated/dashboard/recurring")
+
+type RecurringData = ReturnType<typeof recurringRouteApi.useLoaderData>
 
 export function useRecurringDialog(data: RecurringData | null | undefined) {
   const navigate = useNavigate()

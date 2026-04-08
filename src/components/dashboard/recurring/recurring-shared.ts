@@ -1,10 +1,10 @@
-import type { useRecurringPageData } from "@/hooks/use-money-dashboard"
+import { getRouteApi } from "@tanstack/react-router"
 import type { recurringFrequencyOptions } from "@/lib/money"
 import { resolveValidOption as resolveValidOptionGeneric } from "@/lib/form-helpers"
 
-type RecurringData = NonNullable<
-  ReturnType<typeof useRecurringPageData>["data"]
->
+const recurringRouteApi = getRouteApi("/_authenticated/dashboard/recurring")
+
+type RecurringData = ReturnType<typeof recurringRouteApi.useLoaderData>
 
 export type RecurringRecord = RecurringData["recurring"]["all"][number]
 export type RecurringAccountOption = RecurringData["accounts"]["active"][number]

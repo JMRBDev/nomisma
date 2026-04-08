@@ -1,8 +1,8 @@
-import type { useOverviewData } from "@/hooks/use-money-dashboard"
+import { getRouteApi } from "@tanstack/react-router"
 
-export type OverviewData = NonNullable<
-  ReturnType<typeof useOverviewData>["data"]
->
+const overviewRouteApi = getRouteApi("/_authenticated/dashboard/")
+
+export type OverviewData = ReturnType<typeof overviewRouteApi.useLoaderData>
 
 export type OverviewAlertRecord = OverviewData["overview"]["alerts"][number]
 export type OverviewTopSpendingCategory =

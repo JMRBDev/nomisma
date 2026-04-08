@@ -1,7 +1,7 @@
+import { getRouteApi } from "@tanstack/react-router"
 import { useMemo } from "react"
 import { PlusIcon, TagIcon } from "lucide-react"
 import type { CategoryTableRow } from "@/components/dashboard/transactions/categories-table"
-import type { useTransactionsPageData } from "@/hooks/use-money-dashboard"
 import { Button } from "@/components/ui/button"
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CategoryFormDialog } from "@/components/dashboard/transactions/category-form-dialog"
@@ -16,7 +16,11 @@ import {
 } from "@/components/ui/empty"
 import { useCategoryManager } from "@/hooks/use-category-manager"
 
-type PageData = NonNullable<ReturnType<typeof useTransactionsPageData>["data"]>
+const transactionsRouteApi = getRouteApi(
+  "/_authenticated/dashboard/transactions"
+)
+
+type PageData = ReturnType<typeof transactionsRouteApi.useLoaderData>
 
 export function CategoriesSection({
   data,
@@ -33,7 +37,7 @@ export function CategoriesSection({
         txCounts.set(tx.categoryId, (txCounts.get(tx.categoryId) ?? 0) + 1)
       }
     }
-    return data.categories.all.map((cat) => ({
+    return data.categories.all.map((cat: PageData["categories"]["all"][number]) => ({
       _id: cat._id,
       name: cat.name,
       kind: cat.kind,
@@ -88,7 +92,8 @@ export function CategoriesSection({
               categories={categoryRows}
               onEdit={(category) => {
                 const source = data.categories.all.find(
-                  (item) => item._id === category._id
+                  (item: PageData["categories"]["all"][number]) =>
+                    item._id === category._id
                 )
                 if (source) {
                   categoryDialog.openEditDialog(source)
