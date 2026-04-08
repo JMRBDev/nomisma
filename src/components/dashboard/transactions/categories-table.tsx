@@ -104,9 +104,7 @@ export function CategoriesTable({
             <TableCell>
               <span
                 className={cn(
-                  category.kind === "income"
-                    ? "text-emerald-400"
-                    : "text-rose-300"
+                  category.kind === "income" ? "text-success" : "text-destructive"
                 )}
               >
                 {category.kind === "income" ? "Income" : "Expense"}

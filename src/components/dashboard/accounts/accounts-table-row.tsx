@@ -51,7 +51,7 @@ export function AccountsTableRow({
           {archived ? (
             <XIcon size={16} className="mx-auto text-muted-foreground" />
           ) : account.includeInTotals ? (
-            <CheckIcon size={16} className="mx-auto text-emerald-400" />
+            <CheckIcon size={16} className="mx-auto text-success" />
           ) : (
             <XIcon size={16} className="mx-auto text-muted-foreground" />
           )}

@@ -71,7 +71,7 @@ export function BudgetsSummaryCards({
               ? undefined
               : data.budgets.budgetRemaining < 0
                 ? "text-destructive"
-                : "text-emerald-400"
+                : "text-success"
             : undefined
         }
       />

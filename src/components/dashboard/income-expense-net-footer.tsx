@@ -20,11 +20,11 @@ export function IncomeExpenseNetFooter({
           {showBreakdown && (
             <>
               {"Income: "}
-              <span className="font-medium text-emerald-400">
+              <span className="font-medium text-success">
                 {formatCurrency(aggregates.totalIncome, currency)}
               </span>
               {" · Expense: "}
-              <span className="font-medium text-rose-300">
+              <span className="font-medium text-destructive">
                 {formatCurrency(aggregates.totalExpense, currency)}
               </span>
               {" · "}
@@ -34,7 +34,7 @@ export function IncomeExpenseNetFooter({
           <span
             className={cn(
               "font-medium",
-              aggregates.net >= 0 ? "text-emerald-400" : "text-rose-300"
+              aggregates.net >= 0 ? "text-success" : "text-destructive"
             )}
           >
             {formatCurrency(aggregates.net, currency)}

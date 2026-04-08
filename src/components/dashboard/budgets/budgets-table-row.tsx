@@ -43,7 +43,7 @@ export function BudgetsTableRow({
                     "h-full rounded-full transition-[width]",
                     budget.status === "over" && "bg-destructive",
                     budget.status === "near" && "bg-amber-400",
-                    budget.status === "healthy" && "bg-emerald-400"
+                    budget.status === "healthy" && "bg-success"
                   )}
                   style={{ width: `${progressValue}%` }}
                 />

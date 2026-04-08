@@ -10,7 +10,7 @@ export const spendingChartConfig = {
 export const incomeExpensesChartConfig = {
   income: {
     label: "Income",
-    color: "#34d399",
+    color: "var(--color-success)",
   },
   expenses: {
     label: "Expenses",

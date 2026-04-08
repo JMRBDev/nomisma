@@ -78,12 +78,12 @@ export function toAmountInput(value: number) {
 export function getBudgetTone(status: string) {
   if (status === "over") return "text-destructive"
   if (status === "near") return "text-amber-400"
-  return "text-emerald-400"
+  return "text-success"
 }
 
 export function getTransactionTone(type: "income" | "expense" | "transfer") {
-  if (type === "income") return "text-emerald-400"
-  if (type === "expense") return "text-rose-300"
+  if (type === "income") return "text-success"
+  if (type === "expense") return "text-destructive"
   return "text-sky-300"
 }
 

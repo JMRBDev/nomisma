@@ -106,9 +106,7 @@ export function BudgetsTable({
             <TableCell
               className={cn(
                 "text-right font-medium",
-                aggregates.totalRemaining < 0
-                  ? "text-destructive"
-                  : "text-emerald-400"
+                aggregates.totalRemaining < 0 ? "text-destructive" : "text-success"
               )}
             >
               {formatCurrency(aggregates.totalRemaining, currency)}

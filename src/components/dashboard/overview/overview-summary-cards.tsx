@@ -36,7 +36,7 @@ export function OverviewSummaryCards({
     )
   }
 
-  const netToneClassName = net < 0 ? "text-destructive" : "text-emerald-400"
+  const netToneClassName = net < 0 ? "text-destructive" : "text-success"
 
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -55,14 +55,14 @@ export function OverviewSummaryCards({
         value={formatCurrency(income, currency)}
         description={`Posted income in ${activityLabel}`}
         icon={<PiggyBankIcon className="size-4" />}
-        valueClassName="text-emerald-400"
+        valueClassName="text-success"
       />
       <OverviewMetricCard
         title="Expenses"
         value={formatCurrency(expenses, currency)}
         description={`Posted spending in ${activityLabel}`}
         icon={<ReceiptTextIcon className="size-4" />}
-        valueClassName="text-rose-300"
+        valueClassName="text-destructive"
       />
       <OverviewMetricCard
         title="Net"
