@@ -1,7 +1,8 @@
+import { Suspense, lazy } from "react"
 import { Link, getRouteApi } from "@tanstack/react-router"
 import { ArrowRightIcon, CheckCircle2Icon, FunnelIcon, ReceiptTextIcon, RepeatIcon } from "lucide-react"
 import { OverviewAlerts } from "@/components/dashboard/overview/overview-alerts"
-import { OverviewChartsRow } from "@/components/dashboard/overview/overview-charts-row"
+import { OverviewChartsRowFallback } from "@/components/dashboard/overview/overview-charts-row-fallback"
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
 import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
@@ -13,6 +14,10 @@ import { Button } from "@/components/ui/button"
 import { useDateFilter } from "@/hooks/use-date-filter"
 
 const overviewRouteApi = getRouteApi("/_authenticated/dashboard/")
+const LazyOverviewChartsRow = lazy(async () => {
+  const module = await import("@/components/dashboard/overview/overview-charts-row")
+  return { default: module.OverviewChartsRow }
+})
 
 export function OverviewPage() {
   const { hasDateFilter, filterLabel, dateFilter } = useDateFilter()
@@ -129,13 +134,15 @@ export function OverviewPage() {
           </OverviewPanelCard>
         </div>
       </div>
-      <OverviewChartsRow
-        data={data}
-        currency={currency}
-        hasDateFilter={hasDateFilter}
-        filterLabel={filterLabel}
-        isSingleMonth={isSingleMonth}
-      />
+      <Suspense fallback={<OverviewChartsRowFallback />}>
+        <LazyOverviewChartsRow
+          data={data}
+          currency={currency}
+          hasDateFilter={hasDateFilter}
+          filterLabel={filterLabel}
+          isSingleMonth={isSingleMonth}
+        />
+      </Suspense>
     </DashboardPageSection>
   )
 }
