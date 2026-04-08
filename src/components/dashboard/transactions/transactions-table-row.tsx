@@ -22,9 +22,12 @@ export function TransactionsTableRow({
   transaction: TransactionRecord
   currency?: string | null
   isColumnVisible: (columnId: string) => boolean
-  onEdit: (transaction: TransactionRecord) => void
-  onDelete: (transactionId: TransactionRecord["_id"]) => void
+  onEdit?: (transaction: TransactionRecord) => void
+  onDelete?: (transactionId: TransactionRecord["_id"]) => void
 }) {
+  const showActions =
+    isColumnVisible("actions") && onEdit !== undefined && onDelete !== undefined
+
   return (
     <TableRow>
       {isColumnVisible("date") && (
@@ -86,7 +89,7 @@ export function TransactionsTableRow({
           {formatSignedAmount(transaction.amount, currency, transaction.type)}
         </TableCell>
       )}
-      {isColumnVisible("actions") && (
+      {showActions && (
         <TableCell>
           <DashboardTableActions
             actions={[

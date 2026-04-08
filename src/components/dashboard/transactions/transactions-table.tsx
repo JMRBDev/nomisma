@@ -25,7 +25,7 @@ const SORT_ACCESSORS: Record<
 
 const COLUMN_VISIBILITY_STORAGE_KEY = "nomisma-table-columns:transactions"
 
-const COLUMNS: Array<DashboardTableColumn> = [
+const BASE_COLUMNS: Array<DashboardTableColumn> = [
   { id: "date", column: "date", header: "Date", alwaysVisible: true },
   {
     id: "description",
@@ -44,31 +44,44 @@ const COLUMNS: Array<DashboardTableColumn> = [
     className: "text-right",
     alwaysVisible: true,
   },
-  {
-    id: "actions",
-    header: "Actions",
-    className: "text-right",
-    alwaysVisible: true,
-  },
 ]
+
+const ACTIONS_COLUMN: DashboardTableColumn = {
+  id: "actions",
+  header: "Actions",
+  className: "text-right",
+  alwaysVisible: true,
+}
 
 export function TransactionsTable({
   transactions,
   currency,
   onEdit,
   onDelete,
+  columnVisibilityStorageKey = COLUMN_VISIBILITY_STORAGE_KEY,
+  defaultPageSize,
+  showBreakdown = true,
 }: {
   transactions: Array<TransactionRecord>
   currency?: string | null
-  onEdit: (transaction: TransactionRecord) => void
-  onDelete: (transactionId: TransactionRecord["_id"]) => void
+  onEdit?: (transaction: TransactionRecord) => void
+  onDelete?: (transactionId: TransactionRecord["_id"]) => void
+  columnVisibilityStorageKey?: string
+  defaultPageSize?: number
+  showBreakdown?: boolean
 }) {
+  const showActions = Boolean(onEdit && onDelete)
+  const columns = showActions
+    ? [...BASE_COLUMNS, ACTIONS_COLUMN]
+    : BASE_COLUMNS
+
   const table = useDataTable({
     data: transactions,
-    columns: COLUMNS,
-    columnVisibilityStorageKey: COLUMN_VISIBILITY_STORAGE_KEY,
+    columns,
+    columnVisibilityStorageKey,
     sortAccessors: SORT_ACCESSORS,
     defaultSort: { column: "date", direction: "desc" },
+    defaultPageSize,
   })
 
   const aggregates = useMemo(() => {
@@ -89,6 +102,7 @@ export function TransactionsTable({
           aggregates={aggregates}
           currency={currency}
           columnCount={table.visibleColumns.length}
+          showBreakdown={showBreakdown}
         />
       }
     >

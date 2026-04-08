@@ -12,8 +12,8 @@ import { DashboardPageSection } from "@/components/dashboard/dashboard-page-sect
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
 import { OverviewMiddleRow } from "@/components/dashboard/overview/overview-middle-row"
 import { OverviewPanelCard } from "@/components/dashboard/overview/overview-panel-card"
-import { OverviewRecentTransactionsTable } from "@/components/dashboard/overview/overview-recent-transactions-table"
 import { OverviewSummaryCards } from "@/components/dashboard/overview/overview-summary-cards"
+import { TransactionsTable } from "@/components/dashboard/transactions/transactions-table"
 import { Button } from "@/components/ui/button"
 import { useOverviewData } from "@/hooks/use-money-dashboard"
 import { useDateFilter } from "@/hooks/use-date-filter"
@@ -63,9 +63,12 @@ export function OverviewPage() {
         >
           {!isLoading &&
             (data.overview.recentTransactions.length > 0 ? (
-              <OverviewRecentTransactionsTable
+              <TransactionsTable
                 transactions={data.overview.recentTransactions}
                 currency={currency}
+                columnVisibilityStorageKey="nomisma-table-columns:overview-recent-transactions"
+                defaultPageSize={5}
+                showBreakdown={false}
               />
             ) : (
               <FilteredResultsEmptyState

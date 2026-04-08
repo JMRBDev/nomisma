@@ -7,5 +7,3 @@ export type OverviewData = NonNullable<
 export type OverviewAlertRecord = OverviewData["overview"]["alerts"][number]
 export type OverviewTopSpendingCategory =
   OverviewData["overview"]["topSpendingCategories"][number]
-export type OverviewRecentTransactionRecord =
-  OverviewData["overview"]["recentTransactions"][number]
