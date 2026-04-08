@@ -22,7 +22,7 @@ export function OverviewChartsRow({
   isSingleMonth,
 }: OverviewChartsRowProps) {
   return (
-    <div className="grid gap-4 lg:grid-cols-3">
+    <div className="grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(340px,1fr)]">
       <OverviewPanelCard
         loading={isLoading}
         title="Spending over time"
@@ -39,37 +39,38 @@ export function OverviewChartsRow({
           />
         )}
       </OverviewPanelCard>
+      <div className="grid gap-4">
+        <OverviewPanelCard
+          loading={isLoading}
+          title="Income vs expenses"
+          description={
+            isSingleMonth
+              ? "Weekly income and expense comparison."
+              : "Monthly income and expense comparison."
+          }
+        >
+          {!isLoading && (
+            <OverviewIncomeVsExpensesChart
+              data={data.overview.incomeExpensesComparison}
+              currency={currency}
+              isSingleMonth={isSingleMonth}
+            />
+          )}
+        </OverviewPanelCard>
 
-      <OverviewPanelCard
-        loading={isLoading}
-        title="Income vs expenses"
-        description={
-          isSingleMonth
-            ? "Weekly income and expense comparison."
-            : "Monthly income and expense comparison."
-        }
-      >
-        {!isLoading && (
-          <OverviewIncomeVsExpensesChart
-            data={data.overview.incomeExpensesComparison}
-            currency={currency}
-            isSingleMonth={isSingleMonth}
-          />
-        )}
-      </OverviewPanelCard>
-
-      <OverviewPanelCard
-        loading={isLoading}
-        title="Expense breakdown"
-        description="How your posted expenses are distributed by category."
-      >
-        {!isLoading && (
-          <OverviewCategoryBreakdownChart
-            data={data.overview.categoryBreakdown}
-            currency={currency}
-          />
-        )}
-      </OverviewPanelCard>
+        <OverviewPanelCard
+          loading={isLoading}
+          title="Expense breakdown"
+          description="How your posted expenses are distributed by category."
+        >
+          {!isLoading && (
+            <OverviewCategoryBreakdownChart
+              data={data.overview.categoryBreakdown}
+              currency={currency}
+            />
+          )}
+        </OverviewPanelCard>
+      </div>
     </div>
   )
 }

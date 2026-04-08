@@ -4,15 +4,16 @@ import {
   CheckCircle2Icon,
   FunnelIcon,
   ReceiptTextIcon,
+  RepeatIcon,
 } from "lucide-react"
 import { OverviewAlerts } from "@/components/dashboard/overview/overview-alerts"
 import { OverviewChartsRow } from "@/components/dashboard/overview/overview-charts-row"
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
 import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
-import { OverviewMiddleRow } from "@/components/dashboard/overview/overview-middle-row"
 import { OverviewPanelCard } from "@/components/dashboard/overview/overview-panel-card"
 import { OverviewSummaryCards } from "@/components/dashboard/overview/overview-summary-cards"
+import { RecurringTable } from "@/components/dashboard/recurring/recurring-table"
 import { TransactionsTable } from "@/components/dashboard/transactions/transactions-table"
 import { Button } from "@/components/ui/button"
 import { useOverviewData } from "@/hooks/use-money-dashboard"
@@ -40,7 +41,7 @@ export function OverviewPage() {
         currency={currency}
         activityLabel={activityLabel}
       />
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(340px,1fr)]">
         <OverviewPanelCard
           loading={isLoading}
           title="Recent transactions"
@@ -116,15 +117,37 @@ export function OverviewPage() {
                 />
               ))}
           </OverviewPanelCard>
+          <OverviewPanelCard
+            loading={isLoading}
+            title="Upcoming recurring"
+            description="The next recurring items scheduled to hit your accounts."
+            action={
+              <Button asChild size="sm" variant="outline">
+                <Link to="/dashboard/recurring" search={(previous) => previous}>
+                  View recurring
+                  <ArrowRightIcon />
+                </Link>
+              </Button>
+            }
+          >
+            {!isLoading &&
+              (data.overview.upcomingRecurring.length > 0 ? (
+                <RecurringTable
+                  recurringItems={data.overview.upcomingRecurring}
+                  currency={currency}
+                  columnVisibilityStorageKey="nomisma-table-columns:overview-upcoming-recurring"
+                  defaultPageSize={5}
+                />
+              ) : (
+                <FilteredResultsEmptyState
+                  title="No recurring items yet"
+                  description="Add recurring income or bills so future cash movement is visible here."
+                  icon={RepeatIcon}
+                />
+              ))}
+          </OverviewPanelCard>
         </div>
       </div>
-      <OverviewMiddleRow
-        isLoading={isLoading}
-        data={data!}
-        currency={currency}
-        hasDateFilter={hasDateFilter}
-        filterLabel={filterLabel}
-      />
       <OverviewChartsRow
         isLoading={isLoading}
         data={data!}
