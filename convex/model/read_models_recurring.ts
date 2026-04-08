@@ -23,6 +23,8 @@ export function buildRecurringItems(
         accountColor: account?.color ?? null,
         categoryName:
           categoryMap.get(rule.categoryId)?.name ?? "Unknown category",
+        categoryIcon: categoryMap.get(rule.categoryId)?.icon ?? null,
+        categoryColor: categoryMap.get(rule.categoryId)?.color ?? null,
         status:
           rule.nextDueDate < today
             ? ("overdue" as const)

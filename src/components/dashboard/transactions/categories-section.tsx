@@ -5,8 +5,8 @@ import type { useTransactionsPageData } from "@/hooks/use-money-dashboard"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { CategoriesTable } from "@/components/dashboard/transactions/categories-table"
 import { CategoryFormDialog } from "@/components/dashboard/transactions/category-form-dialog"
+import { CategoriesTable } from "@/components/dashboard/transactions/categories-table"
 import {
   Empty,
   EmptyContent,
@@ -41,6 +41,8 @@ export function CategoriesSection({
       _id: cat._id,
       name: cat.name,
       kind: cat.kind,
+      color: cat.color,
+      icon: cat.icon,
       archived: cat.archived,
       transactionCount: txCounts.get(cat._id) ?? 0,
     }))
@@ -92,7 +94,14 @@ export function CategoriesSection({
           ) : (
             <CategoriesTable
               categories={categoryRows}
-              onEdit={categoryDialog.openEditDialog}
+              onEdit={(category) => {
+                const source = data?.categories.all.find(
+                  (item) => item._id === category._id
+                )
+                if (source) {
+                  categoryDialog.openEditDialog(source)
+                }
+              }}
               onToggleArchived={(categoryId, archived) =>
                 toggleCategoryArchived({ categoryId, archived })
               }

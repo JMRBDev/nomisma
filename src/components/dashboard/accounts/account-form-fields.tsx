@@ -4,6 +4,7 @@ import type {
   AccountType,
 } from "@/components/dashboard/accounts/accounts-shared"
 import { ACCOUNT_ICON_OPTIONS } from "@/components/dashboard/accounts/accounts-shared"
+import { ColorPicker } from "@/components/color-picker"
 import { FormErrorMessage } from "@/components/form-error-message"
 import { IconPicker } from "@/components/icon-picker"
 import {
@@ -13,7 +14,6 @@ import {
   FieldLabel,
   FieldTitle,
 } from "@/components/ui/field"
-import { ColorSwatchPicker } from "@/components/dashboard/accounts/color-swatch-picker"
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { Switch } from "@/components/ui/switch"
@@ -88,24 +88,31 @@ export function AccountFormFields({
             <FormErrorMessage error={errors.openingBalance} />
           </Field>
         )}
+      </div>
 
+      <div className="grid gap-4 sm:grid-cols-2">
         <Field>
           <FieldTitle>Color</FieldTitle>
-          <ColorSwatchPicker
+          <FieldDescription>Choose an account color.</FieldDescription>
+          <ColorPicker
             value={values.color}
             onChange={(value) => onValueChange("color", value)}
+            entityName="account"
+          />
+        </Field>
+
+        <Field>
+          <FieldTitle>Icon</FieldTitle>
+          <FieldDescription>Choose an account icon.</FieldDescription>
+          <IconPicker
+            value={values.icon}
+            onChange={(value) => onValueChange("icon", value)}
+            icons={ACCOUNT_ICON_OPTIONS}
+            colorValue={values.color}
+            entityName="account"
           />
         </Field>
       </div>
-
-      <Field>
-        <FieldTitle>Icon</FieldTitle>
-        <IconPicker
-          value={values.icon}
-          onChange={(value) => onValueChange("icon", value)}
-          icons={ACCOUNT_ICON_OPTIONS}
-        />
-      </Field>
 
       <Field orientation="responsive">
         <div className="space-y-1">

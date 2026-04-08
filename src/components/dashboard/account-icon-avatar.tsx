@@ -1,6 +1,5 @@
 import { ACCOUNT_ICON_MAP } from "@/components/dashboard/accounts/accounts-shared"
-import { getContrastColor } from "@/lib/colors"
-import { cn } from "@/lib/utils"
+import { IconAvatar } from "@/components/icon-avatar"
 
 export function AccountIconAvatar({
   icon,
@@ -9,29 +8,5 @@ export function AccountIconAvatar({
   icon?: string | null
   color?: string | null
 }) {
-  const resolvedColor = color?.trim()
-  const isHex = resolvedColor?.startsWith("#")
-  const iconColor = isHex
-    ? getContrastColor(resolvedColor as string)
-    : "#ffffff"
-  const IconComponent = icon ? ACCOUNT_ICON_MAP[icon] : null
-
-  return (
-    <span
-      className={cn(
-        "flex shrink-0 items-center justify-center rounded-full border p-1.5",
-        !isHex && resolvedColor
-      )}
-      style={isHex ? { backgroundColor: resolvedColor } : undefined}
-    >
-      {IconComponent ? (
-        <IconComponent
-          size={14}
-          style={{
-            color: iconColor,
-          }}
-        />
-      ) : null}
-    </span>
-  )
+  return <IconAvatar icon={icon} color={color} iconMap={ACCOUNT_ICON_MAP} />
 }

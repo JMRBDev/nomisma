@@ -50,6 +50,9 @@ export function buildBudgetStatuses(
   }
 
   const items = currentMonthBudgets.map((budget) => {
+    const category = budget.categoryId
+      ? categoryMap.get(budget.categoryId)
+      : null
     const spent =
       budget.categoryId === undefined
         ? currentMonthTotalExpenses
@@ -63,8 +66,10 @@ export function buildBudgetStatuses(
     return {
       ...budget,
       categoryName: budget.categoryId
-        ? (categoryMap.get(budget.categoryId)?.name ?? "Deleted category")
+        ? (category?.name ?? "Deleted category")
         : "Total spending",
+      categoryIcon: category?.icon ?? null,
+      categoryColor: category?.color ?? null,
       spent,
       remaining,
       progress,

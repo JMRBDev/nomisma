@@ -2,6 +2,7 @@ import { useMemo } from "react"
 import type { OverviewRecentTransactionRecord } from "@/components/dashboard/overview/overview-shared"
 import type { DashboardTableColumn } from "@/components/dashboard/dashboard-table-columns"
 import { AccountNameCell } from "@/components/dashboard/account-name-cell"
+import { OverviewRecentTransactionDescription } from "@/components/dashboard/overview/overview-recent-transaction-description"
 import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { IncomeExpenseNetFooter } from "@/components/dashboard/income-expense-net-footer"
 import { TableCell, TableRow } from "@/components/ui/table"
@@ -102,12 +103,7 @@ export function OverviewRecentTransactionsTable({
           )}
           {table.isColumnVisible("description") && (
             <TableCell>
-              <div className="space-y-1">
-                <p className="font-medium">{transaction.description}</p>
-                <p className="text-xs text-muted-foreground">
-                  {transaction.categoryName ?? "Transfer"}
-                </p>
-              </div>
+              <OverviewRecentTransactionDescription transaction={transaction} />
             </TableCell>
           )}
           {table.isColumnVisible("accountName") && (

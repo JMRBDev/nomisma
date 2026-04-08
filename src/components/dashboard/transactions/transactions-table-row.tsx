@@ -1,6 +1,7 @@
 import { PencilIcon, Trash2Icon } from "lucide-react"
 import type { TransactionRecord } from "@/components/dashboard/transactions/transactions-shared"
 import { AccountNameCell } from "@/components/dashboard/account-name-cell"
+import { CategoryNameCell } from "@/components/dashboard/category-name-cell"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { TableCell, TableRow } from "@/components/ui/table"
 import {
@@ -53,7 +54,19 @@ export function TransactionsTableRow({
         </TableCell>
       )}
       {isColumnVisible("categoryName") && (
-        <TableCell>{transaction.categoryName ?? "Transfer"}</TableCell>
+        <TableCell>
+          {transaction.categoryName ? (
+            <CategoryNameCell
+              name={transaction.categoryName}
+              icon={transaction.categoryIcon}
+              color={transaction.categoryColor}
+            />
+          ) : (
+            <span className="text-muted-foreground">
+              —
+            </span>
+          )}
+        </TableCell>
       )}
       {isColumnVisible("type") && (
         <TableCell>

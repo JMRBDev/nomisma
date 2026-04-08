@@ -1,7 +1,16 @@
+import type {
+  CategoryFieldErrors,
+  CategoryFormValues,
+} from "@/components/dashboard/transactions/categories-shared"
+import { ColorPicker } from "@/components/color-picker"
 import { DashboardFormActions } from "@/components/dashboard/dashboard-form-actions"
 import { DashboardFormDialog } from "@/components/dashboard/dashboard-form-dialog"
+import { CATEGORY_ICON_OPTIONS } from "@/components/dashboard/transactions/categories-shared"
+import { FormErrorMessage } from "@/components/form-error-message"
+import { IconPicker } from "@/components/icon-picker"
 import {
   Field,
+  FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldTitle,
@@ -28,12 +37,12 @@ export function CategoryFormDialog({
   open: boolean
   onOpenChange: (open: boolean) => void
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
-  values: { name: string; kind: "income" | "expense" }
-  errors: { name?: string }
+  values: CategoryFormValues
+  errors: CategoryFieldErrors
   formError: string
   pending: boolean
   isEditing: boolean
-  onValueChange: (name: "name" | "kind", value: string) => void
+  onValueChange: (name: keyof CategoryFormValues, value: string) => void
 }) {
   return (
     <DashboardFormDialog
@@ -59,9 +68,7 @@ export function CategoryFormDialog({
                 value={values.name}
                 onChange={(event) => onValueChange("name", event.target.value)}
               />
-              {errors.name ? (
-                <p className="text-sm text-destructive">{errors.name}</p>
-              ) : null}
+              <FormErrorMessage error={errors.name} />
             </Field>
 
             <Field>
@@ -85,6 +92,30 @@ export function CategoryFormDialog({
                   </NativeSelectOption>
                 ))}
               </NativeSelect>
+            </Field>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field>
+              <FieldTitle>Color</FieldTitle>
+              <FieldDescription>Choose a category color.</FieldDescription>
+              <ColorPicker
+                value={values.color}
+                onChange={(value) => onValueChange("color", value)}
+                entityName="category"
+              />
+            </Field>
+
+            <Field>
+              <FieldTitle>Icon</FieldTitle>
+              <FieldDescription>Choose a category icon.</FieldDescription>
+              <IconPicker
+                value={values.icon}
+                onChange={(value) => onValueChange("icon", value)}
+                icons={CATEGORY_ICON_OPTIONS}
+                colorValue={values.color}
+                entityName="category"
+              />
             </Field>
           </div>
         </FieldGroup>

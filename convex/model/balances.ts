@@ -106,6 +106,8 @@ export function mapTransaction(
     accountIcon: account?.icon ?? null,
     accountColor: account?.color ?? null,
     categoryName: category?.name ?? null,
+    categoryIcon: category?.icon ?? null,
+    categoryColor: category?.color ?? null,
     toAccountName: toAccount?.name ?? null,
     toAccountIcon: toAccount?.icon ?? null,
     toAccountColor: toAccount?.color ?? null,

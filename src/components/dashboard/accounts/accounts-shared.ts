@@ -17,12 +17,12 @@ export type AccountRecord = AccountsData["accounts"]["active"][number]
 export type AccountType = (typeof accountTypeOptions)[number]["value"]
 
 export const ACCOUNT_ICON_OPTIONS: Array<IconOption> = [
-  { name: "piggy-bank", icon: PiggyBankIcon },
-  { name: "credit-card", icon: CreditCardIcon },
-  { name: "landmark", icon: LandmarkIcon },
-  { name: "hand-coins", icon: HandCoinsIcon },
-  { name: "wallet", icon: WalletIcon },
-  { name: "receipt-text", icon: ReceiptTextIcon },
+  { name: "piggy-bank", label: "Savings", icon: PiggyBankIcon },
+  { name: "credit-card", label: "Card", icon: CreditCardIcon },
+  { name: "landmark", label: "Bank", icon: LandmarkIcon },
+  { name: "hand-coins", label: "Cash", icon: HandCoinsIcon },
+  { name: "wallet", label: "Wallet", icon: WalletIcon },
+  { name: "receipt-text", label: "Bills", icon: ReceiptTextIcon },
 ]
 
 export const ACCOUNT_ICON_MAP = ACCOUNT_ICON_OPTIONS.reduce<

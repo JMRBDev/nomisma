@@ -7,6 +7,8 @@ export async function createCategory(
   args: {
     kind: "income" | "expense"
     name: string
+    color?: string
+    icon?: string
   }
 ) {
   const user = await requireUser(ctx)
@@ -22,6 +24,8 @@ export async function createCategory(
     userId: user._id,
     kind: args.kind,
     name,
+    color: args.color?.trim() || undefined,
+    icon: args.icon?.trim() || undefined,
     archived: false,
     createdAt: timestamp,
     updatedAt: timestamp,
@@ -33,6 +37,8 @@ export async function updateCategory(
   args: {
     categoryId: Parameters<typeof getOwnedCategory>[2]
     name: string
+    color?: string
+    icon?: string
   }
 ) {
   const user = await requireUser(ctx)
@@ -45,6 +51,8 @@ export async function updateCategory(
 
   await ctx.db.patch(category._id, {
     name,
+    color: args.color?.trim() || undefined,
+    icon: args.icon?.trim() || undefined,
     updatedAt: Date.now(),
   })
 }

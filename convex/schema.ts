@@ -64,6 +64,8 @@ export default defineSchema({
     userId: v.string(),
     kind: categoryKindValidator,
     name: v.string(),
+    color: v.optional(v.string()),
+    icon: v.optional(v.string()),
     archived: v.boolean(),
     createdAt: v.number(),
     updatedAt: v.number(),

@@ -1,20 +1,13 @@
 import { useMemo } from "react"
-import { ArchiveIcon, ArchiveRestoreIcon, PencilIcon } from "lucide-react"
 import type { Id } from "../../../../convex/_generated/dataModel"
 import type { DashboardTableColumn } from "@/components/dashboard/dashboard-table-columns"
+import type { CategoryTableRowData } from "@/components/dashboard/transactions/category-table-row"
 import { DashboardTable } from "@/components/dashboard/dashboard-table"
-import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
+import { CategoryTableRow } from "@/components/dashboard/transactions/category-table-row"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { useDataTable } from "@/hooks/use-data-table"
-import { cn } from "@/lib/utils"
 
-export type CategoryTableRow = {
-  _id: Id<"categories">
-  name: string
-  kind: "income" | "expense"
-  archived: boolean
-  transactionCount: number
-}
+export type CategoryTableRow = CategoryTableRowData
 
 const SORT_ACCESSORS: Record<
   string,
@@ -95,57 +88,13 @@ export function CategoriesTable({
       }
     >
       {table.data.map((category) => (
-        <TableRow key={category._id}>
-          {table.isColumnVisible("name") && (
-            <TableCell className="font-medium">{category.name}</TableCell>
-          )}
-          {table.isColumnVisible("kind") && (
-            <TableCell>
-              <span
-                className={cn(
-                  category.kind === "income" ? "text-success" : "text-destructive"
-                )}
-              >
-                {category.kind === "income" ? "Income" : "Expense"}
-              </span>
-            </TableCell>
-          )}
-          {table.isColumnVisible("status") && (
-            <TableCell>
-              <span
-                className={cn(category.archived && "text-muted-foreground")}
-              >
-                {category.archived ? "Archived" : "Active"}
-              </span>
-            </TableCell>
-          )}
-          {table.isColumnVisible("transactionCount") && (
-            <TableCell className="text-right">
-              {category.transactionCount}
-            </TableCell>
-          )}
-          {table.isColumnVisible("actions") && (
-            <TableCell>
-              <DashboardTableActions
-                actions={[
-                  {
-                    id: "edit",
-                    label: "Edit",
-                    icon: PencilIcon,
-                    onSelect: () => onEdit(category),
-                  },
-                  {
-                    id: "toggle-archived",
-                    label: category.archived ? "Restore" : "Archive",
-                    icon: category.archived ? ArchiveRestoreIcon : ArchiveIcon,
-                    onSelect: () =>
-                      onToggleArchived(category._id, !category.archived),
-                  },
-                ]}
-              />
-            </TableCell>
-          )}
-        </TableRow>
+        <CategoryTableRow
+          key={category._id}
+          category={category}
+          isColumnVisible={table.isColumnVisible}
+          onEdit={onEdit}
+          onToggleArchived={onToggleArchived}
+        />
       ))}
     </DashboardTable>
   )
