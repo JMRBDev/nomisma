@@ -48,7 +48,6 @@ export function DataTablePagination({
         >
           <SelectTrigger
             size="sm"
-            className="h-7 w-auto gap-1 border border-border text-xs"
           >
             <SelectValue />
           </SelectTrigger>

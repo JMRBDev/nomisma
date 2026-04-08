@@ -49,37 +49,6 @@ export function DashboardTable({
 }) {
   return (
     <div>
-      {table.toggleableColumns.length > 0 && (
-        <div className="mb-3 flex justify-end">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" aria-label="Choose columns">
-                <SlidersHorizontalIcon />
-                Columns
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Shown columns</DropdownMenuLabel>
-              <DropdownMenuLabel className="pt-0">
-                Required columns stay visible.
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {table.columns.map((column) => (
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  checked={table.isColumnVisible(column.id)}
-                  disabled={column.alwaysVisible}
-                  onCheckedChange={(checked) =>
-                    table.setColumnVisibility(column.id, checked === true)
-                  }
-                >
-                  {column.header}
-                </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      )}
       <Table>
         <TableHeader>
           <TableRow>
@@ -107,15 +76,48 @@ export function DashboardTable({
           <TableFooter>{footer}</TableFooter>
         )}
       </Table>
-      <DataTablePagination
-        page={table.page}
-        pageSize={table.pageSize}
-        pageSizeOptions={table.pageSizeOptions}
-        totalPages={table.totalPages}
-        totalItems={table.totalItems}
-        onPageChange={table.setPage}
-        onPageSizeChange={table.setPageSize}
-      />
+
+      <div className="flex justify-between items-end gap-4">
+        <DataTablePagination
+          page={table.page}
+          pageSize={table.pageSize}
+          pageSizeOptions={table.pageSizeOptions}
+          totalPages={table.totalPages}
+          totalItems={table.totalItems}
+          onPageChange={table.setPage}
+          onPageSizeChange={table.setPageSize}
+        />
+
+        {table.toggleableColumns.length > 0 ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" aria-label="Choose columns">
+                <SlidersHorizontalIcon />
+                Columns
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Shown columns</DropdownMenuLabel>
+              <DropdownMenuLabel className="pt-0">
+                Required columns stay visible.
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {table.columns.map((column) => (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  checked={table.isColumnVisible(column.id)}
+                  disabled={column.alwaysVisible}
+                  onCheckedChange={(checked) =>
+                    table.setColumnVisibility(column.id, checked === true)
+                  }
+                >
+                  {column.header}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null}
+      </div>
     </div>
   )
 }
