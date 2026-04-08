@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 import type { OverviewUpcomingRecurringRecord } from "@/components/dashboard/overview/overview-shared"
 import type { DashboardTableColumn } from "@/components/dashboard/dashboard-table-columns"
-import { CategoryNameCell } from "@/components/dashboard/category-name-cell"
+import { CategoryTableValue } from "@/components/dashboard/category-table-value"
 import { getRecurringStatusLabel } from "@/components/dashboard/recurring/recurring-shared"
 import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { IncomeExpenseNetFooter } from "@/components/dashboard/income-expense-net-footer"
@@ -108,7 +108,7 @@ export function OverviewUpcomingRecurringTable({
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
                   <span>{item.accountName}</span>
                   <span>•</span>
-                  <CategoryNameCell
+                  <CategoryTableValue
                     name={item.categoryName}
                     icon={item.categoryIcon}
                     color={item.categoryColor}

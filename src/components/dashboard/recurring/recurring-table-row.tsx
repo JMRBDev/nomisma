@@ -10,7 +10,7 @@ import {
   getRecurringStatusLabel,
 } from "@/components/dashboard/recurring/recurring-shared"
 import { AccountNameCell } from "@/components/dashboard/account-name-cell"
-import { CategoryNameCell } from "@/components/dashboard/category-name-cell"
+import { CategoryTableValue } from "@/components/dashboard/category-table-value"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { TableCell, TableRow } from "@/components/ui/table"
 import {
@@ -69,7 +69,7 @@ export function RecurringTableRow({
       )}
       {isColumnVisible("categoryName") && (
         <TableCell>
-          <CategoryNameCell
+          <CategoryTableValue
             name={item.categoryName}
             icon={item.categoryIcon}
             color={item.categoryColor}

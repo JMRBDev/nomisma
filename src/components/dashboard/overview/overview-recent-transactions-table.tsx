@@ -1,19 +1,10 @@
 import { useMemo } from "react"
 import type { OverviewRecentTransactionRecord } from "@/components/dashboard/overview/overview-shared"
 import type { DashboardTableColumn } from "@/components/dashboard/dashboard-table-columns"
-import { AccountNameCell } from "@/components/dashboard/account-name-cell"
-import { OverviewRecentTransactionDescription } from "@/components/dashboard/overview/overview-recent-transaction-description"
+import { OverviewRecentTransactionRow } from "@/components/dashboard/overview/overview-recent-transaction-row"
 import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { IncomeExpenseNetFooter } from "@/components/dashboard/income-expense-net-footer"
-import { TableCell, TableRow } from "@/components/ui/table"
 import { useDataTable } from "@/hooks/use-data-table"
-import {
-  capitalizeFirstLetter,
-  formatDateLabel,
-  formatSignedAmount,
-  getTransactionTone,
-} from "@/lib/money"
-import { cn } from "@/lib/utils"
 
 const SORT_ACCESSORS: Record<
   string,
@@ -22,6 +13,7 @@ const SORT_ACCESSORS: Record<
   date: (row) => row.date,
   description: (row) => row.description.toLowerCase(),
   accountName: (row) => row.accountName.toLowerCase(),
+  categoryName: (row) => (row.categoryName ?? "Transfer").toLowerCase(),
   type: (row) => row.type,
   status: (row) => row.status,
   amount: (row) => {
@@ -43,6 +35,7 @@ const COLUMNS: Array<DashboardTableColumn> = [
     alwaysVisible: true,
   },
   { id: "accountName", column: "accountName", header: "Account" },
+  { id: "categoryName", column: "categoryName", header: "Category" },
   { id: "type", column: "type", header: "Type" },
   { id: "status", column: "status", header: "Status" },
   {
@@ -93,57 +86,12 @@ export function OverviewRecentTransactionsTable({
       }
     >
       {table.data.map((transaction) => (
-        <TableRow key={transaction._id}>
-          {table.isColumnVisible("date") && (
-            <TableCell>
-              <span className="text-muted-foreground">
-                {formatDateLabel(transaction.date)}
-              </span>
-            </TableCell>
-          )}
-          {table.isColumnVisible("description") && (
-            <TableCell>
-              <OverviewRecentTransactionDescription transaction={transaction} />
-            </TableCell>
-          )}
-          {table.isColumnVisible("accountName") && (
-            <TableCell>
-              <AccountNameCell
-                name={transaction.accountName}
-                icon={transaction.accountIcon}
-                color={transaction.accountColor}
-              />
-            </TableCell>
-          )}
-          {table.isColumnVisible("type") && (
-            <TableCell>
-              <span className={cn(getTransactionTone(transaction.type))}>
-                {capitalizeFirstLetter(transaction.type)}
-              </span>
-            </TableCell>
-          )}
-          {table.isColumnVisible("status") && (
-            <TableCell>
-              <span className="text-muted-foreground">
-                {capitalizeFirstLetter(transaction.status)}
-              </span>
-            </TableCell>
-          )}
-          {table.isColumnVisible("amount") && (
-            <TableCell
-              className={cn(
-                "text-right font-medium",
-                getTransactionTone(transaction.type)
-              )}
-            >
-              {formatSignedAmount(
-                transaction.amount,
-                currency,
-                transaction.type
-              )}
-            </TableCell>
-          )}
-        </TableRow>
+        <OverviewRecentTransactionRow
+          key={transaction._id}
+          transaction={transaction}
+          currency={currency}
+          isColumnVisible={table.isColumnVisible}
+        />
       ))}
     </DashboardTable>
   )

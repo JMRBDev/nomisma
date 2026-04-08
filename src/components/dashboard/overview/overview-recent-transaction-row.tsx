@@ -1,8 +1,6 @@
-import { PencilIcon, Trash2Icon } from "lucide-react"
-import type { TransactionRecord } from "@/components/dashboard/transactions/transactions-shared"
+import type { OverviewRecentTransactionRecord } from "@/components/dashboard/overview/overview-shared"
 import { AccountNameCell } from "@/components/dashboard/account-name-cell"
 import { CategoryTableValue } from "@/components/dashboard/category-table-value"
-import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { TableCell, TableRow } from "@/components/ui/table"
 import {
   capitalizeFirstLetter,
@@ -12,18 +10,14 @@ import {
 } from "@/lib/money"
 import { cn } from "@/lib/utils"
 
-export function TransactionsTableRow({
+export function OverviewRecentTransactionRow({
   transaction,
   currency,
   isColumnVisible,
-  onEdit,
-  onDelete,
 }: {
-  transaction: TransactionRecord
+  transaction: OverviewRecentTransactionRecord
   currency?: string | null
   isColumnVisible: (columnId: string) => boolean
-  onEdit: (transaction: TransactionRecord) => void
-  onDelete: (transactionId: TransactionRecord["_id"]) => void
 }) {
   return (
     <TableRow>
@@ -36,12 +30,7 @@ export function TransactionsTableRow({
       )}
       {isColumnVisible("description") && (
         <TableCell>
-          <p
-            className="max-w-xs truncate font-medium"
-            title={transaction.description}
-          >
-            {transaction.description}
-          </p>
+          <p className="font-medium">{transaction.description}</p>
         </TableCell>
       )}
       {isColumnVisible("accountName") && (
@@ -84,27 +73,6 @@ export function TransactionsTableRow({
           )}
         >
           {formatSignedAmount(transaction.amount, currency, transaction.type)}
-        </TableCell>
-      )}
-      {isColumnVisible("actions") && (
-        <TableCell>
-          <DashboardTableActions
-            actions={[
-              {
-                id: "edit",
-                label: "Edit",
-                icon: PencilIcon,
-                onSelect: () => onEdit(transaction),
-              },
-              {
-                id: "delete",
-                label: "Delete",
-                icon: Trash2Icon,
-                variant: "destructive",
-                onSelect: () => onDelete(transaction._id),
-              },
-            ]}
-          />
         </TableCell>
       )}
     </TableRow>

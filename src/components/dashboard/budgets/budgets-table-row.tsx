@@ -1,7 +1,7 @@
 import { PencilIcon, Trash2Icon } from "lucide-react"
 import type { BudgetRecord } from "@/components/dashboard/budgets/budgets-shared"
+import { CategoryTableValue } from "@/components/dashboard/category-table-value"
 import { getBudgetStatusLabel } from "@/components/dashboard/budgets/budgets-shared"
-import { CategoryNameCell } from "@/components/dashboard/category-name-cell"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
@@ -30,7 +30,7 @@ export function BudgetsTableRow({
           <div className="min-w-56 space-y-2">
             <div className="space-y-1">
               <div className="font-medium">
-                <CategoryNameCell
+                <CategoryTableValue
                   name={budget.categoryName}
                   icon={budget.categoryIcon}
                   color={budget.categoryColor}

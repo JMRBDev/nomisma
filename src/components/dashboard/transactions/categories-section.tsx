@@ -3,7 +3,7 @@ import { PlusIcon, TagIcon } from "lucide-react"
 import type { CategoryTableRow } from "@/components/dashboard/transactions/categories-table"
 import type { useTransactionsPageData } from "@/hooks/use-money-dashboard"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { CategoryFormDialog } from "@/components/dashboard/transactions/category-form-dialog"
 import { CategoriesTable } from "@/components/dashboard/transactions/categories-table"
@@ -52,8 +52,11 @@ export function CategoriesSection({
     <>
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center justify-between text-2xl">
+          <CardTitle className="text-2xl">
             Categories
+          </CardTitle>
+
+          <CardAction>
             <Button
               size="sm"
               variant="outline"
@@ -63,7 +66,7 @@ export function CategoriesSection({
               Add category
               <PlusIcon />
             </Button>
-          </CardTitle>
+          </CardAction>
         </CardHeader>
         <CardContent>
           {isLoading ? (
