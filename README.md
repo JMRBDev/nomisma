@@ -48,3 +48,9 @@ Do not edit generated files by hand.
 2. Copy `.env.example` to a local env file and fill in the required values.
 3. Start Convex with `npm run convex:dev`.
 4. Start the app with `npm run dev`.
+
+## License
+
+This work is distributed under the [GNU General Public License 3.0 (GPL)](license) License.
+
+See [license](license) for more information.
