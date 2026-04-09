@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { useRouter } from "@tanstack/react-router"
+import { setLocale } from "@/paraglide/runtime"
+import { m } from "@/paraglide/messages"
 import { api } from "../../../../convex/_generated/api"
 import type { SettingsFormValues } from "@/components/dashboard/settings/settings-shared"
 import { FormErrorMessage } from "@/components/form-error-message"
@@ -14,8 +16,9 @@ import {
 } from "@/components/ui/field"
 import { Separator } from "@/components/ui/separator"
 import {
-  defaultCurrencyOptions,
-  weekStartsOnOptions,
+  getDefaultCurrencyOptions,
+  getLocaleOptions,
+  getWeekStartsOnOptions,
 } from "@/components/dashboard/settings/settings-shared"
 import { SettingsSelect } from "@/components/dashboard/settings/settings-select"
 
@@ -30,6 +33,9 @@ export function SettingsForm({
   const [savedValues, setSavedValues] = useState(initialValues)
   const [formError, setFormError] = useState("")
   const [pending, setPending] = useState(false)
+  const defaultCurrencyOptions = getDefaultCurrencyOptions()
+  const localeOptions = getLocaleOptions()
+  const weekStartsOnOptions = getWeekStartsOnOptions()
 
   const currencyOptions = defaultCurrencyOptions.some(
     (option) => option.value === values.baseCurrency
@@ -45,6 +51,7 @@ export function SettingsForm({
 
   const isDirty =
     values.baseCurrency !== savedValues.baseCurrency ||
+    values.locale !== savedValues.locale ||
     values.weekStartsOn !== savedValues.weekStartsOn
 
   const handleValueChange = (name: keyof SettingsFormValues, value: string) => {
@@ -68,13 +75,20 @@ export function SettingsForm({
     try {
       await upsertSettings({
         baseCurrency: values.baseCurrency,
+        locale: values.locale,
         weekStartsOn: values.weekStartsOn,
       })
       setSavedValues(values)
+
+      if (values.locale !== savedValues.locale) {
+        await setLocale(values.locale)
+        return
+      }
+
       await router.invalidate()
     } catch (error) {
       setFormError(
-        error instanceof Error ? error.message : "Could not save settings."
+        error instanceof Error ? error.message : m.settings_save_error()
       )
     } finally {
       setPending(false)
@@ -87,36 +101,45 @@ export function SettingsForm({
         <Field>
           <FieldContent>
             <FieldTitle className="font-heading text-lg">
-              Base currency
+              {m.settings_base_currency_title()}
             </FieldTitle>
-            <FieldDescription>
-              Format balances, totals, and budget limits with one shared
-              currency.
-            </FieldDescription>
+            <FieldDescription>{m.settings_base_currency_description()}</FieldDescription>
           </FieldContent>
           <SettingsSelect
             value={values.baseCurrency}
             onValueChange={(value) => handleValueChange("baseCurrency", value)}
             options={currencyOptions}
-            placeholder="Choose a currency"
+            placeholder={m.settings_choose_currency()}
           />
         </Field>
 
         <Field>
           <FieldContent>
             <FieldTitle className="font-heading text-lg">
-              Week starts on
+              {m.settings_language_title()}
             </FieldTitle>
-            <FieldDescription>
-              Control how weekly ranges and calendars are aligned across the
-              app.
-            </FieldDescription>
+            <FieldDescription>{m.settings_language_description()}</FieldDescription>
+          </FieldContent>
+          <SettingsSelect
+            value={values.locale}
+            onValueChange={(value) => handleValueChange("locale", value)}
+            options={localeOptions}
+            placeholder={m.settings_choose_language()}
+          />
+        </Field>
+
+        <Field>
+          <FieldContent>
+            <FieldTitle className="font-heading text-lg">
+              {m.settings_week_starts_title()}
+            </FieldTitle>
+            <FieldDescription>{m.settings_week_starts_description()}</FieldDescription>
           </FieldContent>
           <SettingsSelect
             value={values.weekStartsOn}
             onValueChange={(value) => handleValueChange("weekStartsOn", value)}
             options={weekStartsOnOptions}
-            placeholder="Choose a day"
+            placeholder={m.settings_choose_day()}
           />
         </Field>
       </FieldGroup>
@@ -132,10 +155,10 @@ export function SettingsForm({
           onClick={handleReset}
           disabled={!isDirty || pending}
         >
-          Reset
+          {m.common_reset()}
         </Button>
         <Button type="submit" disabled={!isDirty || pending}>
-          {pending ? "Saving..." : "Save changes"}
+          {pending ? m.common_saving() : m.settings_save_changes()}
         </Button>
       </div>
     </form>

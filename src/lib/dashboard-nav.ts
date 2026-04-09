@@ -7,6 +7,7 @@ import {
   TargetIcon,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
+import { m } from "@/paraglide/messages"
 
 type DashboardNavItem = {
   exact?: true
@@ -16,45 +17,52 @@ type DashboardNavItem = {
   to: string
 }
 
-export const mainNavItems: Array<DashboardNavItem> = [
-  {
-    exact: true,
-    icon: LayoutDashboardIcon,
-    label: "Overview",
-    to: "/dashboard",
-    searchTerms: "overview dashboard",
-  },
-  {
-    icon: PiggyBankIcon,
-    label: "Accounts",
-    to: "/dashboard/accounts",
-    searchTerms: "accounts balances money places",
-  },
-  {
-    icon: ReceiptTextIcon,
-    label: "Transactions",
-    to: "/dashboard/transactions",
-    searchTerms: "transactions expenses income transfers ledger",
-  },
-  {
-    icon: TargetIcon,
-    label: "Budgets",
-    to: "/dashboard/budgets",
-    searchTerms: "budgets spending limits",
-  },
-  {
-    icon: RepeatIcon,
-    label: "Recurring",
-    to: "/dashboard/recurring",
-    searchTerms: "recurring bills reminders income",
-  },
-]
+export function getMainNavItems(): Array<DashboardNavItem> {
+  return [
+    {
+      exact: true,
+      icon: LayoutDashboardIcon,
+      label: m.nav_overview(),
+      to: "/dashboard",
+      searchTerms: "overview dashboard resumen panel",
+    },
+    {
+      icon: PiggyBankIcon,
+      label: m.nav_accounts(),
+      to: "/dashboard/accounts",
+      searchTerms: "accounts balances money places cuentas saldos dinero",
+    },
+    {
+      icon: ReceiptTextIcon,
+      label: m.nav_transactions(),
+      to: "/dashboard/transactions",
+      searchTerms:
+        "transactions expenses income transfers ledger transacciones gastos ingresos transferencias",
+    },
+    {
+      icon: TargetIcon,
+      label: m.nav_budgets(),
+      to: "/dashboard/budgets",
+      searchTerms: "budgets spending limits presupuestos presupuesto limites",
+    },
+    {
+      icon: RepeatIcon,
+      label: m.nav_recurring(),
+      to: "/dashboard/recurring",
+      searchTerms:
+        "recurring bills reminders income recurrente facturas recordatorios",
+    },
+  ]
+}
 
-export const secondaryNavItems: Array<DashboardNavItem> = [
-  {
-    icon: SettingsIcon,
-    label: "Settings",
-    to: "/dashboard/settings",
-    searchTerms: "settings currency categories archived accounts",
-  },
-]
+export function getSecondaryNavItems(): Array<DashboardNavItem> {
+  return [
+    {
+      icon: SettingsIcon,
+      label: m.nav_settings(),
+      to: "/dashboard/settings",
+      searchTerms:
+        "settings currency categories archived accounts configuracion ajustes",
+    },
+  ]
+}

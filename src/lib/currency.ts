@@ -1,11 +1,14 @@
+import { getLocale } from "@/paraglide/runtime"
+import { toCalendarLocale } from "@/lib/i18n"
+
 export const CURRENCY_OPTIONS = [
-  { value: "USD", label: "US Dollar (USD)", locale: "en-US" },
-  { value: "EUR", label: "Euro (EUR)", locale: "de-DE" },
-  { value: "GBP", label: "British Pound (GBP)", locale: "en-GB" },
-  { value: "CAD", label: "Canadian Dollar (CAD)", locale: "en-CA" },
-  { value: "AUD", label: "Australian Dollar (AUD)", locale: "en-AU" },
-  { value: "MXN", label: "Mexican Peso (MXN)", locale: "es-MX" },
-  { value: "COP", label: "Colombian Peso (COP)", locale: "es-CO" },
+  { value: "USD", fallbackLabel: "US Dollar", locale: "en-US" },
+  { value: "EUR", fallbackLabel: "Euro", locale: "de-DE" },
+  { value: "GBP", fallbackLabel: "British Pound", locale: "en-GB" },
+  { value: "CAD", fallbackLabel: "Canadian Dollar", locale: "en-CA" },
+  { value: "AUD", fallbackLabel: "Australian Dollar", locale: "en-AU" },
+  { value: "MXN", fallbackLabel: "Mexican Peso", locale: "es-MX" },
+  { value: "COP", fallbackLabel: "Colombian Peso", locale: "es-CO" },
 ] as const
 
 const currencyLocaleMap: Record<string, string> = {}
@@ -15,4 +18,15 @@ for (const c of CURRENCY_OPTIONS) {
 
 export function getCurrencyLocale(currency: string): string {
   return currencyLocaleMap[currency] ?? "en-US"
+}
+
+export function getCurrencyOptions() {
+  const displayNames = new Intl.DisplayNames(toCalendarLocale(getLocale()), {
+    type: "currency",
+  })
+
+  return CURRENCY_OPTIONS.map((option) => ({
+    value: option.value,
+    label: `${displayNames.of(option.value) ?? option.fallbackLabel} (${option.value})`,
+  }))
 }

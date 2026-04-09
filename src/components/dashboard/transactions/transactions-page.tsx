@@ -22,6 +22,7 @@ import { useDateFilter } from "@/hooks/use-date-filter"
 import { useDeleteConfirmation } from "@/hooks/use-delete-confirmation"
 import { useTransactionReferenceHandlers } from "@/hooks/use-transaction-reference-handlers"
 import { getTransactionsPageDataQueryOptions } from "@/lib/dashboard-query-options"
+import { m } from "@/paraglide/messages"
 
 export function TransactionsPage() {
   const { hasDateFilter, filterLabel, dateRange } = useDateFilter()
@@ -46,7 +47,7 @@ export function TransactionsPage() {
   const transactionReferences = useTransactionReferenceHandlers(transactionEditor)
   const deleteConfirmation = useDeleteConfirmation<TransactionRecord["_id"]>({
     onConfirm: (id) => deleteTx({ transactionId: id }),
-    errorMessage: "Unable to delete the transaction.",
+    errorMessage: m.transactions_delete_error(),
   })
   const searchFilter = useTransactionSearchFilter({
     dateRange,
@@ -68,7 +69,7 @@ export function TransactionsPage() {
   return (
     <DashboardPageSection>
       <DashboardPageHeader
-        title="Transactions"
+        title={m.nav_transactions()}
         action={
           <DashboardPageActions>
             <DashboardFilterButton
@@ -76,7 +77,7 @@ export function TransactionsPage() {
               onClick={() => setFiltersSheetOpen((open) => !open)}
             />
             <Button onClick={() => transactionEditor.openCreateDialog()}>
-              Add transaction
+              {m.transactions_add_transaction()}
               <PlusIcon />
             </Button>
           </DashboardPageActions>
@@ -131,11 +132,11 @@ export function TransactionsPage() {
       />
       <AccountReferenceDialog
         accountActions={transactionReferences.accountActions}
-        description="Save this account and it will be selected in the transaction form."
+        description={m.transactions_account_reference_description()}
       />
       <CategoryReferenceDialog
         categoryActions={transactionReferences.categoryActions}
-        description="Save this category and it will be selected in the transaction form."
+        description={m.transactions_category_reference_description()}
       />
     </DashboardPageSection>
   )

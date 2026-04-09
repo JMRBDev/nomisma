@@ -1,0 +1,23 @@
+{
+  "add": "Añadir categoría",
+  "create": "Crear categoría",
+  "create_and_select": "Crear y seleccionar categoría",
+  "empty_description": "Crea categorías para organizar tus transacciones y presupuestos.",
+  "empty_title": "Añade tu primera categoría",
+  "error_color_required": "El color de la categoría es obligatorio.",
+  "error_icon_required": "El icono de la categoría es obligatorio.",
+  "error_name_required": "El nombre de la categoría es obligatorio.",
+  "finish_setup_title": "Completar categoría",
+  "form_create_description": "Crea una nueva categoría para agrupar tus transacciones.",
+  "form_edit_description": "Actualiza esta categoría.",
+  "form_edit_title": "Editar categoría",
+  "form_placeholder": "p. ej. Supermercado, Nómina",
+  "icon_food": "Comida",
+  "icon_home": "Hogar",
+  "icon_income": "Ingresos",
+  "icon_shopping": "Compras",
+  "icon_transport": "Transporte",
+  "icon_work": "Trabajo",
+  "section_title": "Categorías",
+  "table_footer": "Activas: {active} · Archivadas: {archived}"
+}

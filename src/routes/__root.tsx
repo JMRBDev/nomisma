@@ -14,12 +14,15 @@ import type { QueryClient } from "@tanstack/react-query"
 import { BrowserCalendarSync } from "@/components/browser-calendar-sync"
 import { authClient } from "@/lib/auth-client"
 import { getToken } from "@/lib/auth-server"
+import { m } from "@/paraglide/messages"
+import { getLocale } from "@/paraglide/runtime"
 import {
   BROWSER_LOCALE_COOKIE_NAME,
   BROWSER_TIME_ZONE_COOKIE_NAME,
   getBrowserCalendarBootstrapScript,
   resolveBrowserCalendarContext,
 } from "@/lib/browser-calendar"
+import { toCalendarLocale } from "@/lib/i18n"
 import { APP_NAME } from "@/lib/money"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
@@ -28,14 +31,14 @@ import appCss from "@/styles/globals.css?url"
 
 const getRequestState = createServerFn({ method: "GET" }).handler(async () => {
   const token = await getToken()
+  const locale = getLocale()
   const calendarContext = resolveBrowserCalendarContext({
     timeZone: getCookie(BROWSER_TIME_ZONE_COOKIE_NAME),
-    locale:
-      getCookie(BROWSER_LOCALE_COOKIE_NAME) ??
-      getRequestHeader("accept-language"),
+    locale: toCalendarLocale(locale) ?? getCookie(BROWSER_LOCALE_COOKIE_NAME) ?? getRequestHeader("accept-language"),
   })
 
   return {
+    locale,
     token,
     calendarContext,
   }
@@ -67,8 +70,7 @@ export const Route = createRootRouteWithContext<{
       { title: APP_NAME },
       {
         name: "description",
-        content:
-          "Personal finance tracker with accounts, transactions, budgets, and recurring reminders.",
+        content: m.app_description(),
       },
     ],
     links: [
@@ -77,7 +79,7 @@ export const Route = createRootRouteWithContext<{
     ],
   }),
   beforeLoad: async (ctx) => {
-    const { token, calendarContext } = await getRequestState()
+    const { token, locale, calendarContext } = await getRequestState()
 
     if (token) {
       ctx.context.convexQueryClient.convexClient.setAuth(() =>
@@ -88,6 +90,7 @@ export const Route = createRootRouteWithContext<{
 
     return {
       isAuthenticated: !!token,
+      locale,
       token,
       calendarContext,
     }
@@ -113,8 +116,10 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const { locale } = Route.useRouteContext()
+
   return (
-    <html lang="en" className="bg-sidebar" suppressHydrationWarning>
+    <html lang={locale} className="bg-sidebar" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{

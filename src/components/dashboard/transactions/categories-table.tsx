@@ -6,6 +6,7 @@ import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { CategoryTableRow } from "@/components/dashboard/transactions/category-table-row"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { useDataTable } from "@/hooks/use-data-table"
+import { m } from "@/paraglide/messages"
 
 export type CategoryTableRow = CategoryTableRowData
 
@@ -20,18 +21,18 @@ const SORT_ACCESSORS: Record<
 const COLUMN_VISIBILITY_STORAGE_KEY = "nomisma-table-columns:categories"
 
 const COLUMNS: Array<DashboardTableColumn> = [
-  { id: "name", column: "name", header: "Name", alwaysVisible: true },
-  { id: "status", header: "Status" },
+  { id: "name", column: "name", header: m.common_name(), alwaysVisible: true },
+  { id: "status", header: m.common_status() },
   {
     id: "transactionCount",
     column: "transactionCount",
-    header: "Transactions",
+    header: m.nav_transactions(),
     className: "text-right",
     alwaysVisible: true,
   },
   {
     id: "actions",
-    header: "Actions",
+    header: m.common_actions(),
     className: "text-right",
     alwaysVisible: true,
   },
@@ -70,8 +71,10 @@ export function CategoriesTable({
         <TableRow>
           <TableCell>
             <span className="text-muted-foreground">
-              {aggregates.activeCount} active ·{" "}
-              {table.allSortedData.length - aggregates.activeCount} archived
+              {m.categories_table_footer({
+                active: aggregates.activeCount,
+                archived: table.allSortedData.length - aggregates.activeCount,
+              })}
             </span>
           </TableCell>
           {table.isColumnVisible("status") && <TableCell />}

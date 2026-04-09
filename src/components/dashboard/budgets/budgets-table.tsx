@@ -5,11 +5,13 @@ import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { BudgetsTableRow } from "@/components/dashboard/budgets/budgets-table-row"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { useDataTable } from "@/hooks/use-data-table"
+import { getBudgetCategoryLabel } from "@/lib/dashboard-i18n"
 import { cn } from "@/lib/utils"
 import { formatCurrency } from "@/lib/money"
+import { m } from "@/paraglide/messages"
 
 const SORT_ACCESSORS: Record<string, (row: BudgetRecord) => string | number> = {
-  categoryName: (row) => row.categoryName.toLowerCase(),
+  categoryName: (row) => getBudgetCategoryLabel(row).toLowerCase(),
   limitAmount: (row) => row.limitAmount,
   spent: (row) => row.spent,
   remaining: (row) => row.remaining,
@@ -22,27 +24,32 @@ const COLUMNS: Array<DashboardTableColumn> = [
   {
     id: "categoryName",
     column: "categoryName",
-    header: "Budget",
+    header: m.budgets_table_target(),
     alwaysVisible: true,
   },
   {
     id: "limitAmount",
     column: "limitAmount",
-    header: "Planned",
+    header: m.budgets_table_planned(),
     className: "text-right",
   },
-  { id: "spent", column: "spent", header: "Spent", className: "text-right" },
+  {
+    id: "spent",
+    column: "spent",
+    header: m.budgets_table_spent(),
+    className: "text-right",
+  },
   {
     id: "remaining",
     column: "remaining",
-    header: "Remaining",
+    header: m.budgets_table_remaining(),
     className: "text-right",
     alwaysVisible: true,
   },
-  { id: "status", column: "status", header: "Status" },
+  { id: "status", column: "status", header: m.common_status() },
   {
     id: "actions",
-    header: "Actions",
+    header: m.common_actions(),
     className: "text-right",
     alwaysVisible: true,
   },
@@ -88,8 +95,9 @@ export function BudgetsTable({
         <TableRow>
           <TableCell>
             <span className="text-muted-foreground">
-              Total ({table.allSortedData.length} budget
-              {table.allSortedData.length !== 1 ? "s" : ""})
+              {m.budgets_table_total({
+                count: table.allSortedData.length,
+              })}
             </span>
           </TableCell>
           {table.isColumnVisible("limitAmount") && (

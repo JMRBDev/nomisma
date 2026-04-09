@@ -7,6 +7,7 @@ import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-s
 import { PrerequisiteEmptyState } from "@/components/prerequisite-empty-state"
 import { TransactionsEmptyState } from "@/components/dashboard/transactions/transactions-empty-state"
 import { TransactionsTable } from "@/components/dashboard/transactions/transactions-table"
+import { m } from "@/paraglide/messages"
 
 type TransactionsContentProps = {
   accountOptions: Array<unknown>
@@ -44,9 +45,9 @@ export function TransactionsContent({
     return (
       <PrerequisiteEmptyState
         icon={<ReceiptTextIcon className="size-5" />}
-        title="Add an account before recording transactions"
-        description="Transactions need an account because every movement starts from somewhere real."
-        ctaLabel="Create an account"
+        title={m.transactions_prerequisite_title()}
+        description={m.transactions_prerequisite_description()}
+        ctaLabel={m.accounts_add_account()}
         ctaTo="/dashboard/accounts"
       />
     )
@@ -62,17 +63,19 @@ export function TransactionsContent({
                 icon={ReceiptTextIcon}
                 title={
                   hasDateFilter
-                    ? "No transactions in this date range"
-                    : "No transactions match these filters"
+                    ? m.transactions_empty_date_range_title()
+                    : m.transactions_empty_filtered_title()
                 }
                 description={
                   hasDateFilter
-                    ? `Clear the current filters or adjust ${filterLabel} in the header to bring results back.`
-                    : "Clear the current filters or adjust the header date range to bring results back."
+                    ? m.transactions_empty_date_range_description({
+                        filter: filterLabel,
+                      })
+                    : m.transactions_empty_header_description()
                 }
                 action={
                   <Button variant="outline" onClick={onClearFilters}>
-                    Clear filters
+                    {m.common_clear_filters()}
                   </Button>
                 }
               />
@@ -81,9 +84,9 @@ export function TransactionsContent({
                 hasFilters={false}
                 onAddTransaction={onAddTransaction}
                 onClearFilters={onClearFilters}
-                title="No transactions yet"
-                description="Add your first income, expense, or transfer to start building a reliable activity history."
-                actionLabel="Add transaction"
+                title={m.transactions_empty_title()}
+                description={m.transactions_empty_description()}
+                actionLabel={m.transactions_add_transaction()}
               />
             )
           ) : (
@@ -98,8 +101,8 @@ export function TransactionsContent({
       </Card>
       <DeleteConfirmDialog
         {...deleteDialogProps}
-        title="Delete this transaction?"
-        description="This action cannot be undone. The transaction will be permanently removed."
+        title={m.transactions_delete_title()}
+        description={m.transactions_delete_description()}
       />
     </>
   )

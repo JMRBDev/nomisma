@@ -1,0 +1,10 @@
+{
+  "form_expense_placeholder": "Supermercado",
+  "form_note_placeholder": "Contexto opcional",
+  "form_transfer_placeholder": "Transferencia a ahorros",
+  "status_planned": "Planificada",
+  "status_posted": "Registrada",
+  "type_expense": "Gasto",
+  "type_income": "Ingreso",
+  "type_transfer": "Transferencia"
+}

@@ -8,30 +8,26 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { formatCurrency } from "@/lib/money"
+import { formatCurrency, formatDateLabel } from "@/lib/money"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
+import { getLocale } from "@/paraglide/runtime"
+import { m } from "@/paraglide/messages"
+import { toCalendarLocale } from "@/lib/i18n"
 
 function formatPeriodLabel(period: string, isSingleMonth: boolean): string {
+  const locale = toCalendarLocale(getLocale())
   if (isSingleMonth) {
-    const parts = period.split("-")
-    return `${parts[1]}/${parts[2]}`
+    const [year, month, day] = period.split("-").map(Number)
+    return new Intl.DateTimeFormat(locale, {
+      month: "numeric",
+      day: "numeric",
+    }).format(new Date(year, month - 1, day))
   }
-  const [y, m] = period.split("-")
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ]
-  return `${months[parseInt(m) - 1]} ${y}`
+  const [year, month] = period.split("-").map(Number)
+  return new Intl.DateTimeFormat(locale, {
+    month: "short",
+    year: "numeric",
+  }).format(new Date(year, month - 1, 1))
 }
 
 export function OverviewIncomeVsExpensesChart({
@@ -46,8 +42,8 @@ export function OverviewIncomeVsExpensesChart({
   if (data.length === 0) {
     return (
       <FilteredResultsEmptyState
-        title="No comparison data"
-        description="Record income and expenses to see how they compare."
+        title={m.overview_charts_comparison_empty_title()}
+        description={m.overview_charts_comparison_empty_description()}
         icon={BarChart3Icon}
       />
     )
@@ -79,7 +75,9 @@ export function OverviewIncomeVsExpensesChart({
             <ChartTooltipContent
               formatter={(value) => formatCurrency(Number(value), currency)}
               labelFormatter={(label) =>
-                formatPeriodLabel(String(label), isSingleMonth)
+                isSingleMonth
+                  ? formatDateLabel(String(label))
+                  : formatPeriodLabel(String(label), isSingleMonth)
               }
             />
           }

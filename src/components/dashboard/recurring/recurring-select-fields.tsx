@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { getCreateOrRestoreActions } from "@/lib/reference-entities"
+import { m } from "@/paraglide/messages"
 
 export function RecurringSelectFields({
   values,
@@ -47,8 +48,8 @@ export function RecurringSelectFields({
       query,
       createKey: "create-account",
       unarchiveKey: "unarchive-account",
-      createDescription: "Finish account setup and select it here.",
-      unarchiveDescription: "Restore this account and select it here.",
+      createDescription: m.recurring_account_reference_description(),
+      unarchiveDescription: m.recurring_account_restore_description(),
       onCreate: onCreateAccount,
       onUnarchive: (account) => onUnarchiveAccount(account._id),
     })
@@ -60,8 +61,8 @@ export function RecurringSelectFields({
       query,
       createKey: "create-category",
       unarchiveKey: "unarchive-category",
-      createDescription: "Finish category setup and select it here.",
-      unarchiveDescription: "Restore this category and select it here.",
+      createDescription: m.recurring_category_reference_description(),
+      unarchiveDescription: m.recurring_category_restore_description(),
       onCreate: onCreateCategory,
       onUnarchive: (category) => onUnarchiveCategory(category._id),
     })
@@ -71,37 +72,41 @@ export function RecurringSelectFields({
     <>
       <ReferenceComboboxField
         id="recurring-account"
-        label={values.type === "income" ? "Deposit account" : "Payment account"}
+        label={
+          values.type === "income"
+            ? m.recurring_deposit_account()
+            : m.recurring_payment_account()
+        }
         value={resolveValidOption(values.accountId, accountOptions)}
         options={accountOptions.map((account) => ({
           value: account._id,
           label: account.name,
         }))}
         error={errors.accountId}
-        placeholder="Search or create an account"
-        emptyMessage="No accounts found."
+        placeholder={m.recurring_search_account_placeholder()}
+        emptyMessage={m.transactions_no_accounts_found()}
         onValueChange={(nextValue) => onValueChange("accountId", nextValue)}
         getActions={getAccountActions}
       />
 
       <ReferenceComboboxField
         id="recurring-category"
-        label="Category"
+        label={m.common_category()}
         value={resolveValidOption(values.categoryId, categoryOptions)}
         options={categoryOptions.map((category) => ({
           value: category._id,
           label: category.name,
         }))}
         error={errors.categoryId}
-        placeholder="Search or create a category"
-        emptyMessage="No categories found."
+        placeholder={m.recurring_search_category_placeholder()}
+        emptyMessage={m.transactions_no_categories_found()}
         onValueChange={(nextValue) => onValueChange("categoryId", nextValue)}
         getActions={getCategoryActions}
       />
 
       <Field>
         <FieldLabel htmlFor="recurring-start-date">
-          <FieldTitle>Start date</FieldTitle>
+          <FieldTitle>{m.recurring_start_date()}</FieldTitle>
         </FieldLabel>
         <Input
           id="recurring-start-date"
@@ -114,7 +119,7 @@ export function RecurringSelectFields({
 
       <Field>
         <FieldLabel htmlFor="recurring-next-due-date">
-          <FieldTitle>First due date</FieldTitle>
+          <FieldTitle>{m.recurring_first_due_date()}</FieldTitle>
         </FieldLabel>
         <Input
           id="recurring-next-due-date"
@@ -127,7 +132,7 @@ export function RecurringSelectFields({
 
       <Field>
         <FieldLabel htmlFor="recurring-end-date">
-          <FieldTitle>End date</FieldTitle>
+          <FieldTitle>{m.recurring_end_date()}</FieldTitle>
         </FieldLabel>
         <Input
           id="recurring-end-date"
@@ -136,7 +141,7 @@ export function RecurringSelectFields({
           onChange={(event) => onValueChange("endDate", event.target.value)}
         />
         <FieldDescription>
-          Leave blank to keep this rule active.
+          {m.recurring_end_date_description()}
         </FieldDescription>
         <FormErrorMessage error={errors.endDate} />
       </Field>

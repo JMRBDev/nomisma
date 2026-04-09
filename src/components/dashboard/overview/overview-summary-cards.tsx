@@ -6,6 +6,7 @@ import {
 } from "lucide-react"
 import { OverviewMetricCard } from "@/components/dashboard/overview/overview-metric-card"
 import { formatCurrency } from "@/lib/money"
+import { m } from "@/paraglide/messages"
 
 export function OverviewSummaryCards({
   currentMoney = 0,
@@ -29,33 +30,39 @@ export function OverviewSummaryCards({
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       <OverviewMetricCard
-        title="Grand total"
+        title={m.overview_summary_total_title()}
         value={formatCurrency(currentMoney, currency)}
         description={
           hasAccounts
-            ? "Included balances across active accounts"
-            : "Add your first account to start tracking balances"
+            ? m.overview_summary_total_description()
+            : m.overview_summary_total_empty_description()
         }
         icon={<WalletCardsIcon className="size-4" />}
       />
       <OverviewMetricCard
-        title="Income"
+        title={m.overview_summary_income_title()}
         value={formatCurrency(income, currency)}
-        description={`Posted income in ${activityLabel}`}
+        description={m.overview_summary_income_description({
+          activity: activityLabel,
+        })}
         icon={<PiggyBankIcon className="size-4" />}
         valueClassName="text-success"
       />
       <OverviewMetricCard
-        title="Expenses"
+        title={m.overview_summary_expenses_title()}
         value={formatCurrency(expenses, currency)}
-        description={`Posted spending in ${activityLabel}`}
+        description={m.overview_summary_expenses_description({
+          activity: activityLabel,
+        })}
         icon={<ReceiptTextIcon className="size-4" />}
         valueClassName="text-destructive"
       />
       <OverviewMetricCard
-        title="Net"
+        title={m.overview_summary_net_title()}
         value={formatCurrency(net, currency)}
-        description={`Income minus expenses in ${activityLabel}`}
+        description={m.overview_summary_net_description({
+          activity: activityLabel,
+        })}
         icon={<TargetIcon className="size-4" />}
         valueClassName={netToneClassName}
       />

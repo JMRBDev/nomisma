@@ -10,8 +10,8 @@ type DashboardCalendarInput = Pick<
 export function getOverviewDataQueryOptions(
   calendar: DashboardCalendarInput,
   args?: {
-  startDate?: string
-  endDate?: string
+    startDate?: string
+    endDate?: string
   }
 ) {
   return convexQuery(api.overview.getOverviewData, {

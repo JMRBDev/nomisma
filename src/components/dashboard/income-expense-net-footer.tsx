@@ -1,5 +1,6 @@
 import { TableCell, TableRow } from "@/components/ui/table"
 import { formatCurrency } from "@/lib/money"
+import { m } from "@/paraglide/messages"
 import { cn } from "@/lib/utils"
 
 export function IncomeExpenseNetFooter({
@@ -19,18 +20,18 @@ export function IncomeExpenseNetFooter({
         <span className="text-muted-foreground">
           {showBreakdown && (
             <>
-              {"Income: "}
+              {`${m.overview_summary_income_title()}: `}
               <span className="font-medium text-success">
                 {formatCurrency(aggregates.totalIncome, currency)}
               </span>
-              {" · Expense: "}
+              {` · ${m.overview_summary_expenses_title()}: `}
               <span className="font-medium text-destructive">
                 {formatCurrency(aggregates.totalExpense, currency)}
               </span>
               {" · "}
             </>
           )}
-          {"Net: "}
+          {`${m.overview_summary_net_title()}: `}
           <span
             className={cn(
               "font-medium",

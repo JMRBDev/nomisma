@@ -5,6 +5,7 @@ import type {
 import { AccountFormFields } from "@/components/dashboard/accounts/account-form-fields"
 import { DashboardFormActions } from "@/components/dashboard/dashboard-form-actions"
 import { DashboardFormDialog } from "@/components/dashboard/dashboard-form-dialog"
+import { m } from "@/paraglide/messages"
 
 export function AccountFormDialog({
   open,
@@ -42,10 +43,13 @@ export function AccountFormDialog({
     <DashboardFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={title ?? (editing ? "Edit account" : "Add account")}
+      title={
+        title ??
+        (editing ? m.accounts_form_edit_title() : m.accounts_add_account())
+      }
       description={
         description ??
-        "Set the starting balance and whether this account should count toward your headline dashboard totals."
+        m.accounts_form_description()
       }
     >
       <form className="space-y-4" onSubmit={onSubmit}>
@@ -61,9 +65,10 @@ export function AccountFormDialog({
           pending={pending}
           formError={formError}
           submitLabel={
-            submitLabel ?? (editing ? "Save changes" : "Save account")
+            submitLabel ??
+            (editing ? m.settings_save_changes() : m.accounts_form_save())
           }
-          pendingLabel="Saving..."
+          pendingLabel={m.common_saving()}
         />
       </form>
     </DashboardFormDialog>

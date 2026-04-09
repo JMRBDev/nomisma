@@ -9,28 +9,105 @@ import type {
 const ACCOUNT_RESULT_LIMIT = 5
 const BUDGET_RESULT_LIMIT = 5
 const RECURRING_RESULT_LIMIT = 5
+const BUDGET_TOTAL_SEARCH_TERMS = [
+  "total",
+  "total spending",
+  "gasto total",
+]
+const DELETED_CATEGORY_SEARCH_TERMS = [
+  "deleted category",
+  "deleted",
+  "categoria eliminada",
+  "categoría eliminada",
+  "eliminada",
+]
+const ARCHIVED_SEARCH_TERMS = ["archived", "archivado", "archivada"]
 
-export type SearchResult = {
+const ACCOUNT_TYPE_SEARCH_TERMS = {
+  checking: ["checking", "current account", "cuenta corriente"],
+  savings: ["savings", "savings account", "ahorros", "cuenta de ahorros"],
+  cash: ["cash", "efectivo"],
+  wallet: ["wallet", "digital wallet", "billetera", "monedero"],
+} as const
+
+const RECURRING_FREQUENCY_SEARCH_TERMS = {
+  daily: ["daily", "diario"],
+  weekly: ["weekly", "semanal"],
+  monthly: ["monthly", "mensual"],
+  yearly: ["yearly", "annual", "anual"],
+} as const
+
+export type TransactionSearchResult = {
   id: string
   title: string
-  subtitle: string
+  type: "income" | "expense" | "transfer"
+  date: string
+  accountName: string | null
+  accountMissing: boolean
+  categoryName: string | null
+  categoryDisplayState: "named" | "deleted" | "uncategorized" | "none"
+}
+
+export type AccountSearchResult = {
+  id: string
+  title: string
+  type: "checking" | "savings" | "cash" | "wallet"
+  archived: boolean
+}
+
+export type BudgetSearchResult = {
+  id: string
+  title: string | null
+  month: string
+  isTotal: boolean
+  categoryMissing: boolean
+}
+
+export type RecurringSearchResult = {
+  id: string
+  title: string
+  frequency: "daily" | "weekly" | "monthly" | "yearly"
+  accountName: string | null
+  accountMissing: boolean
+  categoryName: string | null
+  categoryMissing: boolean
 }
 
 export function normalizeSearchQuery(value: string) {
   return value.trim().toLowerCase()
 }
 
-function matchesSearch(value: string | undefined, query: string) {
+function matchesSearch(value: string | null | undefined, query: string) {
   return value?.toLowerCase().includes(query) ?? false
 }
 
-function formatRecurringFrequency(
-  frequency: "daily" | "weekly" | "monthly" | "yearly"
+function matchesSearchTerms(
+  values: ReadonlyArray<string | null | undefined>,
+  query: string
 ) {
-  if (frequency === "daily") return "Daily"
-  if (frequency === "weekly") return "Weekly"
-  if (frequency === "monthly") return "Monthly"
-  return "Yearly"
+  return values.some((value) => matchesSearch(value, query))
+}
+
+function getMonthSearchTerms(month: string) {
+  const [year, monthIndex] = month.split("-").map(Number)
+  const date = new Date(Date.UTC(year, monthIndex - 1, 1))
+
+  return ["en-US", "es-ES"].flatMap((locale) => [
+    new Intl.DateTimeFormat(locale, {
+      month: "long",
+    }).format(date),
+    new Intl.DateTimeFormat(locale, {
+      month: "short",
+    }).format(date),
+    new Intl.DateTimeFormat(locale, {
+      month: "long",
+      year: "numeric",
+    }).format(date),
+    new Intl.DateTimeFormat(locale, {
+      month: "short",
+      year: "numeric",
+    }).format(date),
+  ])
 }
 
 export function buildAccountsResults(
@@ -40,14 +117,23 @@ export function buildAccountsResults(
   return accounts
     .filter(
       (account) =>
-        matchesSearch(account.name, query) || matchesSearch(account.type, query)
+        matchesSearchTerms(
+          [
+            account.name,
+            account.type,
+            ...ACCOUNT_TYPE_SEARCH_TERMS[account.type],
+            ...(account.archived ? ARCHIVED_SEARCH_TERMS : []),
+          ],
+          query
+        )
     )
     .sort((a, b) => a.name.localeCompare(b.name))
     .slice(0, ACCOUNT_RESULT_LIMIT)
-    .map<SearchResult>((account) => ({
+    .map<AccountSearchResult>((account) => ({
       id: account._id,
       title: account.name,
-      subtitle: `${account.archived ? "Archived " : ""}${account.type} account`,
+      type: account.type,
+      archived: account.archived,
     }))
 }
 
@@ -66,20 +152,37 @@ export function buildBudgetResults(
     .map((budget) => ({
       budget,
       categoryName: budget.categoryId
-        ? (categoryMap.get(budget.categoryId)?.name ?? "Deleted category")
-        : "Total spending",
+        ? (categoryMap.get(budget.categoryId)?.name ?? null)
+        : null,
+      categoryMissing:
+        budget.categoryId !== undefined &&
+        categoryMap.get(budget.categoryId) === undefined,
+      isTotal: budget.categoryId === undefined,
     }))
     .filter(
-      ({ budget, categoryName }) =>
-        matchesSearch(categoryName, query) || matchesSearch(budget.month, query)
+      ({ budget, categoryName, categoryMissing, isTotal }) =>
+        matchesSearchTerms(
+          [
+            categoryName,
+            budget.month,
+            ...getMonthSearchTerms(budget.month),
+            ...(isTotal ? BUDGET_TOTAL_SEARCH_TERMS : []),
+            ...(categoryMissing ? DELETED_CATEGORY_SEARCH_TERMS : []),
+          ],
+          query
+        )
     )
-    .sort((a, b) => a.categoryName.localeCompare(b.categoryName))
+    .sort((a, b) => (a.categoryName ?? "").localeCompare(b.categoryName ?? ""))
     .slice(0, BUDGET_RESULT_LIMIT)
-    .map<SearchResult>(({ budget, categoryName }) => ({
-      id: budget._id,
-      title: categoryName,
-      subtitle: `Budget for ${budget.month}`,
-    }))
+    .map<BudgetSearchResult>(
+      ({ budget, categoryName, categoryMissing, isTotal }) => ({
+        id: budget._id,
+        title: categoryName,
+        month: budget.month,
+        isTotal,
+        categoryMissing,
+      })
+    )
 }
 
 export function buildRecurringResults(
@@ -97,22 +200,37 @@ export function buildRecurringResults(
     .filter((rule) => rule.active)
     .map((rule) => ({
       rule,
-      accountName: accountMap.get(rule.accountId)?.name ?? "Unknown account",
-      categoryName: categoryMap.get(rule.categoryId)?.name ?? "Unknown category",
+      accountName: accountMap.get(rule.accountId)?.name ?? null,
+      accountMissing: accountMap.get(rule.accountId) === undefined,
+      categoryName: categoryMap.get(rule.categoryId)?.name ?? null,
+      categoryMissing: categoryMap.get(rule.categoryId) === undefined,
     }))
     .filter(
-      ({ rule, accountName, categoryName }) =>
-        matchesSearch(rule.description, query) ||
-        matchesSearch(accountName, query) ||
-        matchesSearch(categoryName, query) ||
-        matchesSearch(rule.nextDueDate, query) ||
-        matchesSearch(rule.frequency, query)
+      ({ rule, accountName, categoryName, categoryMissing }) =>
+        matchesSearchTerms(
+          [
+            rule.description,
+            accountName,
+            categoryName,
+            rule.nextDueDate,
+            rule.frequency,
+            ...RECURRING_FREQUENCY_SEARCH_TERMS[rule.frequency],
+            ...(categoryMissing ? DELETED_CATEGORY_SEARCH_TERMS : []),
+          ],
+          query
+        )
     )
     .sort((a, b) => a.rule.nextDueDate.localeCompare(b.rule.nextDueDate))
     .slice(0, RECURRING_RESULT_LIMIT)
-    .map<SearchResult>(({ rule, accountName, categoryName }) => ({
-      id: rule._id,
-      title: rule.description,
-      subtitle: `${formatRecurringFrequency(rule.frequency)} • ${categoryName} • ${accountName}`,
-    }))
+    .map<RecurringSearchResult>(
+      ({ rule, accountName, accountMissing, categoryName, categoryMissing }) => ({
+        id: rule._id,
+        title: rule.description,
+        frequency: rule.frequency,
+        accountName,
+        accountMissing,
+        categoryName,
+        categoryMissing,
+      })
+    )
 }

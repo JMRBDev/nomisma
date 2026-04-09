@@ -5,6 +5,11 @@ import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { IncomeExpenseNetFooter } from "@/components/dashboard/income-expense-net-footer"
 import { RecurringTableRow } from "@/components/dashboard/recurring/recurring-table-row"
 import { useDataTable } from "@/hooks/use-data-table"
+import {
+  getAccountDisplayName,
+  getRecurringCategoryLabel,
+} from "@/lib/dashboard-i18n"
+import { m } from "@/paraglide/messages"
 
 const SORT_ACCESSORS: Record<
   string,
@@ -12,8 +17,8 @@ const SORT_ACCESSORS: Record<
 > = {
   nextDueDate: (row) => row.nextDueDate,
   description: (row) => row.description.toLowerCase(),
-  accountName: (row) => row.accountName.toLowerCase(),
-  categoryName: (row) => row.categoryName.toLowerCase(),
+  accountName: (row) => getAccountDisplayName(row.accountName).toLowerCase(),
+  categoryName: (row) => getRecurringCategoryLabel(row).toLowerCase(),
   frequency: (row) => row.frequency,
   status: (row) => row.status,
   amount: (row) => (row.type === "income" ? row.amount : -row.amount),
@@ -25,23 +30,23 @@ const BASE_COLUMNS: Array<DashboardTableColumn> = [
   {
     id: "nextDueDate",
     column: "nextDueDate",
-    header: "Next due",
+    header: m.recurring_table_next_due(),
     alwaysVisible: true,
   },
   {
     id: "description",
     column: "description",
-    header: "Description",
+    header: m.common_description(),
     alwaysVisible: true,
   },
-  { id: "accountName", column: "accountName", header: "Account" },
-  { id: "categoryName", column: "categoryName", header: "Category" },
-  { id: "frequency", column: "frequency", header: "Schedule" },
-  { id: "status", column: "status", header: "Status" },
+  { id: "accountName", column: "accountName", header: m.common_account() },
+  { id: "categoryName", column: "categoryName", header: m.common_category() },
+  { id: "frequency", column: "frequency", header: m.recurring_table_schedule() },
+  { id: "status", column: "status", header: m.common_status() },
   {
     id: "amount",
     column: "amount",
-    header: "Amount",
+    header: m.common_amount(),
     className: "text-right",
     alwaysVisible: true,
   },
@@ -49,7 +54,7 @@ const BASE_COLUMNS: Array<DashboardTableColumn> = [
 
 const ACTIONS_COLUMN: DashboardTableColumn = {
   id: "actions",
-  header: "Actions",
+  header: m.common_actions(),
   className: "text-right",
   alwaysVisible: true,
 }

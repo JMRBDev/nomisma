@@ -11,6 +11,7 @@ import type { LucideIcon } from "lucide-react"
 import type { IconOption } from "@/components/picker-shared"
 import { COLOR_OPTIONS } from "@/components/picker-shared"
 import { pickRandomItem } from "@/lib/random"
+import { m } from "@/paraglide/messages"
 
 const transactionsRouteApi = getRouteApi(
   "/_authenticated/dashboard/transactions"
@@ -31,12 +32,32 @@ export type CategoryFieldErrors = Partial<
 >
 
 export const CATEGORY_ICON_OPTIONS: Array<IconOption> = [
-  { name: "shopping-cart", label: "Shopping", icon: ShoppingCartIcon },
-  { name: "utensils-crossed", label: "Food", icon: UtensilsCrossedIcon },
-  { name: "house", label: "Home", icon: HouseIcon },
-  { name: "car-front", label: "Transport", icon: CarFrontIcon },
-  { name: "briefcase-business", label: "Work", icon: BriefcaseBusinessIcon },
-  { name: "badge-dollar-sign", label: "Income", icon: BadgeDollarSignIcon },
+  {
+    name: "shopping-cart",
+    label: m.categories_icon_shopping(),
+    icon: ShoppingCartIcon,
+  },
+  {
+    name: "utensils-crossed",
+    label: m.categories_icon_food(),
+    icon: UtensilsCrossedIcon,
+  },
+  { name: "house", label: m.categories_icon_home(), icon: HouseIcon },
+  {
+    name: "car-front",
+    label: m.categories_icon_transport(),
+    icon: CarFrontIcon,
+  },
+  {
+    name: "briefcase-business",
+    label: m.categories_icon_work(),
+    icon: BriefcaseBusinessIcon,
+  },
+  {
+    name: "badge-dollar-sign",
+    label: m.categories_icon_income(),
+    icon: BadgeDollarSignIcon,
+  },
 ]
 
 export const CATEGORY_ICON_MAP = CATEGORY_ICON_OPTIONS.reduce<
@@ -78,15 +99,15 @@ export function validateCategoryValues(
   const errors: CategoryFieldErrors = {}
 
   if (!values.name.trim()) {
-    errors.name = "Category name is required."
+    errors.name = m.categories_error_name_required()
   }
 
   if (!values.color.trim()) {
-    errors.color = "Category color is required."
+    errors.color = m.categories_error_color_required()
   }
 
   if (!values.icon.trim()) {
-    errors.icon = "Category icon is required."
+    errors.icon = m.categories_error_icon_required()
   }
 
   return errors

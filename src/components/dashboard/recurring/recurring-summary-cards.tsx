@@ -2,6 +2,8 @@ import type { RecurringRecord } from "@/components/dashboard/recurring/recurring
 import { DashboardSummaryCard } from "@/components/dashboard/dashboard-summary-card"
 import { canConfirmRecurringItem } from "@/components/dashboard/recurring/recurring-shared"
 import { formatDateLabel } from "@/lib/money"
+import { getRecurringFrequencyLabel } from "@/lib/money"
+import { m } from "@/paraglide/messages"
 
 interface RecurringSummaryCardsProps {
   recurringItems: Array<RecurringRecord>
@@ -28,24 +30,30 @@ export function RecurringSummaryCards({
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <DashboardSummaryCard
-        title="Active schedules"
+        title={m.recurring_summary_active_title()}
         value={recurringItems.length.toString()}
-        description={`${activeExpenseCount} expense item${activeExpenseCount === 1 ? "" : "s"}, ${activeIncomeCount} income item${activeIncomeCount === 1 ? "" : "s"}`}
+        description={m.recurring_summary_active_description({
+          expenses: activeExpenseCount,
+          income: activeIncomeCount,
+        })}
       />
       <DashboardSummaryCard
-        title="Due now"
+        title={m.recurring_summary_due_now_title()}
         value={dueNowCount.toString()}
-        description={`${overdueCount} overdue, ${dueSoonCount} due within 7 days`}
+        description={m.recurring_summary_due_now_description({
+          overdue: overdueCount,
+          dueSoon: dueSoonCount,
+        })}
         toneClassName={dueNowCount > 0 ? "text-destructive" : undefined}
       />
       <DashboardSummaryCard
-        title="Next scheduled"
+        title={m.recurring_summary_next_title()}
         value={
           recurringItems.length > 0 ? formatDateLabel(nextItem.nextDueDate) : ""
         }
         description={
           recurringItems.length > 0
-            ? `${nextItem.description} \u2022 ${nextItem.frequency}`
+            ? `${nextItem.description} \u2022 ${getRecurringFrequencyLabel(nextItem.frequency)}`
             : ""
         }
       />

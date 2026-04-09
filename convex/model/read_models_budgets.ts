@@ -65,11 +65,11 @@ export function buildBudgetStatuses(
 
     return {
       ...budget,
-      categoryName: budget.categoryId
-        ? (category?.name ?? "Deleted category")
-        : "Total spending",
+      categoryName: category?.name ?? null,
       categoryIcon: category?.icon ?? null,
       categoryColor: category?.color ?? null,
+      isTotal: budget.categoryId === undefined,
+      categoryMissing: budget.categoryId !== undefined && category === undefined,
       spent,
       remaining,
       progress,

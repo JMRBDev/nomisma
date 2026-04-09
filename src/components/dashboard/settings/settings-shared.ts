@@ -1,4 +1,6 @@
-import { CURRENCY_OPTIONS } from "@/lib/currency"
+import type { AppLocale } from "../../../../shared/i18n"
+import { getCurrencyOptions } from "@/lib/currency"
+import { m } from "@/paraglide/messages"
 import {
   resolveUserSettings,
   type UserSettingsLike,
@@ -7,17 +9,29 @@ import {
 
 export type SettingsFormValues = {
   baseCurrency: string
+  locale: AppLocale
   weekStartsOn: WeekStartsOnPreference
 }
 
 export type { WeekStartsOnPreference } from "../../../../shared/settings"
 
-export const defaultCurrencyOptions = CURRENCY_OPTIONS
+export function getDefaultCurrencyOptions() {
+  return getCurrencyOptions()
+}
 
-export const weekStartsOnOptions = [
-  { value: "sunday", label: "Sunday" },
-  { value: "monday", label: "Monday" },
-] as const
+export function getWeekStartsOnOptions() {
+  return [
+    { value: "sunday", label: m.week_start_sunday() },
+    { value: "monday", label: m.week_start_monday() },
+  ] as const
+}
+
+export function getLocaleOptions() {
+  return [
+    { value: "en", label: m.locale_english() },
+    { value: "es", label: m.locale_spanish() },
+  ] as const
+}
 
 export function createSettingsFormValues(
   settings?: UserSettingsLike | null

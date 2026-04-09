@@ -6,6 +6,7 @@ import { ConvexQueryClient } from "@convex-dev/react-query"
 import { routeTree } from "./routeTree.gen"
 import { ErrorPage } from "@/components/error-page"
 import { NotFoundPage } from "@/components/not-found-page"
+import { deLocalizeUrl, localizeUrl } from "@/paraglide/runtime"
 
 export function getRouter() {
   if (typeof document !== "undefined") {
@@ -44,6 +45,10 @@ export function getRouter() {
     scrollRestoration: true,
     defaultErrorComponent: ErrorPage,
     defaultNotFoundComponent: NotFoundPage,
+    rewrite: {
+      input: ({ url }) => deLocalizeUrl(url),
+      output: ({ url }) => localizeUrl(url),
+    },
   })
 
   setupRouterSsrQueryIntegration({

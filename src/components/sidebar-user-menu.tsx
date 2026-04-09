@@ -1,4 +1,5 @@
 import { ChevronsUpDownIcon, LogOutIcon } from "lucide-react"
+import { m } from "@/paraglide/messages"
 import { UserInfoPreview } from "@/components/user-info-preview"
 import {
   DropdownMenu,
@@ -50,7 +51,7 @@ export function SidebarUserMenu({
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={onSignOut}>
               <LogOutIcon />
-              Sign out
+              {m.common_sign_out()}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -22,6 +22,7 @@ import { useCalendarContext } from "@/hooks/use-calendar-context"
 import { useCategoryReferenceActions } from "@/hooks/use-category-reference-actions"
 import { useDeleteConfirmation } from "@/hooks/use-delete-confirmation"
 import { getBudgetsPageDataQueryOptions } from "@/lib/dashboard-query-options"
+import { m } from "@/paraglide/messages"
 
 export function BudgetsPage() {
   const calendarContext = useCalendarContext()
@@ -55,7 +56,7 @@ export function BudgetsPage() {
         setPendingBudgetId(null)
       }
     },
-    errorMessage: "Unable to delete the budget.",
+    errorMessage: m.budgets_delete_error(),
   })
   const categoryOptions = data.categories.active
   const allCategoryOptions = data.categories.all
@@ -67,11 +68,11 @@ export function BudgetsPage() {
   return (
     <DashboardPageSection>
       <DashboardPageHeader
-        title="Budgets"
+        title={m.nav_budgets()}
         action={
           <DashboardPageActions>
             <Button onClick={() => dialog.openCreateDialog()}>
-              Add budget
+              {m.budgets_add_budget()}
               <PlusIcon />
             </Button>
           </DashboardPageActions>
@@ -138,12 +139,12 @@ export function BudgetsPage() {
       />
       <CategoryReferenceDialog
         categoryActions={categoryActions}
-        description="Save this category and it will be selected in the budget form."
+        description={m.budgets_category_reference_description()}
       />
       <DeleteConfirmDialog
         {...deleteConfirmation.dialogProps}
-        title="Delete this budget?"
-        description="This action cannot be undone. The budget will be permanently removed."
+        title={m.budgets_delete_title()}
+        description={m.budgets_delete_description()}
       />
     </DashboardPageSection>
   )

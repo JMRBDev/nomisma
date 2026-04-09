@@ -9,6 +9,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
+import { m } from "@/paraglide/messages"
 
 export function AccountsEmptyState({
   hasArchivedAccounts,
@@ -20,12 +21,12 @@ export function AccountsEmptyState({
   if (hasArchivedAccounts) {
     return (
       <FilteredResultsEmptyState
-        title="No active accounts"
-        description="Restore an archived account or add a new one to keep tracking where your money lives."
+        title={m.accounts_no_active_title()}
+        description={m.accounts_no_active_description()}
         icon={WalletCardsIcon}
         action={
           <div className="flex justify-center px-6 pb-6">
-            <Button onClick={onAddAccount}>Add account</Button>
+            <Button onClick={onAddAccount}>{m.accounts_add_account()}</Button>
           </div>
         }
       />
@@ -38,14 +39,13 @@ export function AccountsEmptyState({
         <EmptyMedia variant="icon">
           <WalletCardsIcon className="size-5" />
         </EmptyMedia>
-        <EmptyTitle>Add your first account</EmptyTitle>
+        <EmptyTitle>{m.accounts_first_empty_title()}</EmptyTitle>
         <EmptyDescription>
-          Create the cash, bank, or wallet accounts you use so balances and
-          transaction history have a real home.
+          {m.accounts_first_empty_description()}
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button onClick={onAddAccount}>Add account</Button>
+        <Button onClick={onAddAccount}>{m.accounts_add_account()}</Button>
       </EmptyContent>
     </Empty>
   )

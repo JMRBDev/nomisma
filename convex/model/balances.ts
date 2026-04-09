@@ -102,15 +102,25 @@ export function mapTransaction(
 
   return {
     ...transaction,
-    accountName: account?.name ?? "Unknown account",
+    accountName: account?.name ?? null,
     accountIcon: account?.icon ?? null,
     accountColor: account?.color ?? null,
+    accountMissing: account === undefined,
     categoryName: category?.name ?? null,
     categoryIcon: category?.icon ?? null,
     categoryColor: category?.color ?? null,
+    categoryDisplayState:
+      transaction.type === "transfer"
+        ? ("none" as const)
+        : transaction.categoryId === undefined
+          ? ("uncategorized" as const)
+          : category === undefined
+            ? ("deleted" as const)
+            : ("named" as const),
     toAccountName: toAccount?.name ?? null,
     toAccountIcon: toAccount?.icon ?? null,
     toAccountColor: toAccount?.color ?? null,
+    toAccountMissing: transaction.toAccountId !== undefined && toAccount === undefined,
   }
 }
 

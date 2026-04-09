@@ -3,14 +3,24 @@ import type { Id } from "../_generated/dataModel"
 import type { MappedTransaction } from "./read_models_transactions"
 
 type DashboardTransactions = Array<MappedTransaction>
+type CategoryBreakdownItem = {
+  labelKind: "category" | "deleted" | "uncategorized" | "other"
+  categoryName: string | null
+  amount: number
+}
 
 export function buildTopSpendingCategories(
   transactions: DashboardTransactions,
   dateRange: { startDate: string; endDate: string }
 ) {
   const spendByCategory = new Map<
-    string,
-    { amount: number; categoryId: Id<"categories">; categoryName: string }
+    Id<"categories">,
+    {
+      amount: number
+      categoryId: Id<"categories">
+      categoryName: string | null
+      categoryMissing: boolean
+    }
   >()
 
   for (const transaction of transactions) {
@@ -23,7 +33,6 @@ export function buildTopSpendingCategories(
       continue
     }
 
-    const categoryName = transaction.categoryName ?? "Uncategorized"
     const existing = spendByCategory.get(transaction.categoryId)
     if (existing) {
       existing.amount += transaction.amount
@@ -33,7 +42,8 @@ export function buildTopSpendingCategories(
     spendByCategory.set(transaction.categoryId, {
       amount: transaction.amount,
       categoryId: transaction.categoryId,
-      categoryName,
+      categoryName: transaction.categoryName,
+      categoryMissing: transaction.categoryDisplayState === "deleted",
     })
   }
 
@@ -70,11 +80,13 @@ export function buildDailySpending(
 export function buildCategoryBreakdown(
   transactions: DashboardTransactions,
   dateRange: { startDate: string; endDate: string }
-): Array<{ categoryName: string; amount: number; percentage: number }> {
-  const categoryMap = new Map<
-    string,
-    { categoryName: string; amount: number }
-  >()
+): Array<{
+  labelKind: "category" | "deleted" | "uncategorized" | "other"
+  categoryName: string | null
+  amount: number
+  percentage: number
+}> {
+  const categoryMap = new Map<string, CategoryBreakdownItem>()
   for (const t of transactions) {
     if (
       t.status !== "posted" ||
@@ -83,21 +95,39 @@ export function buildCategoryBreakdown(
     ) {
       continue
     }
-    const name = t.categoryName ?? "Uncategorized"
-    const existing = categoryMap.get(name)
+    const key =
+      t.categoryDisplayState === "deleted"
+        ? "deleted"
+        : t.categoryDisplayState === "uncategorized"
+          ? "uncategorized"
+          : `category:${t.categoryId ?? t.categoryName ?? ""}`
+    const existing = categoryMap.get(key)
     if (existing) {
       existing.amount += t.amount
     } else {
-      categoryMap.set(name, { categoryName: name, amount: t.amount })
+      categoryMap.set(key, {
+        labelKind:
+          t.categoryDisplayState === "deleted"
+            ? "deleted"
+            : t.categoryDisplayState === "uncategorized"
+              ? "uncategorized"
+              : "category",
+        categoryName: t.categoryName,
+        amount: t.amount,
+      })
     }
   }
   const sorted = [...categoryMap.values()].sort((a, b) => b.amount - a.amount)
   const totalExpenses = sorted.reduce((sum, c) => sum + c.amount, 0)
   if (totalExpenses === 0) return []
-  const top = sorted.slice(0, 5)
+  const top: Array<CategoryBreakdownItem> = sorted.slice(0, 5)
   const otherAmount = sorted.slice(5).reduce((sum, c) => sum + c.amount, 0)
   if (otherAmount > 0) {
-    top.push({ categoryName: "Other", amount: otherAmount })
+    top.push({
+      labelKind: "other",
+      categoryName: null,
+      amount: otherAmount,
+    })
   }
   return top.map((item) => ({
     ...item,

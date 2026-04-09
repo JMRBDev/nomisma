@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button"
 import { useAccountCreator } from "@/hooks/use-account-creator"
 import { useAccountEditor } from "@/hooks/use-account-editor"
 import { getAccountsPageDataQueryOptions } from "@/lib/dashboard-query-options"
+import { m } from "@/paraglide/messages"
 
 export function AccountsPage() {
   const { data } = useSuspenseQuery(getAccountsPageDataQueryOptions())
@@ -72,7 +73,7 @@ export function AccountsPage() {
       setConfirmArchiveId(null)
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Unable to update the account."
+        error instanceof Error ? error.message : m.accounts_update_error()
       )
       setConfirmArchiveId(null)
     } finally {
@@ -83,11 +84,11 @@ export function AccountsPage() {
   return (
     <DashboardPageSection>
       <DashboardPageHeader
-        title="Accounts"
+        title={m.nav_accounts()}
         action={
           <DashboardPageActions>
             <Button onClick={() => creator.openDialog()}>
-              Add account
+              {m.accounts_add_account()}
               <PlusIcon />
             </Button>
           </DashboardPageActions>
@@ -135,15 +136,19 @@ export function AccountsPage() {
         }}
         title={
           confirmArchiveId?.archived
-            ? "Archive this account?"
-            : "Restore this account?"
+            ? m.accounts_archive_title()
+            : m.accounts_restore_title()
         }
         description={
           confirmArchiveId?.archived
-            ? "Archived accounts are hidden from the dashboard. You can restore them at any time."
-            : "This account will be added back to your active accounts and included in totals."
+            ? m.accounts_archive_description()
+            : m.accounts_restore_description()
         }
-        confirmLabel={confirmArchiveId?.archived ? "Archive" : "Restore"}
+        confirmLabel={
+          confirmArchiveId?.archived
+            ? m.accounts_archive_confirm()
+            : m.accounts_restore_confirm()
+        }
         onConfirm={handleArchiveConfirm}
         pending={pendingArchiveId !== null}
       />

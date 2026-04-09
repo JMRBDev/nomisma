@@ -1,5 +1,6 @@
 import type { useAccountReferenceActions } from "@/hooks/use-account-reference-actions"
 import { AccountFormDialog } from "@/components/dashboard/accounts/account-form-dialog"
+import { m } from "@/paraglide/messages"
 
 export function AccountReferenceDialog({
   accountActions,
@@ -17,9 +18,9 @@ export function AccountReferenceDialog({
       errors={accountActions.creator.errors}
       formError={accountActions.creator.formError}
       pending={accountActions.creator.pending}
-      title="Finish account setup"
+      title={m.accounts_finish_setup_title()}
       description={description}
-      submitLabel="Create and select account"
+      submitLabel={m.accounts_create_and_select()}
       onValueChange={accountActions.creator.handleValueChange}
       onIncludeInTotalsChange={accountActions.creator.handleIncludeInTotalsChange}
     />

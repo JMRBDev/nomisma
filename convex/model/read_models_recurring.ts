@@ -16,15 +16,17 @@ export function buildRecurringItems(
     .filter((rule) => rule.active)
     .map((rule) => {
       const account = accountMap.get(rule.accountId)
+      const category = categoryMap.get(rule.categoryId)
       return {
         ...rule,
-        accountName: account?.name ?? "Unknown account",
+        accountName: account?.name ?? null,
         accountIcon: account?.icon ?? null,
         accountColor: account?.color ?? null,
-        categoryName:
-          categoryMap.get(rule.categoryId)?.name ?? "Unknown category",
-        categoryIcon: categoryMap.get(rule.categoryId)?.icon ?? null,
-        categoryColor: categoryMap.get(rule.categoryId)?.color ?? null,
+        accountMissing: account === undefined,
+        categoryName: category?.name ?? null,
+        categoryIcon: category?.icon ?? null,
+        categoryColor: category?.color ?? null,
+        categoryMissing: category === undefined,
         status:
           rule.nextDueDate < today
             ? ("overdue" as const)

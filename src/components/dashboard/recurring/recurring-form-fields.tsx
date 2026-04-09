@@ -15,7 +15,11 @@ import {
 import { FormErrorMessage } from "@/components/form-error-message"
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
-import { recurringFrequencyOptions } from "@/lib/money"
+import { m } from "@/paraglide/messages"
+import {
+  getRecurringFrequencyOptions,
+  getTransactionTypeLabel,
+} from "@/lib/money"
 import { RecurringSelectFields } from "@/components/dashboard/recurring/recurring-select-fields"
 
 export function RecurringFormFields({
@@ -46,12 +50,13 @@ export function RecurringFormFields({
   onUnarchiveCategory: (categoryId: string) => void
 }) {
   const resolvedCategoryOptions = getCategoryOptions(values.type, categoryOptions)
+  const recurringFrequencyOptions = getRecurringFrequencyOptions()
   return (
     <FieldGroup>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field>
           <FieldLabel htmlFor="recurring-type">
-            <FieldTitle>Type</FieldTitle>
+            <FieldTitle>{m.common_type()}</FieldTitle>
           </FieldLabel>
           <NativeSelect
             id="recurring-type"
@@ -60,13 +65,17 @@ export function RecurringFormFields({
               onTypeChange(event.target.value as RecurringType)
             }
           >
-            <NativeSelectOption value="expense">Expense</NativeSelectOption>
-            <NativeSelectOption value="income">Income</NativeSelectOption>
+            <NativeSelectOption value="expense">
+              {getTransactionTypeLabel("expense")}
+            </NativeSelectOption>
+            <NativeSelectOption value="income">
+              {getTransactionTypeLabel("income")}
+            </NativeSelectOption>
           </NativeSelect>
         </Field>
         <Field>
           <FieldLabel htmlFor="recurring-frequency">
-            <FieldTitle>Frequency</FieldTitle>
+            <FieldTitle>{m.common_frequency()}</FieldTitle>
           </FieldLabel>
           <NativeSelect
             id="recurring-frequency"
@@ -82,7 +91,7 @@ export function RecurringFormFields({
         </Field>
         <Field>
           <FieldLabel htmlFor="recurring-amount">
-            <FieldTitle>Amount</FieldTitle>
+            <FieldTitle>{m.common_amount()}</FieldTitle>
           </FieldLabel>
           <Input
             id="recurring-amount"
@@ -110,13 +119,17 @@ export function RecurringFormFields({
       </div>
       <Field>
         <FieldLabel htmlFor="recurring-description">
-          <FieldTitle>Description</FieldTitle>
+          <FieldTitle>{m.common_description()}</FieldTitle>
         </FieldLabel>
         <Input
           id="recurring-description"
           value={values.description}
           onChange={(event) => onValueChange("description", event.target.value)}
-          placeholder={values.type === "income" ? "Salary" : "Rent"}
+          placeholder={
+            values.type === "income"
+              ? m.recurring_income_placeholder()
+              : m.recurring_expense_placeholder()
+          }
         />
       </Field>
     </FieldGroup>

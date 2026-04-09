@@ -7,7 +7,15 @@ import {
 import type { useNavigate } from "@tanstack/react-router"
 import type { LucideIcon } from "lucide-react"
 import type { useGlobalSearch } from "@/hooks/use-money-dashboard"
-import { mainNavItems, secondaryNavItems } from "@/lib/dashboard-nav"
+import {
+  getSearchAccountSubtitle,
+  getSearchBudgetSubtitle,
+  getSearchBudgetTitle,
+  getSearchRecurringSubtitle,
+  getSearchTransactionSubtitle,
+} from "@/lib/dashboard-i18n"
+import { m } from "@/paraglide/messages"
+import { getMainNavItems, getSecondaryNavItems } from "@/lib/dashboard-nav"
 
 export type SearchItem = {
   group: string
@@ -32,8 +40,10 @@ function clearTransactionSearch(
 }
 
 export function buildPageSearchItems(navigate: ReturnType<typeof useNavigate>) {
-  return [...mainNavItems, ...secondaryNavItems].map<SearchItem>((item) => ({
-    group: "Pages",
+  const navItems = [...getMainNavItems(), ...getSecondaryNavItems()]
+
+  return navItems.map<SearchItem>((item) => ({
+    group: m.search_group_pages(),
     icon: item.icon,
     id: `page-${item.label.toLowerCase()}`,
     onSelect: () => {
@@ -56,7 +66,7 @@ export function buildEntitySearchItems(
 ) {
   return [
     ...results.transactions.map<SearchItem>((item) => ({
-      group: "Transactions",
+      group: m.search_group_transactions(),
       icon: ReceiptTextIcon,
       id: `transaction-${item.id}`,
       onSelect: () => {
@@ -66,11 +76,11 @@ export function buildEntitySearchItems(
         })
       },
       title: item.title,
-      subtitle: item.subtitle,
-      value: `${item.title} ${item.subtitle}`.trim(),
+      subtitle: getSearchTransactionSubtitle(item),
+      value: `${item.title} ${getSearchTransactionSubtitle(item)}`.trim(),
     })),
     ...results.accounts.map<SearchItem>((item) => ({
-      group: "Accounts",
+      group: m.search_group_accounts(),
       icon: PiggyBankIcon,
       id: `account-${item.id}`,
       onSelect: () => {
@@ -80,11 +90,11 @@ export function buildEntitySearchItems(
         })
       },
       title: item.title,
-      subtitle: item.subtitle,
-      value: `${item.title} ${item.subtitle}`.trim(),
+      subtitle: getSearchAccountSubtitle(item),
+      value: `${item.title} ${getSearchAccountSubtitle(item)}`.trim(),
     })),
     ...results.budgets.map<SearchItem>((item) => ({
-      group: "Budgets",
+      group: m.search_group_budgets(),
       icon: TargetIcon,
       id: `budget-${item.id}`,
       onSelect: () => {
@@ -93,12 +103,12 @@ export function buildEntitySearchItems(
           search: (previous) => previous,
         })
       },
-      title: item.title,
-      subtitle: item.subtitle,
-      value: `${item.title} ${item.subtitle}`.trim(),
+      title: getSearchBudgetTitle(item),
+      subtitle: getSearchBudgetSubtitle(item),
+      value: `${getSearchBudgetTitle(item)} ${getSearchBudgetSubtitle(item)}`.trim(),
     })),
     ...results.recurring.map<SearchItem>((item) => ({
-      group: "Recurring",
+      group: m.search_group_recurring(),
       icon: RepeatIcon,
       id: `recurring-${item.id}`,
       onSelect: () => {
@@ -108,8 +118,8 @@ export function buildEntitySearchItems(
         })
       },
       title: item.title,
-      subtitle: item.subtitle,
-      value: `${item.title} ${item.subtitle}`.trim(),
+      subtitle: getSearchRecurringSubtitle(item),
+      value: `${item.title} ${getSearchRecurringSubtitle(item)}`.trim(),
     })),
   ]
 }

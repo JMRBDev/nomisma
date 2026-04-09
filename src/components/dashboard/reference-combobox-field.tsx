@@ -4,6 +4,7 @@ import { useMemo } from "react"
 import type { ReactNode } from "react"
 import type { ReferenceComboboxAction } from "@/lib/reference-entities"
 import { ReferenceAutocompleteField } from "@/components/dashboard/reference-autocomplete-field"
+import { m } from "@/paraglide/messages"
 
 export type ReferenceComboboxOption = {
   value: string
@@ -18,7 +19,7 @@ export function ReferenceComboboxField({
   options,
   error,
   placeholder,
-  emptyMessage = "No matches found.",
+  emptyMessage = m.common_no_matches_found(),
   disabled = false,
   description,
   onValueChange,

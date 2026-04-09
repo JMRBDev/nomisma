@@ -7,6 +7,7 @@ import type {
 import { resolveValidOption } from "@/components/dashboard/transactions/transactions-shared"
 import { ReferenceComboboxField } from "@/components/dashboard/reference-combobox-field"
 import { getCreateOrRestoreActions } from "@/lib/reference-entities"
+import { m } from "@/paraglide/messages"
 
 export function TransactionSelectFields({
   values,
@@ -47,8 +48,8 @@ export function TransactionSelectFields({
       query,
       createKey: `create-account-${fieldName}`,
       unarchiveKey: `unarchive-account-${fieldName}`,
-      createDescription: "Finish account setup and select it here.",
-      unarchiveDescription: "Restore this account and select it here.",
+      createDescription: m.transactions_account_reference_description(),
+      unarchiveDescription: m.transactions_account_restore_description(),
       onCreate: (name) => onCreateAccount(name, fieldName),
       onUnarchive: (account) => onUnarchiveAccount(account._id, fieldName),
     })
@@ -60,8 +61,8 @@ export function TransactionSelectFields({
       query,
       createKey: "create-category",
       unarchiveKey: "unarchive-category",
-      createDescription: "Finish category setup and use it for this transaction.",
-      unarchiveDescription: "Restore this category and use it here.",
+      createDescription: m.transactions_category_reference_description(),
+      unarchiveDescription: m.transactions_category_restore_description(),
       onCreate: onCreateCategory,
       onUnarchive: (category) => onUnarchiveCategory(category._id),
     })
@@ -75,15 +76,19 @@ export function TransactionSelectFields({
     <>
       <ReferenceComboboxField
         id="transaction-account"
-        label={values.type === "transfer" ? "From account" : "Account"}
+        label={
+          values.type === "transfer"
+            ? m.transactions_from_account()
+            : m.common_account()
+        }
         value={resolveValidOption(values.accountId, accountOptions)}
         options={accountOptions.map((account) => ({
           value: account._id,
           label: account.name,
         }))}
         error={errors.accountId}
-        placeholder="Search or create an account"
-        emptyMessage="No accounts found."
+        placeholder={m.transactions_search_account_placeholder()}
+        emptyMessage={m.transactions_no_accounts_found()}
         onValueChange={onAccountChange}
         getActions={(query) => getAccountActions(query, "accountId")}
       />
@@ -91,30 +96,30 @@ export function TransactionSelectFields({
       {values.type === "transfer" ? (
         <ReferenceComboboxField
           id="transaction-to-account"
-          label="Destination account"
+          label={m.transactions_destination_account()}
           value={values.toAccountId}
           options={destinationAccountOptions.map((account) => ({
             value: account._id,
             label: account.name,
           }))}
           error={errors.toAccountId}
-          placeholder="Search or create an account"
-          emptyMessage="No destination accounts found."
+          placeholder={m.transactions_search_account_placeholder()}
+          emptyMessage={m.transactions_no_destination_accounts_found()}
           onValueChange={(nextValue) => onValueChange("toAccountId", nextValue)}
           getActions={(query) => getAccountActions(query, "toAccountId")}
         />
       ) : (
         <ReferenceComboboxField
           id="transaction-category"
-          label="Category"
+          label={m.common_category()}
           value={resolveValidOption(values.categoryId, categoryOptions)}
           options={categoryOptions.map((category) => ({
             value: category._id,
             label: category.name,
           }))}
           error={errors.categoryId}
-          placeholder="Search or create a category"
-          emptyMessage="No categories found."
+          placeholder={m.transactions_search_category_placeholder()}
+          emptyMessage={m.transactions_no_categories_found()}
           onValueChange={(nextValue) => onValueChange("categoryId", nextValue)}
           getActions={getCategoryActions}
         />

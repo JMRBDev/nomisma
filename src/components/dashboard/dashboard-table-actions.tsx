@@ -7,6 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { m } from "@/paraglide/messages"
 import { cn } from "@/lib/utils"
 
 export type DashboardTableAction = {
@@ -20,7 +21,7 @@ export type DashboardTableAction = {
 
 export function DashboardTableActions({
   actions,
-  triggerLabel = "Actions",
+  triggerLabel = m.common_actions(),
   className,
 }: {
   actions: Array<DashboardTableAction>

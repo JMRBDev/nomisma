@@ -1,5 +1,6 @@
 import type { useCategoryReferenceActions } from "@/hooks/use-category-reference-actions"
 import { CategoryFormDialog } from "@/components/dashboard/transactions/category-form-dialog"
+import { m } from "@/paraglide/messages"
 
 export function CategoryReferenceDialog({
   categoryActions,
@@ -18,9 +19,9 @@ export function CategoryReferenceDialog({
       formError={categoryActions.manager.dialog.formError}
       pending={categoryActions.manager.dialog.pending}
       isEditing={categoryActions.manager.dialog.isEditing}
-      title="Finish category setup"
+      title={m.categories_finish_setup_title()}
       description={description}
-      submitLabel="Create and select category"
+      submitLabel={m.categories_create_and_select()}
       onValueChange={categoryActions.manager.dialog.handleValueChange}
     />
   )

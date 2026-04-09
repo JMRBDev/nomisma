@@ -11,16 +11,12 @@ import {
   buildRecurringResults,
   normalizeSearchQuery,
 } from "./search_shared"
-import type { SearchResult } from "./search_shared"
+import type {
+  TransactionSearchResult,
+} from "./search_shared"
 import type { QueryCtx } from "../_generated/server"
 
 const TRANSACTION_RESULT_LIMIT = 8
-
-function formatTransactionType(type: "income" | "expense" | "transfer") {
-  if (type === "income") return "Income"
-  if (type === "expense") return "Expense"
-  return "Transfer"
-}
 
 export async function getGlobalSearchResults(
   ctx: QueryCtx,
@@ -33,10 +29,10 @@ export async function getGlobalSearchResults(
 
   if (!normalizedQuery) {
     return {
-      accounts: [] as Array<SearchResult>,
-      budgets: [] as Array<SearchResult>,
-      recurring: [] as Array<SearchResult>,
-      transactions: [] as Array<SearchResult>,
+      accounts: [] as Array<ReturnType<typeof buildAccountsResults>[number]>,
+      budgets: [] as Array<ReturnType<typeof buildBudgetResults>[number]>,
+      recurring: [] as Array<ReturnType<typeof buildRecurringResults>[number]>,
+      transactions: [] as Array<TransactionSearchResult>,
     }
   }
 
@@ -61,19 +57,24 @@ export async function getGlobalSearchResults(
   )
 
   return {
-    transactions: transactions.map<SearchResult>((transaction) => ({
+    transactions: transactions.map<TransactionSearchResult>((transaction) => ({
       id: transaction._id,
       title: transaction.description,
-      subtitle: [
-        formatTransactionType(transaction.type),
-        transaction.date,
-        accountMap.get(transaction.accountId)?.name ?? "Unknown account",
-        transaction.categoryId
-          ? (categoryMap.get(transaction.categoryId)?.name ?? "Deleted category")
-          : null,
-      ]
-        .filter(Boolean)
-        .join(" • "),
+      type: transaction.type,
+      date: transaction.date,
+      accountName: accountMap.get(transaction.accountId)?.name ?? null,
+      accountMissing: accountMap.get(transaction.accountId) === undefined,
+      categoryName: transaction.categoryId
+        ? (categoryMap.get(transaction.categoryId)?.name ?? null)
+        : null,
+      categoryDisplayState:
+        transaction.type === "transfer"
+          ? "none"
+          : transaction.categoryId === undefined
+            ? "uncategorized"
+            : categoryMap.get(transaction.categoryId) === undefined
+              ? "deleted"
+              : "named",
     })),
     accounts: buildAccountsResults(accounts, normalizedQuery),
     budgets: buildBudgetResults(

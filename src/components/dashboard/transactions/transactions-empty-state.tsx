@@ -9,14 +9,15 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { Button } from "@/components/ui/button"
+import { m } from "@/paraglide/messages"
 
 export function TransactionsEmptyState({
   hasFilters,
   onAddTransaction,
   onClearFilters,
-  title = "No transactions yet",
-  description = "Add your first income, expense, or transfer to start building a reliable activity history.",
-  actionLabel = "Add transaction",
+  title = m.transactions_empty_title(),
+  description = m.transactions_empty_description(),
+  actionLabel = m.transactions_add_transaction(),
 }: {
   hasFilters: boolean
   onAddTransaction: () => void
@@ -29,11 +30,11 @@ export function TransactionsEmptyState({
     return (
       <FilteredResultsEmptyState
         icon={ReceiptTextIcon}
-        title="No transactions match these filters"
-        description="Clear the current filters or adjust the date range to bring results back."
+        title={m.transactions_empty_filtered_title()}
+        description={m.transactions_empty_filtered_description()}
         action={
           <Button variant="outline" onClick={onClearFilters}>
-            Clear filters
+            {m.common_clear_filters()}
           </Button>
         }
       />

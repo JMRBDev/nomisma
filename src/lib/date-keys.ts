@@ -1,4 +1,6 @@
 import { format, lastDayOfMonth, parseISO } from "date-fns"
+import { getLocale } from "@/paraglide/runtime"
+import { toCalendarLocale } from "@/lib/i18n"
 
 function padNumber(value: number) {
   return value.toString().padStart(2, "0")
@@ -34,11 +36,18 @@ export function parseDayKey(dayKey: string) {
 }
 
 export function formatDayKeyLabel(dayKey: string) {
-  return format(parseDayKey(dayKey), "MMM d, yyyy")
+  return new Intl.DateTimeFormat(toCalendarLocale(getLocale()), {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(parseDayKey(dayKey))
 }
 
 export function formatMonthKeyLabel(monthKey: string) {
-  return format(parseISO(`${monthKey}-01`), "LLLL yyyy")
+  return new Intl.DateTimeFormat(toCalendarLocale(getLocale()), {
+    month: "long",
+    year: "numeric",
+  }).format(parseISO(`${monthKey}-01`))
 }
 
 export function getMonthRange(monthKey: string) {

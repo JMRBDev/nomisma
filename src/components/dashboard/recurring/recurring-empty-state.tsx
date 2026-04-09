@@ -8,6 +8,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { Button } from "@/components/ui/button"
+import { m } from "@/paraglide/messages"
 
 export function RecurringEmptyState({
   onAddRecurring,
@@ -20,15 +21,14 @@ export function RecurringEmptyState({
         <EmptyMedia variant="icon">
           <RepeatIcon className="size-5" />
         </EmptyMedia>
-        <EmptyTitle>No recurring items yet</EmptyTitle>
+        <EmptyTitle>{m.recurring_empty_title()}</EmptyTitle>
         <EmptyDescription>
-          Add your regular bills or expected income so upcoming money movements
-          stay visible before they hit your account history.
+          {m.recurring_empty_description()}
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
         <Button onClick={onAddRecurring}>
-          Add recurring item
+          {m.recurring_add_item()}
           <PlusIcon />
         </Button>
       </EmptyContent>

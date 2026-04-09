@@ -4,6 +4,7 @@ import { AccountsTable } from "@/components/dashboard/accounts/accounts-table"
 import { DashboardSummaryCard } from "@/components/dashboard/dashboard-summary-card"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatCurrency } from "@/lib/money"
+import { m } from "@/paraglide/messages"
 
 interface AccountsContentProps {
   activeAccounts: Array<AccountRecord>
@@ -35,21 +36,25 @@ export function AccountsContent({
       <>
         <div className="grid gap-4 md:grid-cols-2">
           <DashboardSummaryCard
-            title="Active balance"
+            title={m.accounts_summary_active_balance_title()}
             value={formatCurrency(totalBalance, currency)}
-            description={`${activeAccounts.length} active account${activeAccounts.length === 1 ? "" : "s"}`}
+            description={m.accounts_summary_active_balance_description({
+              count: activeAccounts.length,
+            })}
           />
           <DashboardSummaryCard
-            title="Included in totals"
+            title={m.accounts_summary_included_title()}
             value={formatCurrency(includedBalance, currency)}
-            description="Balances that count toward dashboard totals"
+            description={m.accounts_summary_included_description()}
           />
         </div>
 
         {activeAccounts.length > 0 ? (
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">Active accounts</CardTitle>
+              <CardTitle className="text-2xl">
+                {m.accounts_active_section_title()}
+              </CardTitle>
             </CardHeader>
 
             <CardContent>
@@ -73,7 +78,9 @@ export function AccountsContent({
         {archivedAccounts.length > 0 ? (
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">Archived accounts</CardTitle>
+              <CardTitle className="text-2xl">
+                {m.accounts_archived_section_title()}
+              </CardTitle>
             </CardHeader>
 
             <CardContent>

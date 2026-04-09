@@ -13,7 +13,11 @@ import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { Textarea } from "@/components/ui/textarea"
 import { getCategoryOptions } from "@/components/dashboard/transactions/transactions-shared"
-import { transactionStatusOptions, transactionTypeOptions } from "@/lib/money"
+import { m } from "@/paraglide/messages"
+import {
+  getTransactionStatusOptions,
+  getTransactionTypeOptions,
+} from "@/lib/money"
 import { TransactionSelectFields } from "@/components/dashboard/transactions/transaction-select-fields"
 
 export function TransactionFormFields({
@@ -32,12 +36,15 @@ export function TransactionFormFields({
   onUnarchiveCategory,
 }: TransactionFormFieldsProps) {
   const resolvedCategoryOptions = getCategoryOptions(values.type, categoryOptions)
+  const transactionStatusOptions = getTransactionStatusOptions()
+  const transactionTypeOptions = getTransactionTypeOptions()
+
   return (
     <FieldGroup>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field>
           <FieldLabel htmlFor="transaction-type">
-            <FieldTitle>Type</FieldTitle>
+            <FieldTitle>{m.common_type()}</FieldTitle>
           </FieldLabel>
           <NativeSelect
             id="transaction-type"
@@ -55,7 +62,7 @@ export function TransactionFormFields({
         </Field>
         <Field>
           <FieldLabel htmlFor="transaction-status">
-            <FieldTitle>Status</FieldTitle>
+            <FieldTitle>{m.common_status()}</FieldTitle>
           </FieldLabel>
           <NativeSelect
             id="transaction-status"
@@ -73,7 +80,7 @@ export function TransactionFormFields({
         </Field>
         <Field>
           <FieldLabel htmlFor="transaction-amount">
-            <FieldTitle>Amount</FieldTitle>
+            <FieldTitle>{m.common_amount()}</FieldTitle>
           </FieldLabel>
           <Input
             id="transaction-amount"
@@ -87,7 +94,7 @@ export function TransactionFormFields({
         </Field>
         <Field>
           <FieldLabel htmlFor="transaction-date">
-            <FieldTitle>Date</FieldTitle>
+            <FieldTitle>{m.common_date()}</FieldTitle>
           </FieldLabel>
           <Input
             id="transaction-date"
@@ -114,26 +121,28 @@ export function TransactionFormFields({
       />
       <Field>
         <FieldLabel htmlFor="transaction-description">
-          <FieldTitle>Description</FieldTitle>
+          <FieldTitle>{m.common_description()}</FieldTitle>
         </FieldLabel>
         <Input
           id="transaction-description"
           value={values.description}
           onChange={(event) => onValueChange("description", event.target.value)}
           placeholder={
-            values.type === "transfer" ? "Transfer to savings" : "Groceries"
+            values.type === "transfer"
+              ? m.transaction_form_transfer_placeholder()
+              : m.transaction_form_expense_placeholder()
           }
         />
       </Field>
       <Field>
         <FieldLabel htmlFor="transaction-note">
-          <FieldTitle>Note</FieldTitle>
+          <FieldTitle>{m.common_note()}</FieldTitle>
         </FieldLabel>
         <Textarea
           id="transaction-note"
           value={values.note}
           onChange={(event) => onValueChange("note", event.target.value)}
-          placeholder="Optional context"
+          placeholder={m.transaction_form_note_placeholder()}
         />
       </Field>
     </FieldGroup>

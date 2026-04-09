@@ -1,0 +1,11 @@
+{
+  "form_include_in_totals": "Incluir en totales",
+  "form_include_in_totals_description": "Usa esta cuenta en los saldos totales del panel.",
+  "form_name_and_appearance": "Nombre y apariencia",
+  "form_name_placeholder": "Cuenta principal",
+  "form_opening_balance": "Saldo inicial",
+  "type_cash": "Efectivo",
+  "type_checking": "Cuenta corriente",
+  "type_savings": "Ahorros",
+  "type_wallet": "Billetera digital"
+}

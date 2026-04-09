@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { FormErrorMessage } from "@/components/form-error-message"
+import { m } from "@/paraglide/messages"
 
 export function BudgetFormFields({
   values,
@@ -42,8 +43,8 @@ export function BudgetFormFields({
       query,
       createKey: "create-category",
       unarchiveKey: "unarchive-category",
-      createDescription: "Finish category setup and use it for this budget.",
-      unarchiveDescription: "Restore this category and use it here.",
+      createDescription: m.budgets_category_reference_description(),
+      unarchiveDescription: m.budgets_category_restore_description(),
       onCreate: onCreateCategory,
       onUnarchive: (category) => onUnarchiveCategory(category._id),
     })
@@ -53,12 +54,12 @@ export function BudgetFormFields({
     <FieldGroup>
       <ReferenceComboboxField
         id="budget-category"
-        label="Budget target"
+        label={m.budgets_table_target()}
         value={resolveBudgetCategoryValue(values.categoryId, categoryOptions)}
         options={[
           {
             value: TOTAL_BUDGET_VALUE,
-            label: "Total spending",
+            label: m.budgets_total_spending(),
           },
           ...categoryOptions.map((category) => ({
             value: category._id,
@@ -66,16 +67,16 @@ export function BudgetFormFields({
           })),
         ]}
         error={errors.categoryId}
-        placeholder="Search or create a category"
-        emptyMessage="No budget targets found."
-        description="Track all posted expenses or focus on one category."
+        placeholder={m.budgets_category_placeholder()}
+        emptyMessage={m.budgets_empty_targets()}
+        description={m.budgets_target_description()}
         onValueChange={(nextValue) => onValueChange("categoryId", nextValue)}
         getActions={getCategoryActions}
       />
 
       <Field>
         <FieldLabel htmlFor="budget-limit">
-          <FieldTitle>Monthly limit</FieldTitle>
+          <FieldTitle>{m.budgets_monthly_limit()}</FieldTitle>
         </FieldLabel>
         <Input
           id="budget-limit"

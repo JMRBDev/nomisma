@@ -11,7 +11,8 @@
     "convex:dev": "npx convex dev",
     "convex:codegen": "npx convex codegen",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx}\" --ignore-path .prettierignore",
-    "typecheck": "tsc --noEmit"
+    "paraglide:compile": "node ./scripts/build-paraglide-messages.mjs && node -e \"fs.rmSync('./src/paraglide', { recursive: true, force: true })\" && paraglide-js compile --project ./project.inlang --outdir ./src/paraglide --strategy url cookie preferredLanguage baseLocale --emit-ts-declarations",
+    "typecheck": "npm run paraglide:compile && tsc --noEmit"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",
@@ -19,6 +20,7 @@
     "@convex-dev/react-query": "^0.1.0",
     "@fontsource-variable/geist": "^5.2.8",
     "@fontsource/instrument-serif": "^5.2.8",
+    "@noble/ciphers": "^2.1.1",
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/react-form": "^1.28.6",
     "@tanstack/react-router": "^1.167.4",
@@ -52,6 +54,7 @@
     "vite-tsconfig-paths": "^5.1.4"
   },
   "devDependencies": {
+    "@inlang/paraglide-js": "^2.15.3",
     "@tanstack/devtools-vite": "^0.6.0",
     "@tanstack/eslint-config": "^0.4.0",
     "@types/node": "^25.5.0",

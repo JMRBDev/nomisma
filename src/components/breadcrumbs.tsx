@@ -1,5 +1,6 @@
 import { Fragment } from "react"
 import { Link, useMatches } from "@tanstack/react-router"
+import { m } from "@/paraglide/messages"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -45,6 +46,26 @@ function normalizePathname(pathname: string) {
   return normalized || "/"
 }
 
+function translateBreadcrumb(routeId: string, label: string) {
+  switch (routeId) {
+    case "/_authenticated/dashboard":
+    case "/_authenticated/dashboard/":
+      return m.nav_overview()
+    case "/_authenticated/dashboard/accounts":
+      return m.nav_accounts()
+    case "/_authenticated/dashboard/transactions":
+      return m.nav_transactions()
+    case "/_authenticated/dashboard/budgets":
+      return m.nav_budgets()
+    case "/_authenticated/dashboard/recurring":
+      return m.nav_recurring()
+    case "/_authenticated/dashboard/settings":
+      return m.nav_settings()
+    default:
+      return label
+  }
+}
+
 export function dedupeBreadcrumbItems(items: Array<BreadcrumbItemData>) {
   return items.filter((item, index) => {
     const previous = items[index - 1]
@@ -74,7 +95,7 @@ export function Breadcrumbs() {
             if (match.fullPath === "/" && !staticData?.breadcrumb) return null
 
             return {
-              label,
+              label: translateBreadcrumb(match.routeId, label),
               pathname: match.pathname,
             }
           })

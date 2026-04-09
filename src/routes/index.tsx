@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { APP_NAME, APP_TAGLINE } from "@/lib/money"
+import { m } from "@/paraglide/messages"
+import { APP_NAME } from "@/lib/money"
 import { HomePage } from "@/components/home-page"
 
 export const Route = createFileRoute("/")({
@@ -8,11 +9,10 @@ export const Route = createFileRoute("/")({
   }),
   head: () => ({
     meta: [
-      { title: `${APP_NAME} — ${APP_TAGLINE}` },
+      { title: `${APP_NAME} — ${m.app_tagline()}` },
       {
         name: "description",
-        content:
-          "Track every account, stay on top of budgets, and never miss a bill. One place, zero chaos.",
+        content: m.home_hero_description(),
       },
     ],
   }),

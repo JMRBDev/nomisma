@@ -15,6 +15,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { useCategoryManager } from "@/hooks/use-category-manager"
+import { m } from "@/paraglide/messages"
 
 const transactionsRouteApi = getRouteApi(
   "/_authenticated/dashboard/transactions"
@@ -52,7 +53,7 @@ export function CategoriesSection({
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">
-            Categories
+            {m.categories_section_title()}
           </CardTitle>
 
           <CardAction>
@@ -61,7 +62,7 @@ export function CategoriesSection({
               variant="outline"
               onClick={() => categoryDialog.openCreateDialog()}
             >
-              Add category
+              {m.categories_add()}
               <PlusIcon />
             </Button>
           </CardAction>
@@ -73,14 +74,14 @@ export function CategoriesSection({
                 <EmptyMedia variant="icon">
                   <TagIcon className="size-5" />
                 </EmptyMedia>
-                <EmptyTitle>Add your first category</EmptyTitle>
+                <EmptyTitle>{m.categories_empty_title()}</EmptyTitle>
                 <EmptyDescription>
-                  Create categories to organize your transactions and budgets.
+                  {m.categories_empty_description()}
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
                 <Button onClick={() => categoryDialog.openCreateDialog()}>
-                  Add category
+                  {m.categories_add()}
                   <PlusIcon />
                 </Button>
               </EmptyContent>

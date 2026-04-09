@@ -10,7 +10,11 @@ import { getRouteApi } from "@tanstack/react-router"
 import type { LucideIcon } from "lucide-react"
 import type { IconOption } from "@/components/picker-shared"
 import { COLOR_OPTIONS } from "@/components/picker-shared"
-import { accountTypeOptions } from "@/lib/money"
+import {
+  getAccountTypeLabel as getAccountTypeLabelFromLocale,
+  type AccountTypeValue,
+} from "@/lib/money"
+import { m } from "@/paraglide/messages"
 import { pickRandomItem } from "@/lib/random"
 
 const accountsRouteApi = getRouteApi("/_authenticated/dashboard/accounts")
@@ -18,15 +22,15 @@ const accountsRouteApi = getRouteApi("/_authenticated/dashboard/accounts")
 type AccountsData = ReturnType<typeof accountsRouteApi.useLoaderData>
 
 export type AccountRecord = AccountsData["accounts"]["active"][number]
-export type AccountType = (typeof accountTypeOptions)[number]["value"]
+export type AccountType = AccountTypeValue
 
 export const ACCOUNT_ICON_OPTIONS: Array<IconOption> = [
-  { name: "piggy-bank", label: "Savings", icon: PiggyBankIcon },
-  { name: "credit-card", label: "Card", icon: CreditCardIcon },
-  { name: "landmark", label: "Bank", icon: LandmarkIcon },
-  { name: "hand-coins", label: "Cash", icon: HandCoinsIcon },
-  { name: "wallet", label: "Wallet", icon: WalletIcon },
-  { name: "receipt-text", label: "Bills", icon: ReceiptTextIcon },
+  { name: "piggy-bank", label: m.accounts_icon_savings(), icon: PiggyBankIcon },
+  { name: "credit-card", label: m.accounts_icon_card(), icon: CreditCardIcon },
+  { name: "landmark", label: m.accounts_icon_bank(), icon: LandmarkIcon },
+  { name: "hand-coins", label: m.accounts_icon_cash(), icon: HandCoinsIcon },
+  { name: "wallet", label: m.accounts_icon_wallet(), icon: WalletIcon },
+  { name: "receipt-text", label: m.accounts_icon_bills(), icon: ReceiptTextIcon },
 ]
 
 export const ACCOUNT_ICON_MAP = ACCOUNT_ICON_OPTIONS.reduce<
@@ -79,10 +83,7 @@ export function createDefaultAccountValues(): AccountFormValues {
 }
 
 export function getAccountTypeLabel(type: AccountType) {
-  return (
-    accountTypeOptions.find((option) => option.value === type)?.label ??
-    "Account"
-  )
+  return getAccountTypeLabelFromLocale(type)
 }
 
 export function validateAccountValues(
@@ -92,21 +93,21 @@ export function validateAccountValues(
   const openingBalance = Number(values.openingBalance || "0")
 
   if (!values.name.trim()) {
-    errors.name = "Account name is required."
+    errors.name = m.accounts_error_name_required()
   }
 
   if (!Number.isFinite(openingBalance)) {
-    errors.openingBalance = "Opening balance must be a valid number."
+    errors.openingBalance = m.accounts_error_opening_balance_number()
   } else if (openingBalance < 0) {
-    errors.openingBalance = "Opening balance cannot be negative."
+    errors.openingBalance = m.accounts_error_opening_balance_negative()
   }
 
   if (!values.color.trim()) {
-    errors.color = "Account color is required."
+    errors.color = m.accounts_error_color_required()
   }
 
   if (!values.icon.trim()) {
-    errors.icon = "Account icon is required."
+    errors.icon = m.accounts_error_icon_required()
   }
 
   return errors

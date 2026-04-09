@@ -4,8 +4,10 @@ import { CategoryTableValue } from "@/components/dashboard/category-table-value"
 import { getBudgetStatusLabel } from "@/components/dashboard/budgets/budgets-shared"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { TableCell, TableRow } from "@/components/ui/table"
+import { getBudgetCategoryLabel } from "@/lib/dashboard-i18n"
 import { cn } from "@/lib/utils"
 import { formatCurrency, getBudgetTone } from "@/lib/money"
+import { m } from "@/paraglide/messages"
 
 export function BudgetsTableRow({
   budget,
@@ -34,12 +36,13 @@ export function BudgetsTableRow({
                   name={budget.categoryName}
                   icon={budget.categoryIcon}
                   color={budget.categoryColor}
+                  emptyLabel={getBudgetCategoryLabel(budget)}
                 />
               </div>
               <p className="text-xs text-muted-foreground">
                 {budget.categoryId
-                  ? "Expense category"
-                  : "Overall monthly spending cap"}
+                  ? m.budgets_row_category_description()
+                  : m.budgets_row_total_description()}
               </p>
             </div>
             <div className="space-y-1">
@@ -55,7 +58,9 @@ export function BudgetsTableRow({
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                {Math.round(budget.progress * 100)}% used
+                {m.budgets_row_progress({
+                  percent: Math.round(budget.progress * 100),
+                })}
               </p>
             </div>
           </div>
@@ -91,14 +96,14 @@ export function BudgetsTableRow({
             actions={[
               {
                 id: "edit",
-                label: "Edit",
+                label: m.common_edit(),
                 icon: PencilIcon,
                 disabled: pending,
                 onSelect: () => onEdit(budget),
               },
               {
                 id: "delete",
-                label: "Delete",
+                label: m.common_delete(),
                 icon: Trash2Icon,
                 disabled: pending,
                 variant: "destructive",

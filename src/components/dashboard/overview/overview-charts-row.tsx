@@ -3,6 +3,7 @@ import { OverviewCategoryBreakdownChart } from "@/components/dashboard/overview/
 import { OverviewIncomeVsExpensesChart } from "@/components/dashboard/overview/overview-income-vs-expenses-chart"
 import { OverviewPanelCard } from "@/components/dashboard/overview/overview-panel-card"
 import { OverviewSpendingChart } from "@/components/dashboard/overview/overview-spending-chart"
+import { m } from "@/paraglide/messages"
 
 interface OverviewChartsRowProps {
   data: OverviewData
@@ -22,11 +23,13 @@ export function OverviewChartsRow({
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(340px,1fr)]">
       <OverviewPanelCard
-        title="Spending over time"
+        title={m.overview_charts_spending_title()}
         description={
           hasDateFilter
-            ? `Daily expense totals for ${filterLabel}.`
-            : "Daily expense totals for the current month."
+            ? m.overview_charts_spending_description_filtered({
+                filter: filterLabel,
+              })
+            : m.overview_charts_spending_description_default()
         }
       >
         <OverviewSpendingChart
@@ -36,11 +39,11 @@ export function OverviewChartsRow({
       </OverviewPanelCard>
       <div className="grid gap-4">
         <OverviewPanelCard
-          title="Income vs expenses"
+          title={m.overview_charts_comparison_title()}
           description={
             isSingleMonth
-              ? "Weekly income and expense comparison."
-            : "Monthly income and expense comparison."
+              ? m.overview_charts_comparison_description_weekly()
+              : m.overview_charts_comparison_description_monthly()
           }
         >
           <OverviewIncomeVsExpensesChart
@@ -51,8 +54,8 @@ export function OverviewChartsRow({
         </OverviewPanelCard>
 
         <OverviewPanelCard
-          title="Expense breakdown"
-          description="How your posted expenses are distributed by category."
+          title={m.overview_charts_breakdown_title()}
+          description={m.overview_charts_breakdown_description()}
         >
           <OverviewCategoryBreakdownChart
             data={data.overview.categoryBreakdown}

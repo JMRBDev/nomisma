@@ -4,12 +4,15 @@ import { AccountNameCell } from "@/components/dashboard/account-name-cell"
 import { CategoryTableValue } from "@/components/dashboard/category-table-value"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { TableCell, TableRow } from "@/components/ui/table"
+import { getTransactionCategoryLabel } from "@/lib/dashboard-i18n"
 import {
-  capitalizeFirstLetter,
   formatDateLabel,
   formatSignedAmount,
+  getTransactionStatusLabel,
   getTransactionTone,
+  getTransactionTypeLabel,
 } from "@/lib/money"
+import { m } from "@/paraglide/messages"
 import { cn } from "@/lib/utils"
 
 export function TransactionsTableRow({
@@ -62,20 +65,21 @@ export function TransactionsTableRow({
             name={transaction.categoryName}
             icon={transaction.categoryIcon}
             color={transaction.categoryColor}
+            emptyLabel={getTransactionCategoryLabel(transaction)}
           />
         </TableCell>
       )}
       {isColumnVisible("type") && (
         <TableCell>
           <span className={cn(getTransactionTone(transaction.type))}>
-            {capitalizeFirstLetter(transaction.type)}
+            {getTransactionTypeLabel(transaction.type)}
           </span>
         </TableCell>
       )}
       {isColumnVisible("status") && (
         <TableCell>
           <span className="text-muted-foreground">
-            {capitalizeFirstLetter(transaction.status)}
+            {getTransactionStatusLabel(transaction.status)}
           </span>
         </TableCell>
       )}
@@ -95,13 +99,13 @@ export function TransactionsTableRow({
             actions={[
               {
                 id: "edit",
-                label: "Edit",
+                label: m.common_edit(),
                 icon: PencilIcon,
                 onSelect: () => onEdit(transaction),
               },
               {
                 id: "delete",
-                label: "Delete",
+                label: m.common_delete(),
                 icon: Trash2Icon,
                 variant: "destructive",
                 onSelect: () => onDelete(transaction._id),

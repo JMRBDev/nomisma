@@ -5,6 +5,11 @@ import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { IncomeExpenseNetFooter } from "@/components/dashboard/income-expense-net-footer"
 import { TransactionsTableRow } from "@/components/dashboard/transactions/transactions-table-row"
 import { useDataTable } from "@/hooks/use-data-table"
+import {
+  getAccountDisplayName,
+  getTransactionCategoryLabel,
+} from "@/lib/dashboard-i18n"
+import { m } from "@/paraglide/messages"
 
 const SORT_ACCESSORS: Record<
   string,
@@ -12,8 +17,9 @@ const SORT_ACCESSORS: Record<
 > = {
   date: (row) => row.date,
   description: (row) => row.description.toLowerCase(),
-  accountName: (row) => row.accountName.toLowerCase(),
-  categoryName: (row) => (row.categoryName ?? "Transfer").toLowerCase(),
+  accountName: (row) => getAccountDisplayName(row.accountName).toLowerCase(),
+  categoryName: (row) =>
+    (getTransactionCategoryLabel(row) ?? m.transaction_type_transfer()).toLowerCase(),
   type: (row) => row.type,
   status: (row) => row.status,
   amount: (row) => {
@@ -26,21 +32,21 @@ const SORT_ACCESSORS: Record<
 const COLUMN_VISIBILITY_STORAGE_KEY = "nomisma-table-columns:transactions"
 
 const BASE_COLUMNS: Array<DashboardTableColumn> = [
-  { id: "date", column: "date", header: "Date", alwaysVisible: true },
+  { id: "date", column: "date", header: m.common_date(), alwaysVisible: true },
   {
     id: "description",
     column: "description",
-    header: "Description",
+    header: m.common_description(),
     alwaysVisible: true,
   },
-  { id: "accountName", column: "accountName", header: "Account" },
-  { id: "categoryName", column: "categoryName", header: "Category" },
-  { id: "type", column: "type", header: "Type" },
-  { id: "status", column: "status", header: "Status" },
+  { id: "accountName", column: "accountName", header: m.common_account() },
+  { id: "categoryName", column: "categoryName", header: m.common_category() },
+  { id: "type", column: "type", header: m.common_type() },
+  { id: "status", column: "status", header: m.common_status() },
   {
     id: "amount",
     column: "amount",
-    header: "Amount",
+    header: m.common_amount(),
     className: "text-right",
     alwaysVisible: true,
   },
@@ -48,7 +54,7 @@ const BASE_COLUMNS: Array<DashboardTableColumn> = [
 
 const ACTIONS_COLUMN: DashboardTableColumn = {
   id: "actions",
-  header: "Actions",
+  header: m.common_actions(),
   className: "text-right",
   alwaysVisible: true,
 }

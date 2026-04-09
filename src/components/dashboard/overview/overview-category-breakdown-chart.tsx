@@ -9,21 +9,28 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import { getOverviewCategoryLabel } from "@/lib/dashboard-i18n"
 import { formatCurrency } from "@/lib/money"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
+import { m } from "@/paraglide/messages"
 
 export function OverviewCategoryBreakdownChart({
   data,
   currency,
 }: {
-  data: Array<{ categoryName: string; amount: number; percentage: number }>
+  data: Array<{
+    labelKind: "category" | "deleted" | "uncategorized" | "other"
+    categoryName: string | null
+    amount: number
+    percentage: number
+  }>
   currency?: string | null
 }) {
   if (data.length === 0) {
     return (
       <FilteredResultsEmptyState
-        title="No category data"
-        description="Record expenses with categories to see the breakdown."
+        title={m.overview_charts_breakdown_empty_title()}
+        description={m.overview_charts_breakdown_empty_description()}
         icon={PieChartIcon}
       />
     )
@@ -31,7 +38,7 @@ export function OverviewCategoryBreakdownChart({
 
   const config = data.reduce<ChartConfig>((acc, item, index) => {
     acc[`cat-${index}`] = {
-      label: item.categoryName,
+      label: getOverviewCategoryLabel(item),
       color: CATEGORY_COLORS[index % CATEGORY_COLORS.length],
     }
     return acc

@@ -36,10 +36,13 @@ export const weekStartsOnPreferenceValidator = v.union(
   v.literal("monday")
 )
 
+export const appLocaleValidator = v.union(v.literal("en"), v.literal("es"))
+
 export default defineSchema({
   userSettings: defineTable({
     userId: v.string(),
     baseCurrency: v.string(),
+    locale: v.optional(appLocaleValidator),
     weekStartsOn: v.optional(weekStartsOnPreferenceValidator),
     createdAt: v.number(),
     updatedAt: v.number(),

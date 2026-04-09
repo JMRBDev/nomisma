@@ -1,6 +1,7 @@
 import { AlertTriangleIcon, RefreshCwIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import type { ErrorComponentProps } from "@tanstack/react-router"
+import { m } from "@/paraglide/messages"
 import { Button } from "@/components/ui/button"
 import {
   Empty,
@@ -23,19 +24,17 @@ export function ErrorPage({ error, reset }: ErrorComponentProps) {
           <EmptyMedia variant="icon">
             <AlertTriangleIcon />
           </EmptyMedia>
-          <EmptyTitle>Something went wrong</EmptyTitle>
-          <EmptyDescription>
-            An unexpected error occurred. Try reloading the page.
-          </EmptyDescription>
+          <EmptyTitle>{m.error_title()}</EmptyTitle>
+          <EmptyDescription>{m.error_description()}</EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => reset()}>
               <RefreshCwIcon />
-              Reload
+              {m.error_reload()}
             </Button>
             <Button asChild>
-              <Link to="/dashboard">Go to Overview</Link>
+              <Link to="/dashboard">{m.error_go_to_overview()}</Link>
             </Button>
           </div>
           {import.meta.env.DEV && (

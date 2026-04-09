@@ -4,13 +4,15 @@ export function CategoryTableValue({
   name,
   icon,
   color,
+  emptyLabel,
 }: {
   name?: string | null
   icon?: string | null
   color?: string | null
+  emptyLabel?: string
 }) {
   if (!name) {
-    return <span className="text-muted-foreground">—</span>
+    return <span className="text-muted-foreground">{emptyLabel ?? "—"}</span>
   }
 
   return <CategoryNameCell name={name} icon={icon} color={color} />

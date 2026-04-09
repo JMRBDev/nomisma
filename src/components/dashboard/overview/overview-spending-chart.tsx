@@ -6,8 +6,11 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { formatCurrency } from "@/lib/money"
+import { formatCurrency, formatDateLabel } from "@/lib/money"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
+import { getLocale } from "@/paraglide/runtime"
+import { m } from "@/paraglide/messages"
+import { toCalendarLocale } from "@/lib/i18n"
 
 export function OverviewSpendingChart({
   data,
@@ -16,11 +19,22 @@ export function OverviewSpendingChart({
   data: Array<{ date: string; amount: number }>
   currency?: string | null
 }) {
+  const locale = toCalendarLocale(getLocale())
+  const shortDateFormatter = new Intl.DateTimeFormat(locale, {
+    month: "numeric",
+    day: "numeric",
+  })
+
+  const formatShortDate = (value: string) => {
+    const [year, month, day] = value.split("-").map(Number)
+    return shortDateFormatter.format(new Date(year, month - 1, day))
+  }
+
   if (data.length === 0) {
     return (
       <FilteredResultsEmptyState
-        title="No spending data"
-        description="Start recording expenses to see your spending trends over time."
+        title={m.overview_charts_spending_empty_title()}
+        description={m.overview_charts_spending_empty_description()}
         icon={TrendingUpIcon}
       />
     )
@@ -32,10 +46,7 @@ export function OverviewSpendingChart({
         <CartesianGrid strokeDasharray="3 3" vertical={false} />
         <XAxis
           dataKey="date"
-          tickFormatter={(v: string) => {
-            const parts = v.split("-")
-            return `${parts[1]}/${parts[2]}`
-          }}
+          tickFormatter={formatShortDate}
           tickLine={false}
           axisLine={false}
           fontSize={12}
@@ -51,10 +62,7 @@ export function OverviewSpendingChart({
           content={
             <ChartTooltipContent
               formatter={(value) => formatCurrency(Number(value), currency)}
-              labelFormatter={(label) => {
-                const [y, m, d] = String(label).split("-")
-                return `${m}/${d}/${y}`
-              }}
+              labelFormatter={(label) => formatDateLabel(String(label))}
             />
           }
         />

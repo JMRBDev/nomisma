@@ -1,4 +1,5 @@
 import type { DateRange } from "react-day-picker"
+import { m } from "@/paraglide/messages"
 import type {
   OverviewDateFilterPreset,
   OverviewDateFilterValues,
@@ -14,6 +15,7 @@ import {
 } from "@/components/dashboard/overview/overview-date-filter"
 import { getOverviewDateFilterPresets } from "@/components/dashboard/overview/overview-date-filter-presets"
 import { toWeekStartsOnDayIndex } from "@/components/dashboard/settings/settings-shared"
+import { getDateFnsLocale } from "@/lib/date-locale"
 
 export function OverviewDateFilterSheet({
   open,
@@ -52,8 +54,8 @@ export function OverviewDateFilterSheet({
     <DashboardFilterSheet
       open={open}
       onOpenChange={onOpenChange}
-      title="Date filter"
-      description="Filter dashboard activity by a single day or a custom date range."
+      title={m.date_filter_title()}
+      description={m.date_filter_description()}
     >
       <div className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -95,16 +97,17 @@ export function OverviewDateFilterSheet({
                 toDate: range?.to ? toOverviewDayKey(range.to) : "",
               })
             }
+            locale={getDateFnsLocale()}
             weekStartsOn={toWeekStartsOnDayIndex(weekStartsOn)}
             footer={
               <div className="mt-4 flex items-center justify-end gap-2">
                 {canReset ? (
                   <Button size="sm" variant="outline" onClick={onReset}>
-                    Clear all
+                    {m.common_clear_all()}
                   </Button>
                 ) : null}
                 <Button size="sm" onClick={onApply} disabled={!canApply}>
-                  Apply
+                  {m.common_apply()}
                 </Button>
               </div>
             }

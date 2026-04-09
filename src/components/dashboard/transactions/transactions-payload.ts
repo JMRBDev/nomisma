@@ -12,6 +12,7 @@ import {
 } from "@/components/dashboard/transactions/transactions-shared"
 import { getFirstOptionId } from "@/lib/form-helpers"
 import { toAmountInput, todayInputValue } from "@/lib/money"
+import { m } from "@/paraglide/messages"
 
 export type TransactionEditorOptions = {
   accountOptions: Array<AccountOption>
@@ -59,27 +60,26 @@ export function validateTransactionValues(
   const resolvedAccountId = resolveValidOption(values.accountId, accountOptions)
 
   if (!resolvedAccountId) {
-    errors.accountId =
-      "Add at least one account before recording a transaction."
+    errors.accountId = m.transactions_error_no_account()
   }
 
   if (Number(values.amount || "0") <= 0) {
-    errors.amount = "Amount must be greater than zero."
+    errors.amount = m.common_error_amount_positive()
   }
 
   if (!values.date) {
-    errors.date = "Pick a date."
+    errors.date = m.common_error_pick_date()
   }
 
   if (values.type === "transfer") {
     if (!values.toAccountId) {
-      errors.toAccountId = "Transfers need a destination account."
+      errors.toAccountId = m.transactions_error_destination_required()
     } else if (values.toAccountId === resolvedAccountId) {
-      errors.toAccountId = "Pick two different accounts for a transfer."
+      errors.toAccountId = m.transactions_error_destination_different()
     } else if (
       !accountOptions.some((account) => account._id === values.toAccountId)
     ) {
-      errors.toAccountId = "Pick a valid destination account."
+      errors.toAccountId = m.transactions_error_destination_invalid()
     }
 
     return errors
@@ -88,8 +88,7 @@ export function validateTransactionValues(
   const validCategoryOptions = getCategoryOptions(values.type, categoryOptions)
 
   if (!resolveValidOption(values.categoryId, validCategoryOptions)) {
-    errors.categoryId =
-      "Create at least one category in Transactions before saving this transaction."
+    errors.categoryId = m.transactions_error_no_category()
   }
 
   return errors

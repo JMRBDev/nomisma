@@ -14,6 +14,7 @@ import { useCalendarContext } from "@/hooks/use-calendar-context"
 import { useCategoryReferenceActions } from "@/hooks/use-category-reference-actions"
 import { useDateFilter } from "@/hooks/use-date-filter"
 import { getRecurringPageDataQueryOptions } from "@/lib/dashboard-query-options"
+import { m } from "@/paraglide/messages"
 
 export function RecurringPage() {
   const { hasDateFilter, filterLabel, dateRange } = useDateFilter()
@@ -52,11 +53,11 @@ export function RecurringPage() {
   return (
     <DashboardPageSection>
       <DashboardPageHeader
-        title="Recurring"
+        title={m.nav_recurring()}
         action={
           <DashboardPageActions>
             <Button onClick={() => dialog.openCreateDialog()}>
-              Add recurring item
+              {m.recurring_add_item()}
               <PlusIcon />
             </Button>
           </DashboardPageActions>
@@ -119,11 +120,11 @@ export function RecurringPage() {
       />
       <AccountReferenceDialog
         accountActions={accountActions}
-        description="Save this account and it will be selected in the recurring item form."
+        description={m.recurring_account_reference_description()}
       />
       <CategoryReferenceDialog
         categoryActions={categoryActions}
-        description="Save this category and it will be selected in the recurring item form."
+        description={m.recurring_category_reference_description()}
       />
     </DashboardPageSection>
   )

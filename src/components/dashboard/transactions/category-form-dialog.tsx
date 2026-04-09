@@ -16,6 +16,7 @@ import {
   FieldTitle,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { m } from "@/paraglide/messages"
 
 export function CategoryFormDialog({
   open,
@@ -48,18 +49,21 @@ export function CategoryFormDialog({
     <DashboardFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={title ?? (isEditing ? "Edit category" : "Add category")}
+      title={
+        title ??
+        (isEditing ? m.categories_form_edit_title() : m.categories_add())
+      }
       description={
         description ??
         (isEditing
-          ? "Update this category."
-          : "Create a new category to group your transactions.")
+          ? m.categories_form_edit_description()
+          : m.categories_form_create_description())
       }
     >
       <form className="space-y-4" onSubmit={onSubmit}>
         <Field>
           <FieldLabel htmlFor="category-name">
-            <FieldTitle>Name and Appearance</FieldTitle>
+            <FieldTitle>{m.account_form_name_and_appearance()}</FieldTitle>
           </FieldLabel>
 
           <div className="flex gap-2 items-center">
@@ -74,7 +78,7 @@ export function CategoryFormDialog({
             />
             <Input
               id="category-name"
-              placeholder="e.g. Groceries, Salary"
+              placeholder={m.categories_form_placeholder()}
               value={values.name}
               onChange={(event) => onValueChange("name", event.target.value)}
             />
@@ -86,9 +90,10 @@ export function CategoryFormDialog({
           pending={pending}
           formError={formError}
           submitLabel={
-            submitLabel ?? (isEditing ? "Save changes" : "Create category")
+            submitLabel ??
+            (isEditing ? m.settings_save_changes() : m.categories_create())
           }
-          pendingLabel="Saving..."
+          pendingLabel={m.common_saving()}
         />
       </form>
     </DashboardFormDialog>

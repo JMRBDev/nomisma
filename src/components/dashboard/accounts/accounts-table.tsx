@@ -6,6 +6,7 @@ import { AccountsTableRow } from "@/components/dashboard/accounts/accounts-table
 import { TableCell, TableRow } from "@/components/ui/table"
 import { useDataTable } from "@/hooks/use-data-table"
 import { formatCurrency } from "@/lib/money"
+import { m } from "@/paraglide/messages"
 
 const SORT_ACCESSORS: Record<string, (row: AccountRecord) => string | number> =
   {
@@ -17,19 +18,28 @@ const SORT_ACCESSORS: Record<string, (row: AccountRecord) => string | number> =
 const COLUMN_VISIBILITY_STORAGE_KEY = "nomisma-table-columns:accounts"
 
 const COLUMNS: Array<DashboardTableColumn> = [
-  { id: "name", column: "name", header: "Account", alwaysVisible: true },
-  { id: "type", column: "type", header: "Type" },
-  { id: "includeInTotals", header: "Totals", className: "text-center" },
+  {
+    id: "name",
+    column: "name",
+    header: m.common_account(),
+    alwaysVisible: true,
+  },
+  { id: "type", column: "type", header: m.common_type() },
+  {
+    id: "includeInTotals",
+    header: m.accounts_table_totals(),
+    className: "text-center",
+  },
   {
     id: "currentBalance",
     column: "currentBalance",
-    header: "Current",
+    header: m.accounts_table_current(),
     className: "text-right",
     alwaysVisible: true,
   },
   {
     id: "actions",
-    header: "Actions",
+    header: m.common_actions(),
     className: "text-right",
     alwaysVisible: true,
   },
@@ -75,8 +85,9 @@ export function AccountsTable({
         <TableRow>
           <TableCell>
             <span className="text-muted-foreground">
-              Total ({table.allSortedData.length} account
-              {table.allSortedData.length !== 1 ? "s" : ""})
+              {m.accounts_table_total({
+                count: table.allSortedData.length,
+              })}
             </span>
           </TableCell>
           {table.isColumnVisible("type") && <TableCell />}

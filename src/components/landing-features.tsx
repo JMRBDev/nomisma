@@ -1,27 +1,25 @@
 import { CalendarDays, PieChart, Wallet } from "lucide-react"
-
-const features = [
-  {
-    icon: Wallet,
-    title: "All accounts, one number",
-    description:
-      "Checking, savings, cash, wallets — your total balance, always in view.",
-  },
-  {
-    icon: PieChart,
-    title: "Budgets that work",
-    description:
-      "Set limits that fit your life. See how you're doing before the month runs out.",
-  },
-  {
-    icon: CalendarDays,
-    title: "Bills on your radar",
-    description:
-      "Recurring charges and upcoming payments tracked automatically. No surprises.",
-  },
-]
+import { m } from "@/paraglide/messages"
 
 export function LandingFeatures() {
+  const features = [
+    {
+      icon: Wallet,
+      title: m.landing_feature_accounts_title(),
+      description: m.landing_feature_accounts_description(),
+    },
+    {
+      icon: PieChart,
+      title: m.landing_feature_budgets_title(),
+      description: m.landing_feature_budgets_description(),
+    },
+    {
+      icon: CalendarDays,
+      title: m.landing_feature_bills_title(),
+      description: m.landing_feature_bills_description(),
+    },
+  ]
+
   return (
     <section className="border-t bg-muted/30 py-24">
       <div className="mx-auto max-w-5xl px-6">
@@ -29,7 +27,7 @@ export function LandingFeatures() {
           className="text-center font-heading text-3xl tracking-tight"
           style={{ animation: "fadeUp 0.7s ease-out 300ms both" }}
         >
-          Clarity for every corner of your finances
+          {m.landing_features_heading()}
         </h2>
         <div className="mt-16 grid gap-8 sm:grid-cols-2 md:grid-cols-3">
           {features.map((feature, i) => (

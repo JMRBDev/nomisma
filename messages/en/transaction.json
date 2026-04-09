@@ -1,0 +1,10 @@
+{
+  "form_expense_placeholder": "Groceries",
+  "form_note_placeholder": "Optional context",
+  "form_transfer_placeholder": "Transfer to savings",
+  "status_planned": "Planned",
+  "status_posted": "Posted",
+  "type_expense": "Expense",
+  "type_income": "Income",
+  "type_transfer": "Transfer"
+}

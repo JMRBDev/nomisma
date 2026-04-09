@@ -1,7 +1,14 @@
 import { useState } from "react"
 
+import { useMountEffect } from "@/hooks/use-mount-effect"
+import { m } from "@/paraglide/messages"
 import type { ColorTheme } from "@/lib/theme"
-import { colorThemeOptions, getColorTheme, setColorTheme } from "@/lib/theme"
+import {
+  DEFAULT_COLOR_THEME,
+  getColorTheme,
+  getColorThemeOptions,
+  setColorTheme,
+} from "@/lib/theme"
 import {
   Field,
   FieldContent,
@@ -11,7 +18,14 @@ import {
 import { cn } from "@/lib/utils"
 
 export function ColorThemeField() {
-  const [colorTheme, setColorThemeState] = useState<ColorTheme>(getColorTheme)
+  const [colorTheme, setColorThemeState] = useState<ColorTheme>(
+    DEFAULT_COLOR_THEME
+  )
+  const colorThemeOptions = getColorThemeOptions()
+
+  useMountEffect(() => {
+    setColorThemeState(getColorTheme())
+  })
 
   function handleChange(value: string) {
     const theme = value as ColorTheme
@@ -22,9 +36,11 @@ export function ColorThemeField() {
   return (
     <Field>
       <FieldContent>
-        <FieldTitle className="font-heading text-lg">Color Theme</FieldTitle>
+        <FieldTitle className="font-heading text-lg">
+          {m.settings_color_theme_title()}
+        </FieldTitle>
         <FieldDescription>
-          Choose the accent color used throughout the app.
+          {m.settings_color_theme_description()}
         </FieldDescription>
       </FieldContent>
 

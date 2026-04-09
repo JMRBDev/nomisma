@@ -1,19 +1,20 @@
 import type { ChartConfig } from "@/components/ui/chart"
+import { m } from "@/paraglide/messages"
 
 export const spendingChartConfig = {
   amount: {
-    label: "Expenses",
+    label: m.overview_summary_expenses_title(),
     color: "#fb7185",
   },
 } satisfies ChartConfig
 
 export const incomeExpensesChartConfig = {
   income: {
-    label: "Income",
+    label: m.overview_summary_income_title(),
     color: "var(--color-success)",
   },
   expenses: {
-    label: "Expenses",
+    label: m.overview_summary_expenses_title(),
     color: "#fb7185",
   },
 } satisfies ChartConfig

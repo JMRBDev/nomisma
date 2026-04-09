@@ -8,6 +8,7 @@ import { BudgetFormFields } from "@/components/dashboard/budgets/budget-form-fie
 import { DashboardFormActions } from "@/components/dashboard/dashboard-form-actions"
 import { DashboardFormDialog } from "@/components/dashboard/dashboard-form-dialog"
 import { Button } from "@/components/ui/button"
+import { m } from "@/paraglide/messages"
 
 export function BudgetFormDialog({
   open,
@@ -46,8 +47,8 @@ export function BudgetFormDialog({
     <DashboardFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={editing ? "Edit budget" : "Add budget"}
-      description={`Set a spending limit for ${monthLabel}. Saving the same target again updates this month's budget.`}
+      title={editing ? m.budgets_form_edit_title() : m.budgets_add_budget()}
+      description={m.budgets_form_description({ month: monthLabel })}
     >
       <form className="space-y-4" onSubmit={onSubmit}>
         <BudgetFormFields
@@ -63,7 +64,9 @@ export function BudgetFormDialog({
         <DashboardFormActions
           pending={pending}
           formError={formError}
-          submitLabel={editing ? "Save changes" : "Save budget"}
+          submitLabel={
+            editing ? m.settings_save_changes() : m.budgets_form_save()
+          }
           secondaryAction={
             editing && onDelete ? (
               <Button
@@ -72,7 +75,7 @@ export function BudgetFormDialog({
                 onClick={onDelete}
                 disabled={pending}
               >
-                Delete budget
+                {m.budgets_form_delete()}
               </Button>
             ) : null
           }

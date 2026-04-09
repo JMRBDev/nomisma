@@ -9,6 +9,7 @@ import { RecurringFormFields } from "@/components/dashboard/recurring/recurring-
 import { DashboardFormActions } from "@/components/dashboard/dashboard-form-actions"
 import { DashboardFormDialog } from "@/components/dashboard/dashboard-form-dialog"
 import { getCategoryOptions } from "@/components/dashboard/recurring/recurring-shared"
+import { m } from "@/paraglide/messages"
 
 export function RecurringFormDialog({
   open,
@@ -55,8 +56,10 @@ export function RecurringFormDialog({
     <DashboardFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={editing ? "Edit recurring item" : "Add recurring item"}
-      description="Schedule future income or expenses so due dates stay visible before you need to record the actual transaction."
+      title={
+        editing ? m.recurring_form_edit_title() : m.recurring_add_item()
+      }
+      description={m.recurring_form_description()}
     >
       <form className="space-y-4" onSubmit={onSubmit}>
         <RecurringFormFields
@@ -76,8 +79,7 @@ export function RecurringFormDialog({
 
         {resolvedCategoryOptions.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            You can create a category directly from the category field if you
-            need a new one.
+            {m.recurring_form_create_category_hint()}
           </p>
         ) : null}
 
@@ -85,7 +87,9 @@ export function RecurringFormDialog({
           pending={pending}
           formError={formError}
           submitLabel={
-            editing ? "Update recurring item" : "Save recurring item"
+            editing
+              ? m.recurring_form_update_submit()
+              : m.recurring_form_save_submit()
           }
         />
       </form>

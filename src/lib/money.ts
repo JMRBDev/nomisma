@@ -1,46 +1,125 @@
-import { getCurrencyLocale } from "@/lib/currency"
+import { getLocale } from "@/paraglide/runtime"
+import { m } from "@/paraglide/messages"
 import {
   formatDayKeyLabel,
   formatMonthKeyLabel,
   toDayKey,
   toMonthKey,
 } from "@/lib/date-keys"
+import { toCalendarLocale } from "@/lib/i18n"
 
 export const APP_NAME = "Nomisma"
 
 export const APP_TAGLINE = "Your money, clarified"
 
-export const accountTypeOptions = [
-  { label: "Checking", value: "checking" },
-  { label: "Savings", value: "savings" },
-  { label: "Cash", value: "cash" },
-  { label: "Digital wallet", value: "wallet" },
+export const accountTypeValues = [
+  "checking",
+  "savings",
+  "cash",
+  "wallet",
 ] as const
 
-export const transactionTypeOptions = [
-  { label: "Expense", value: "expense" },
-  { label: "Income", value: "income" },
-  { label: "Transfer", value: "transfer" },
+export type AccountTypeValue = (typeof accountTypeValues)[number]
+
+export const transactionTypeValues = [
+  "expense",
+  "income",
+  "transfer",
 ] as const
 
-export const transactionStatusOptions = [
-  { label: "Posted", value: "posted" },
-  { label: "Planned", value: "planned" },
+export type TransactionTypeValue = (typeof transactionTypeValues)[number]
+
+export const transactionStatusValues = ["posted", "planned"] as const
+
+export type TransactionStatusValue = (typeof transactionStatusValues)[number]
+
+export const recurringFrequencyValues = [
+  "daily",
+  "weekly",
+  "monthly",
+  "yearly",
 ] as const
 
-export const recurringFrequencyOptions = [
-  { label: "Daily", value: "daily" },
-  { label: "Weekly", value: "weekly" },
-  { label: "Monthly", value: "monthly" },
-  { label: "Yearly", value: "yearly" },
-] as const
+export type RecurringFrequencyValue =
+  (typeof recurringFrequencyValues)[number]
+
+export function getAccountTypeLabel(value: AccountTypeValue) {
+  switch (value) {
+    case "savings":
+      return m.account_type_savings()
+    case "cash":
+      return m.account_type_cash()
+    case "wallet":
+      return m.account_type_wallet()
+    default:
+      return m.account_type_checking()
+  }
+}
+
+export function getAccountTypeOptions() {
+  return accountTypeValues.map((value) => ({
+    value,
+    label: getAccountTypeLabel(value),
+  }))
+}
+
+export function getTransactionTypeLabel(value: TransactionTypeValue) {
+  switch (value) {
+    case "income":
+      return m.transaction_type_income()
+    case "transfer":
+      return m.transaction_type_transfer()
+    default:
+      return m.transaction_type_expense()
+  }
+}
+
+export function getTransactionTypeOptions() {
+  return transactionTypeValues.map((value) => ({
+    value,
+    label: getTransactionTypeLabel(value),
+  }))
+}
+
+export function getTransactionStatusLabel(value: TransactionStatusValue) {
+  return value === "planned"
+    ? m.transaction_status_planned()
+    : m.transaction_status_posted()
+}
+
+export function getTransactionStatusOptions() {
+  return transactionStatusValues.map((value) => ({
+    value,
+    label: getTransactionStatusLabel(value),
+  }))
+}
+
+export function getRecurringFrequencyLabel(value: RecurringFrequencyValue) {
+  switch (value) {
+    case "weekly":
+      return m.recurring_frequency_weekly()
+    case "monthly":
+      return m.recurring_frequency_monthly()
+    case "yearly":
+      return m.recurring_frequency_yearly()
+    default:
+      return m.recurring_frequency_daily()
+  }
+}
+
+export function getRecurringFrequencyOptions() {
+  return recurringFrequencyValues.map((value) => ({
+    value,
+    label: getRecurringFrequencyLabel(value),
+  }))
+}
 
 export function formatCurrency(
   value: number,
   currency?: string | null,
   compact = false
 ) {
-  const locale = currency ? getCurrencyLocale(currency) : "en-US"
+  const locale = toCalendarLocale(getLocale())
   const notation = compact ? "compact" : "standard"
 
   if (!currency) {

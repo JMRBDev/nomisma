@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button"
 import { useCalendarContext } from "@/hooks/use-calendar-context"
 import { useDateFilter } from "@/hooks/use-date-filter"
 import { getOverviewDataQueryOptions } from "@/lib/dashboard-query-options"
+import { m } from "@/paraglide/messages"
 
 const LazyOverviewChartsRow = lazy(async () => ({
   default: (await import("@/components/dashboard/overview/overview-charts-row"))
@@ -24,15 +25,19 @@ const LazyOverviewChartsRow = lazy(async () => ({
 export function OverviewPage() {
   const calendarContext = useCalendarContext()
   const { hasDateFilter, filterLabel, dateFilter, dateRange } = useDateFilter()
-  const activityLabel = hasDateFilter ? filterLabel : "the current month"
-  const { data } = useSuspenseQuery(getOverviewDataQueryOptions(calendarContext, dateRange))
+  const activityLabel = hasDateFilter
+    ? filterLabel
+    : m.overview_activity_current_month()
+  const { data } = useSuspenseQuery(
+    getOverviewDataQueryOptions(calendarContext, dateRange)
+  )
   const currency = data.settings?.baseCurrency
   const isSingleMonth =
     !hasDateFilter ||
     dateFilter.fromDate.slice(0, 7) === dateFilter.toDate.slice(0, 7)
   return (
     <DashboardPageSection>
-      <DashboardPageHeader title="Overview" />
+      <DashboardPageHeader title={m.nav_overview()} />
       <OverviewSummaryCards
         currentMoney={data.overview.currentMoney}
         income={data.overview.income}
@@ -44,16 +49,18 @@ export function OverviewPage() {
       />
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(340px,1fr)]">
         <OverviewPanelCard
-          title="Recent transactions"
+          title={m.overview_recent_transactions_title()}
           description={
             hasDateFilter
-              ? `Transactions recorded in ${filterLabel}.`
-              : "Your latest income, expenses, and transfers."
+              ? m.overview_recent_transactions_filtered({
+                  filter: filterLabel,
+                })
+              : m.overview_recent_transactions_description()
           }
           action={
             <Button asChild size="sm" variant="outline">
               <Link to="/dashboard/transactions" search={(previous) => previous}>
-                View all
+                {m.common_view_all()}
                 <ArrowRightIcon />
               </Link>
             </Button>
@@ -71,20 +78,20 @@ export function OverviewPage() {
             <FilteredResultsEmptyState
               title={
                 hasDateFilter
-                  ? "No transactions in this date filter"
-                  : "No transactions yet"
+                  ? m.overview_no_transactions_filtered_title()
+                  : m.overview_no_transactions_title()
               }
               description={
                 hasDateFilter
-                  ? "Pick another day or range from the header to inspect a different slice of activity."
-                  : "Add your first transaction to build a usable activity history."
+                  ? m.overview_no_transactions_filtered_description()
+                  : m.overview_no_transactions_description()
               }
               icon={hasDateFilter ? FunnelIcon : ReceiptTextIcon}
               action={
                 hasDateFilter ? null : (
                   <Button asChild>
                     <Link to="/dashboard/transactions" search={(previous) => previous}>
-                      Open transactions
+                      {m.overview_open_transactions()}
                       <ArrowRightIcon />
                     </Link>
                   </Button>
@@ -95,26 +102,26 @@ export function OverviewPage() {
         </OverviewPanelCard>
         <div className="grid gap-4">
           <OverviewPanelCard
-            title="Alerts"
-            description="Things that need attention or are worth checking."
+            title={m.overview_alerts_title()}
+            description={m.overview_alerts_description()}
           >
             {data.overview.alerts.length > 0 ? (
-              <OverviewAlerts alerts={data.overview.alerts} />
+              <OverviewAlerts alerts={data.overview.alerts} currency={currency} />
             ) : (
               <FilteredResultsEmptyState
-                title="No alerts right now"
-                description="Your dashboard is clear. New budget or recurring issues will show up here."
+                title={m.overview_no_alerts_title()}
+                description={m.overview_no_alerts_description()}
                 icon={CheckCircle2Icon}
               />
             )}
           </OverviewPanelCard>
           <OverviewPanelCard
-            title="Upcoming recurring"
-            description="The next recurring items scheduled to hit your accounts."
+            title={m.overview_upcoming_recurring_title()}
+            description={m.overview_upcoming_recurring_description()}
             action={
               <Button asChild size="sm" variant="outline">
                 <Link to="/dashboard/recurring" search={(previous) => previous}>
-                  View recurring
+                  {m.overview_view_recurring()}
                   <ArrowRightIcon />
                 </Link>
               </Button>
@@ -129,8 +136,8 @@ export function OverviewPage() {
               />
             ) : (
               <FilteredResultsEmptyState
-                title="No recurring items yet"
-                description="Add recurring income or bills so future cash movement is visible here."
+                title={m.overview_no_recurring_title()}
+                description={m.overview_no_recurring_description()}
                 icon={RepeatIcon}
               />
             )}

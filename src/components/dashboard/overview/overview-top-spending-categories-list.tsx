@@ -1,6 +1,7 @@
 import type { OverviewTopSpendingCategory } from "@/components/dashboard/overview/overview-shared"
 import { Progress } from "@/components/ui/progress"
 import { formatCurrency } from "@/lib/money"
+import { m } from "@/paraglide/messages"
 
 export function OverviewTopSpendingCategoriesList({
   categories,
@@ -23,7 +24,9 @@ export function OverviewTopSpendingCategoriesList({
               <div className="space-y-1">
                 <p className="font-medium">{category.categoryName}</p>
                 <p className="text-sm text-muted-foreground">
-                  {Math.round(share)}% of posted expense spending
+                  {m.overview_top_spending_share({
+                    percent: Math.round(share),
+                  })}
                 </p>
               </div>
               <p className="font-medium">

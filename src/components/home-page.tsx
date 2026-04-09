@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router"
 import { ArrowRight } from "lucide-react"
+import { m } from "@/paraglide/messages"
 import { handleSignIn } from "@/lib/auth"
 import { APP_NAME } from "@/lib/money"
 import { Button } from "@/components/ui/button"
@@ -32,11 +33,11 @@ export function HomePage({
           </Link>
           {isAuthenticated ? (
             <Button asChild size="sm">
-              <Link to="/dashboard">Go to dashboard</Link>
+              <Link to="/dashboard">{m.home_go_to_dashboard()}</Link>
             </Button>
           ) : (
             <Button size="sm" onClick={() => handleSignIn(redirectTo)}>
-              Get started
+              {m.home_get_started()}
             </Button>
           )}
         </div>
@@ -52,14 +53,13 @@ export function HomePage({
             className="font-heading text-4xl leading-tight tracking-tight sm:text-5xl md:text-6xl"
             style={{ animation: "fadeUp 0.7s ease-out 0ms both" }}
           >
-            Your money, finally clear.
+            {m.home_hero_title()}
           </h1>
           <p
             className="mx-auto mt-6 max-w-md text-lg text-muted-foreground"
             style={{ animation: "fadeUp 0.7s ease-out 100ms both" }}
           >
-            Track every account, stay on top of budgets, and never miss a bill.
-            One place, zero chaos.
+            {m.home_hero_description()}
           </p>
           <div
             className="mt-10 flex flex-col items-center gap-3"
@@ -68,19 +68,19 @@ export function HomePage({
             {isAuthenticated ? (
               <Button asChild size="lg">
                 <Link to="/dashboard">
-                  Go to dashboard
+                  {m.home_go_to_dashboard()}
                   <ArrowRight />
                 </Link>
               </Button>
             ) : (
               <Button size="lg" onClick={() => handleSignIn(redirectTo)}>
-                Get started for free
+                {m.home_get_started_free()}
                 <ArrowRight />
               </Button>
             )}
             {!isAuthenticated && (
               <p className="text-sm text-muted-foreground">
-                Free to use. Sign in with Google.
+                {m.home_sign_in_hint()}
               </p>
             )}
           </div>
@@ -94,7 +94,7 @@ export function HomePage({
           className="font-heading text-3xl tracking-tight"
           style={{ animation: "fadeUp 0.7s ease-out 700ms both" }}
         >
-          Start seeing your money clearly.
+          {m.home_cta_title()}
         </h2>
         <div
           className="mt-8"
@@ -103,13 +103,13 @@ export function HomePage({
           {isAuthenticated ? (
             <Button asChild size="lg">
               <Link to="/dashboard">
-                Go to dashboard
+                {m.home_go_to_dashboard()}
                 <ArrowRight />
               </Link>
             </Button>
           ) : (
             <Button size="lg" onClick={() => handleSignIn(redirectTo)}>
-              Get started for free
+              {m.home_get_started_free()}
               <ArrowRight />
             </Button>
           )}

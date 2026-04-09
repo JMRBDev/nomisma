@@ -1,5 +1,6 @@
 import { getRouteApi } from "@tanstack/react-router"
-import type { recurringFrequencyOptions } from "@/lib/money"
+import { m } from "@/paraglide/messages"
+import type { RecurringFrequencyValue } from "@/lib/money"
 import { resolveValidOption as resolveValidOptionGeneric } from "@/lib/form-helpers"
 
 const recurringRouteApi = getRouteApi("/_authenticated/dashboard/recurring")
@@ -10,8 +11,7 @@ export type RecurringRecord = RecurringData["recurring"]["all"][number]
 export type RecurringAccountOption = RecurringData["accounts"]["active"][number]
 export type RecurringCategoryOption = RecurringData["categories"]["all"][number]
 export type RecurringType = RecurringRecord["type"]
-export type RecurringFrequency =
-  (typeof recurringFrequencyOptions)[number]["value"]
+export type RecurringFrequency = RecurringFrequencyValue
 export type RecurringFormValues = {
   type: RecurringType
   amount: string
@@ -44,14 +44,14 @@ export const resolveValidOption = resolveValidOptionGeneric
 
 export function getRecurringStatusLabel(status: RecurringRecord["status"]) {
   if (status === "overdue") {
-    return "Overdue"
+    return m.recurring_status_overdue()
   }
 
   if (status === "dueSoon") {
-    return "Due soon"
+    return m.recurring_status_due_soon()
   }
 
-  return "Upcoming"
+  return m.recurring_status_upcoming()
 }
 
 export function canConfirmRecurringItem(item: RecurringRecord, today: string) {

@@ -13,13 +13,15 @@ import { AccountNameCell } from "@/components/dashboard/account-name-cell"
 import { CategoryTableValue } from "@/components/dashboard/category-table-value"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { TableCell, TableRow } from "@/components/ui/table"
+import { getRecurringCategoryLabel } from "@/lib/dashboard-i18n"
 import {
-  capitalizeFirstLetter,
   formatDateLabel,
   formatSignedAmount,
+  getRecurringFrequencyLabel,
   getRecurringTone,
   getTransactionTone,
 } from "@/lib/money"
+import { m } from "@/paraglide/messages"
 import { cn } from "@/lib/utils"
 
 export function RecurringTableRow({
@@ -79,11 +81,12 @@ export function RecurringTableRow({
             name={item.categoryName}
             icon={item.categoryIcon}
             color={item.categoryColor}
+            emptyLabel={getRecurringCategoryLabel(item)}
           />
         </TableCell>
       )}
       {isColumnVisible("frequency") && (
-        <TableCell>{capitalizeFirstLetter(item.frequency)}</TableCell>
+        <TableCell>{getRecurringFrequencyLabel(item.frequency)}</TableCell>
       )}
       {isColumnVisible("status") && (
         <TableCell>
@@ -108,13 +111,15 @@ export function RecurringTableRow({
             actions={[
               {
                 id: "edit",
-                label: "Edit",
+                label: m.common_edit(),
                 icon: PencilIcon,
                 onSelect: () => onEdit(item),
               },
               {
                 id: "toggle",
-                label: item.active ? "Deactivate" : "Activate",
+                label: item.active
+                  ? m.common_deactivate()
+                  : m.common_activate(),
                 icon: item.active ? PowerOffIcon : PowerIcon,
                 onSelect: () => onToggle(item._id, !item.active),
               },
@@ -122,7 +127,7 @@ export function RecurringTableRow({
                 ? [
                     {
                       id: "confirm",
-                      label: pending ? "Saving..." : "Confirm",
+                      label: pending ? m.common_saving() : m.common_confirm(),
                       icon: CheckCircle2Icon,
                       disabled: pending,
                       onSelect: () => onConfirm(item._id),

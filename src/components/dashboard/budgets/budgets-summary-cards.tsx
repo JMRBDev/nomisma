@@ -1,6 +1,7 @@
 import type { BudgetRecord } from "@/components/dashboard/budgets/budgets-shared"
 import { DashboardSummaryCard } from "@/components/dashboard/dashboard-summary-card"
 import { formatCurrency } from "@/lib/money"
+import { m } from "@/paraglide/messages"
 
 interface BudgetsSummaryCardsProps {
   budgets: Array<BudgetRecord>
@@ -31,23 +32,29 @@ export function BudgetsSummaryCards({
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <DashboardSummaryCard
-        title="Planned this month"
+        title={m.budgets_summary_planned_title()}
         value={formatCurrency(data.budgets.totalPlanned, currency)}
-        description={`${budgets.length} budget${budgets.length === 1 ? "" : "s"} in ${monthLabel}`}
+        description={m.budgets_summary_planned_description({
+          count: budgets.length,
+          month: monthLabel,
+        })}
       />
       <DashboardSummaryCard
-        title="Posted spending"
+        title={m.budgets_summary_spent_title()}
         value={formatCurrency(data.budgets.totalSpent, currency)}
-        description={`Tracked posted expenses for ${monthLabel}`}
+        description={m.budgets_summary_spent_description({ month: monthLabel })}
       />
       <DashboardSummaryCard
-        title="Remaining"
+        title={m.budgets_summary_remaining_title()}
         value={
           data.budgets.budgetRemaining === null
-            ? "No limit set"
+            ? m.budgets_summary_no_limit()
             : formatCurrency(data.budgets.budgetRemaining, currency)
         }
-        description={`${overBudgetCount} over budget, ${nearBudgetCount} close to the limit`}
+        description={m.budgets_summary_remaining_description({
+          over: overBudgetCount,
+          near: nearBudgetCount,
+        })}
         toneClassName={
           data.budgets.budgetRemaining === null
             ? undefined

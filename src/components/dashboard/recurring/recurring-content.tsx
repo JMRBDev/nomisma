@@ -7,6 +7,7 @@ import { RecurringSummaryCards } from "@/components/dashboard/recurring/recurrin
 import { RecurringTable } from "@/components/dashboard/recurring/recurring-table"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { m } from "@/paraglide/messages"
 
 interface RecurringContentProps {
   hasRecurringItems: boolean
@@ -71,11 +72,13 @@ export function RecurringContent({
             ) : hasDateFilter ? (
               <FilteredResultsEmptyState
                 icon={FunnelIcon}
-                title="No recurring items in this date range"
-                description={`Pick another day or range in the header to inspect recurring items due during ${filterLabel}.`}
+                title={m.recurring_empty_date_range_title()}
+                description={m.recurring_empty_date_range_description({
+                  filter: filterLabel,
+                })}
                 action={
                   <Button variant="outline" onClick={onClearDateFilter}>
-                    Clear date filter
+                    {m.recurring_clear_date_filter()}
                   </Button>
                 }
               />
@@ -90,9 +93,9 @@ export function RecurringContent({
     return (
       <PrerequisiteEmptyState
         icon={<WalletCardsIcon className="size-5" />}
-        title="Add an account before scheduling recurring items"
-        description="Recurring bills and paychecks need an account so every future money movement points somewhere real."
-        ctaLabel="Create an account"
+        title={m.recurring_prerequisite_account_title()}
+        description={m.recurring_prerequisite_account_description()}
+        ctaLabel={m.accounts_add_account()}
         ctaTo="/dashboard/accounts"
       />
     )
@@ -102,9 +105,9 @@ export function RecurringContent({
     return (
       <PrerequisiteEmptyState
         icon={<ShapesIcon className="size-5" />}
-        title="Create a category before adding recurring items"
-        description="Recurring rules need income or expense categories so upcoming paychecks and bills stay organized when you confirm them."
-        ctaLabel="Manage categories"
+        title={m.recurring_prerequisite_category_title()}
+        description={m.recurring_prerequisite_category_description()}
+        ctaLabel={m.recurring_manage_categories()}
         ctaTo="/dashboard/settings"
       />
     )

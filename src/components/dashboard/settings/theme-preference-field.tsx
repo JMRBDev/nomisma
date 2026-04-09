@@ -1,8 +1,9 @@
 import { useTheme } from "next-themes"
+import { m } from "@/paraglide/messages"
 import type { ThemePreference } from "@/lib/theme"
 
 import { useIsClient } from "@/hooks/use-is-client"
-import { themeOptions } from "@/lib/theme"
+import { getThemeOptions, themeValues } from "@/lib/theme"
 import {
   Field,
   FieldContent,
@@ -21,15 +22,18 @@ import {
 export function ThemePreferenceField() {
   const isClient = useIsClient()
   const { setTheme, theme } = useTheme()
+  const themeOptions = getThemeOptions()
   const selectedTheme: ThemePreference =
     isClient && isThemePreference(theme) ? theme : "system"
 
   return (
     <Field>
       <FieldContent>
-        <FieldTitle className="font-heading text-lg">Appearance</FieldTitle>
+        <FieldTitle className="font-heading text-lg">
+          {m.settings_appearance_title()}
+        </FieldTitle>
         <FieldDescription>
-          Choose this app's theme color. Defaults to system settings.
+          {m.settings_appearance_description()}
         </FieldDescription>
       </FieldContent>
 
@@ -39,7 +43,7 @@ export function ThemePreferenceField() {
         disabled={!isClient}
       >
         <SelectTrigger className="w-full sm:w-56">
-          <SelectValue placeholder="Choose a theme" />
+          <SelectValue placeholder={m.settings_choose_theme()} />
         </SelectTrigger>
 
         <SelectContent>
@@ -59,5 +63,5 @@ export function ThemePreferenceField() {
 function isThemePreference(
   value: string | undefined
 ): value is ThemePreference {
-  return themeOptions.some((option) => option.value === value)
+  return themeValues.some((option) => option === value)
 }

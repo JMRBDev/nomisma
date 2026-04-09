@@ -7,15 +7,20 @@ import { ThemePreferenceField } from "@/components/dashboard/settings/theme-pref
 import { createSettingsFormValues } from "@/components/dashboard/settings/settings-shared"
 import { Separator } from "@/components/ui/separator"
 import { getUserSettingsQueryOptions } from "@/lib/dashboard-query-options"
+import { m } from "@/paraglide/messages"
+import { getLocale } from "@/paraglide/runtime"
 
 export function SettingsPage() {
   const { data: userSettings } = useSuspenseQuery(getUserSettingsQueryOptions())
-  const currentValues = createSettingsFormValues(userSettings.settings)
+  const currentValues = createSettingsFormValues({
+    ...userSettings.settings,
+    locale: userSettings.savedLocale ?? getLocale(),
+  })
 
   return (
     <DashboardPageSection>
       <div className="flex flex-col gap-3">
-        <DashboardPageHeader title="Settings" />
+        <DashboardPageHeader title={m.nav_settings()} />
       </div>
 
       <div className="flex flex-col gap-4">
@@ -26,7 +31,7 @@ export function SettingsPage() {
         <Separator />
 
         <SettingsForm
-          key={`${currentValues.baseCurrency}-${currentValues.weekStartsOn}`}
+          key={`${currentValues.baseCurrency}-${currentValues.locale}-${currentValues.weekStartsOn}`}
           initialValues={currentValues}
         />
       </div>

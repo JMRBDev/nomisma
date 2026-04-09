@@ -13,6 +13,7 @@ import {
 } from "@/components/dashboard/recurring/recurring-shared"
 import { getFirstOptionId } from "@/lib/form-helpers"
 import { toAmountInput, todayInputValue } from "@/lib/money"
+import { m } from "@/paraglide/messages"
 
 export type RecurringEditorOptions = {
   accountOptions: Array<RecurringAccountOption>
@@ -64,28 +65,25 @@ export function validateRecurringValues(
   const validCategoryOptions = getCategoryOptions(values.type, categoryOptions)
 
   if (!resolveValidOption(values.accountId, accountOptions)) {
-    errors.accountId =
-      "Add at least one active account before scheduling a recurring item."
+    errors.accountId = m.recurring_error_no_account()
   }
 
   if (!resolveValidOption(values.categoryId, validCategoryOptions)) {
-    errors.categoryId =
-      "Create at least one category in Settings before saving this recurring item."
+    errors.categoryId = m.recurring_error_no_category()
   }
 
   if (Number(values.amount || "0") <= 0) {
-    errors.amount = "Amount must be greater than zero."
+    errors.amount = m.common_error_amount_positive()
   }
 
   if (!values.startDate) {
-    errors.startDate = "Pick a start date."
+    errors.startDate = m.recurring_error_start_date()
   }
 
   if (!values.nextDueDate) {
-    errors.nextDueDate = "Pick the first due date."
+    errors.nextDueDate = m.recurring_error_first_due_date()
   } else if (values.startDate && values.nextDueDate < values.startDate) {
-    errors.nextDueDate =
-      "The first due date must be on or after the start date."
+    errors.nextDueDate = m.recurring_error_first_due_date_after_start()
   }
 
   if (
@@ -93,7 +91,7 @@ export function validateRecurringValues(
     values.nextDueDate &&
     values.endDate < values.nextDueDate
   ) {
-    errors.endDate = "The end date must be on or after the next due date."
+    errors.endDate = m.recurring_error_end_date_after_due()
   }
 
   return errors

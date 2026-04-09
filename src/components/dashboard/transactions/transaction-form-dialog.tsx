@@ -10,6 +10,7 @@ import { DashboardFormDialog } from "@/components/dashboard/dashboard-form-dialo
 import { Button } from "@/components/ui/button"
 import { TransactionFormFields } from "@/components/dashboard/transactions/transaction-form-fields"
 import { getCategoryOptions } from "@/components/dashboard/transactions/transactions-shared"
+import { m } from "@/paraglide/messages"
 
 export function TransactionFormDialog({
   open,
@@ -66,8 +67,12 @@ export function TransactionFormDialog({
     <DashboardFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={editing ? "Edit transaction" : "Add transaction"}
-      description="Keep amounts positive. The transaction type decides whether it adds money, spends money, or moves money between your accounts."
+      title={
+        editing
+          ? m.transactions_form_edit_title()
+          : m.transactions_add_transaction()
+      }
+      description={m.transactions_form_description()}
     >
       <form className="space-y-4" onSubmit={onSubmit}>
         <TransactionFormFields
@@ -88,19 +93,22 @@ export function TransactionFormDialog({
 
         {values.type !== "transfer" && resolvedCategoryOptions.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            You can create a category directly from the category field if you
-            need a new one.
+            {m.transactions_form_create_category_hint()}
           </p>
         ) : null}
 
         <DashboardFormActions
           pending={pending}
           formError={formError}
-          submitLabel={editing ? "Update transaction" : "Save transaction"}
+          submitLabel={
+            editing
+              ? m.transactions_form_update_submit()
+              : m.transactions_form_save_submit()
+          }
           secondaryAction={
             editing ? (
               <Button type="button" variant="outline" onClick={onStartNew}>
-                New transaction
+                {m.transactions_form_new_transaction()}
               </Button>
             ) : null
           }

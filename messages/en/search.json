@@ -1,0 +1,17 @@
+{
+  "account_subtitle": "{type} account",
+  "account_subtitle_archived": "Archived {type} account",
+  "budget_subtitle": "Budget for {month}",
+  "description": "Search pages, transactions, and other dashboard entities.",
+  "empty_idle": "Search pages or type at least 2 characters to search your data.",
+  "empty_results": "No results found.",
+  "group_accounts": "Accounts",
+  "group_budgets": "Budgets",
+  "group_pages": "Pages",
+  "group_recurring": "Recurring",
+  "group_transactions": "Transactions",
+  "open_dashboard_search": "Open dashboard search",
+  "placeholder": "Search pages, transactions, accounts...",
+  "searching": "Searching...",
+  "title": "Dashboard search"
+}

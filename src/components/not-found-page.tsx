@@ -1,5 +1,6 @@
 import { FileQuestionIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
+import { m } from "@/paraglide/messages"
 import { Button } from "@/components/ui/button"
 import {
   Empty,
@@ -22,14 +23,12 @@ export function NotFoundPage() {
           <EmptyMedia variant="icon">
             <FileQuestionIcon />
           </EmptyMedia>
-          <EmptyTitle>Page not found</EmptyTitle>
-          <EmptyDescription>
-            The page you're looking for doesn't exist or has been moved.
-          </EmptyDescription>
+          <EmptyTitle>{m.not_found_title()}</EmptyTitle>
+          <EmptyDescription>{m.not_found_description()}</EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
           <Button asChild>
-            <Link to="/dashboard">Go to Overview</Link>
+            <Link to="/dashboard">{m.error_go_to_overview()}</Link>
           </Button>
         </EmptyContent>
       </Empty>

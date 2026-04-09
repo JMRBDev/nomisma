@@ -9,6 +9,7 @@ import {
 import { useMountEffect } from "@/hooks/use-mount-effect"
 import { useGlobalSearch } from "@/hooks/use-money-dashboard"
 import { Button } from "@/components/ui/button"
+import { m } from "@/paraglide/messages"
 import {
   Command,
   CommandDialog,
@@ -73,10 +74,10 @@ export function DashboardSearch() {
   }, [items])
 
   const emptyLabel = !normalizedQuery
-    ? "Search pages or type at least 2 characters to search your data."
+    ? m.search_empty_idle()
     : deferredNormalizedQuery !== normalizedQuery || isFetching
-      ? "Searching..."
-      : "No results found."
+      ? m.search_searching()
+      : m.search_empty_results()
 
   return (
     <>
@@ -84,10 +85,10 @@ export function DashboardSearch() {
         variant="outline"
         className="aspect-square justify-center px-0"
         onClick={() => setOpen(true)}
-        aria-label="Open dashboard search"
+        aria-label={m.search_open_dashboard_search()}
       >
         <SearchIcon className="size-4" />
-        <span className="sr-only">Open dashboard search</span>
+        <span className="sr-only">{m.search_open_dashboard_search()}</span>
       </Button>
 
       <CommandDialog
@@ -98,14 +99,14 @@ export function DashboardSearch() {
             setQuery("")
           }
         }}
-        title="Dashboard search"
-        description="Search pages, transactions, and other dashboard entities."
+        title={m.search_title()}
+        description={m.search_description()}
       >
         <Command shouldFilter={false}>
           <CommandInput
             value={query}
             onValueChange={setQuery}
-            placeholder="Search pages, transactions, accounts..."
+            placeholder={m.search_placeholder()}
           />
           <CommandList>
             <CommandEmpty>{emptyLabel}</CommandEmpty>

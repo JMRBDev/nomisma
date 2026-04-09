@@ -1,8 +1,8 @@
 import { getRouteApi } from "@tanstack/react-router"
 import type { Id } from "../../../../convex/_generated/dataModel"
 import type {
-  transactionStatusOptions,
-  transactionTypeOptions,
+  TransactionStatusValue,
+  TransactionTypeValue,
 } from "@/lib/money"
 import {
   getCategoryOptions as getCategoryOptionsGeneric,
@@ -32,9 +32,8 @@ const ALL_FILTER_VALUE = "all"
 export type TransactionRecord = TransactionsData["transactions"][number]
 export type AccountOption = TransactionsData["accounts"]["active"][number]
 export type CategoryOption = TransactionsData["categories"]["all"][number]
-export type TransactionType = (typeof transactionTypeOptions)[number]["value"]
-export type TransactionStatus =
-  (typeof transactionStatusOptions)[number]["value"]
+export type TransactionType = TransactionTypeValue
+export type TransactionStatus = TransactionStatusValue
 
 export type TransactionFormValues = {
   type: TransactionType

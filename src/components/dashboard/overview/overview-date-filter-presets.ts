@@ -6,6 +6,7 @@ import {
   startOfWeek,
   subMonths,
 } from "date-fns"
+import { m } from "@/paraglide/messages"
 import type { WeekStartsOnPreference } from "@/components/dashboard/settings/settings-shared"
 import type {
   OverviewDateFilterPreset,
@@ -36,36 +37,36 @@ export function getOverviewDateFilterPresets(
 
   return [
     {
-      label: "Today",
+      label: m.date_filter_preset_today(),
       values: createOverviewDateFilterValues(referenceDate),
     },
     {
-      label: "Yesterday",
+      label: m.date_filter_preset_yesterday(),
       values: createOverviewDateFilterValues(previousDay),
     },
     {
-      label: "This week",
+      label: m.date_filter_preset_this_week(),
       values: createOverviewDateFilterValues(
         startOfWeek(referenceDate, { weekStartsOn: weekStartsOnDayIndex }),
         endOfWeek(referenceDate, { weekStartsOn: weekStartsOnDayIndex })
       ),
     },
     {
-      label: "Last week",
+      label: m.date_filter_preset_last_week(),
       values: createOverviewDateFilterValues(
         startOfWeek(previousWeek, { weekStartsOn: weekStartsOnDayIndex }),
         endOfWeek(previousWeek, { weekStartsOn: weekStartsOnDayIndex })
       ),
     },
     {
-      label: "This month",
+      label: m.date_filter_preset_this_month(),
       values: createOverviewDateFilterValues(
         startOfMonth(referenceDate),
         endOfMonth(referenceDate)
       ),
     },
     {
-      label: "Last month",
+      label: m.date_filter_preset_last_month(),
       values: createOverviewDateFilterValues(
         startOfMonth(previousMonth),
         endOfMonth(previousMonth)

@@ -1,10 +1,12 @@
 import { useRouter } from "@tanstack/react-router"
+import { getLocale } from "@/paraglide/runtime"
 import type { BrowserCalendarContext } from "@/lib/browser-calendar"
 import {
   detectBrowserCalendarPreferences,
   writeBrowserCalendarCookies,
 } from "@/lib/browser-calendar"
 import { useMountEffect } from "@/hooks/use-mount-effect"
+import { toCalendarLocale } from "@/lib/i18n"
 
 export function BrowserCalendarSync({
   calendarContext,
@@ -15,10 +17,14 @@ export function BrowserCalendarSync({
 
   useMountEffect(() => {
     const browserPreferences = detectBrowserCalendarPreferences()
-    const cookiesChanged = writeBrowserCalendarCookies(browserPreferences)
+    const appLocale = toCalendarLocale(getLocale())
+    const cookiesChanged = writeBrowserCalendarCookies({
+      timeZone: browserPreferences.timeZone,
+      locale: appLocale,
+    })
     const contextChanged =
       browserPreferences.timeZone !== calendarContext.timeZone ||
-      browserPreferences.locale !== calendarContext.locale
+      appLocale !== calendarContext.locale
 
     if (cookiesChanged && contextChanged) {
       void router.invalidate()
