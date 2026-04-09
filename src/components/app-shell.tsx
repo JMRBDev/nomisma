@@ -8,12 +8,14 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
+import type { WeekStartsOnPreference } from "@/components/dashboard/settings/settings-shared"
 
 type AppShellProps = {
   children: ReactNode
+  weekStartsOn: WeekStartsOnPreference
 }
 
-export function AppShell({ children }: AppShellProps) {
+export function AppShell({ children, weekStartsOn }: AppShellProps) {
   return (
     <SidebarProvider className="overflow-hidden">
       <AppSidebar />
@@ -30,7 +32,7 @@ export function AppShell({ children }: AppShellProps) {
             </div>
           </div>
 
-          <DashboardHeaderControls />
+          <DashboardHeaderControls weekStartsOn={weekStartsOn} />
         </header>
 
         {children}

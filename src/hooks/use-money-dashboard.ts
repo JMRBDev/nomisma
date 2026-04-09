@@ -10,6 +10,7 @@ export function useGlobalSearch(query: string) {
 
   return useQuery({
     ...getGlobalSearchQueryOptions(query, calendarContext),
+    gcTime: 30_000,
     enabled: normalizedQuery.length >= 2,
     placeholderData: (previousData) => previousData,
   })

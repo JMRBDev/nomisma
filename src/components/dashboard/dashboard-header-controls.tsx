@@ -1,6 +1,5 @@
-import { useState } from "react"
+import { Suspense, lazy, startTransition, useState } from "react"
 import { getRouteApi, useNavigate } from "@tanstack/react-router"
-import { useSuspenseQuery } from "@tanstack/react-query"
 import { CalendarRangeIcon } from "lucide-react"
 import type { OverviewDateFilterValues } from "@/components/dashboard/overview/overview-date-filter"
 import {
@@ -11,22 +10,27 @@ import {
   normalizeOverviewDateFilterValues,
   resolveOverviewDateFilterValues,
 } from "@/components/dashboard/overview/overview-date-filter"
-import { OverviewDateFilterSheet } from "@/components/dashboard/overview/overview-date-filter-sheet"
 import { DashboardSearch } from "@/components/dashboard/dashboard-search"
 import { Button } from "@/components/ui/button"
-import { getUserSettingsQueryOptions } from "@/lib/dashboard-query-options"
-import { DEFAULT_WEEK_STARTS_ON } from "../../../shared/settings"
+import type { WeekStartsOnPreference } from "@/components/dashboard/settings/settings-shared"
 
 const dashboardRouteApi = getRouteApi("/_authenticated/dashboard")
+const loadOverviewDateFilterSheet = () =>
+  import("@/components/dashboard/overview/overview-date-filter-sheet")
+const LazyOverviewDateFilterSheet = lazy(async () => ({
+  default: (await loadOverviewDateFilterSheet()).OverviewDateFilterSheet,
+}))
 
-function OverviewDateFilterControl() {
-  const { data: userSettings } = useSuspenseQuery(getUserSettingsQueryOptions())
+function OverviewDateFilterControl({
+  weekStartsOn,
+}: {
+  weekStartsOn: WeekStartsOnPreference
+}) {
   const navigate = useNavigate()
   const appliedSearch = dashboardRouteApi.useSearch()
   const appliedValues = resolveOverviewDateFilterValues(appliedSearch)
   const appliedActive = hasOverviewDateFilter(appliedValues)
   const filterLabel = getOverviewDateFilterLabel(appliedValues)
-  const weekStartsOn = userSettings.settings?.weekStartsOn ?? DEFAULT_WEEK_STARTS_ON
   const [open, setOpen] = useState(false)
   const [draft, setDraft] = useState<OverviewDateFilterValues>(appliedValues)
   const draftActive = hasOverviewDateFilter(draft)
@@ -37,6 +41,13 @@ function OverviewDateFilterControl() {
     }
 
     setOpen(nextOpen)
+  }
+
+  const handleOpen = () => {
+    void loadOverviewDateFilterSheet()
+    startTransition(() => {
+      handleOpenChange(true)
+    })
   }
 
   const handleApply = () => {
@@ -76,31 +87,45 @@ function OverviewDateFilterControl() {
         variant={appliedActive ? "secondary" : "outline"}
         className="max-w-56 min-w-0 justify-start"
         title={filterLabel}
-        onClick={() => handleOpenChange(true)}
+        onClick={handleOpen}
+        onFocus={() => {
+          void loadOverviewDateFilterSheet()
+        }}
+        onPointerEnter={() => {
+          void loadOverviewDateFilterSheet()
+        }}
       >
         <span className="truncate">{filterLabel}</span>
         <CalendarRangeIcon className="size-4 shrink-0" />
       </Button>
 
-      <OverviewDateFilterSheet
-        open={open}
-        onOpenChange={handleOpenChange}
-        values={draft}
-        onChange={setDraft}
-        onApply={handleApply}
-        onReset={handleReset}
-        canApply={hasOverviewDateFilter(draft)}
-        canReset={draftActive || appliedActive}
-        weekStartsOn={weekStartsOn}
-      />
+      {open ? (
+        <Suspense fallback={null}>
+          <LazyOverviewDateFilterSheet
+            open={open}
+            onOpenChange={handleOpenChange}
+            values={draft}
+            onChange={setDraft}
+            onApply={handleApply}
+            onReset={handleReset}
+            canApply={hasOverviewDateFilter(draft)}
+            canReset={draftActive || appliedActive}
+            weekStartsOn={weekStartsOn}
+          />
+        </Suspense>
+      ) : null}
     </>
   )
 }
 
-export function DashboardHeaderControls() {
+export function DashboardHeaderControls({
+  weekStartsOn,
+}: {
+  weekStartsOn: WeekStartsOnPreference
+}) {
   return (
     <div className="flex items-center gap-2 md:ml-auto">
-      <OverviewDateFilterControl />
+      <OverviewDateFilterControl weekStartsOn={weekStartsOn} />
       <DashboardSearch />
     </div>
   )
