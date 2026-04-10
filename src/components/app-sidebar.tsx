@@ -34,7 +34,7 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar variant="inset" collapsible="icon">
+    <Sidebar variant="inset" collapsible="offcanvas">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -45,10 +45,7 @@ export function AppSidebar() {
                 preload="intent"
                 onClick={closeSidebarOnMobile}
               >
-                <div className="flex aspect-square size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                  <span className="font-heading text-base">N</span>
-                </div>
-                <span className="font-heading text-base tracking-tight">
+                <span className="font-heading text-2xl tracking-tight text-center">
                   {APP_NAME}
                 </span>
               </Link>

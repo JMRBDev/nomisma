@@ -33,7 +33,9 @@ export function HomePage({
             search={{ redirect: undefined }}
             className="font-heading text-xl tracking-tight"
           >
-            {APP_NAME}
+            <span className="font-heading text-2xl tracking-tight text-center">
+              {APP_NAME}
+            </span>
           </Link>
           <div className="flex items-center gap-2">
             <HomePageNavbarControls locale={locale} />
