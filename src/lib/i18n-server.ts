@@ -1,12 +1,12 @@
 import { ConvexHttpClient } from "convex/browser"
 import { api } from "../../convex/_generated/api"
+import type { AppLocale } from "@/lib/i18n"
 import {
   defaultAppLocale,
   localeCookieName,
   normalizeAppLocale,
   parseCookieValue,
   resolveLocaleFromAcceptLanguage,
-  type AppLocale,
 } from "@/lib/i18n"
 
 type RequestLocaleStore = {
@@ -14,7 +14,7 @@ type RequestLocaleStore = {
 }
 
 type LocaleStore = {
-  getStore(): RequestLocaleStore | undefined
+  getStore: () => RequestLocaleStore | undefined
 }
 
 function getLocaleStore() {
@@ -50,22 +50,40 @@ export async function resolveAuthenticatedRequestLocale(token: string) {
   return normalizeAppLocale(userSettings.savedLocale) ?? null
 }
 
-export async function resolveRequestLocaleWithAuth(request: Request, token?: string | null) {
-  const cookieLocale = normalizeAppLocale(
-    parseCookieValue(request.headers.get("cookie"), localeCookieName),
-  )
+export function resolvePreferredRequestLocale(input: {
+  savedLocale?: string | null
+  cookieLocale?: string | null
+  acceptLanguage?: string | null
+}) {
+  const savedLocale = normalizeAppLocale(input.savedLocale)
+
+  if (savedLocale) {
+    return savedLocale
+  }
+
+  const cookieLocale = normalizeAppLocale(input.cookieLocale)
 
   if (cookieLocale) {
     return cookieLocale
   }
 
-  if (token) {
-    const savedLocale = await resolveAuthenticatedRequestLocale(token)
+  return resolveLocaleFromAcceptLanguage(input.acceptLanguage)
+}
 
-    if (savedLocale) {
-      return savedLocale
-    }
-  }
+export async function resolveRequestLocaleWithAuth(
+  request: Request,
+  token?: string | null
+) {
+  const savedLocale = token
+    ? await resolveAuthenticatedRequestLocale(token)
+    : null
 
-  return resolveLocaleFromAcceptLanguage(request.headers.get("accept-language"))
+  return resolvePreferredRequestLocale({
+    savedLocale,
+    cookieLocale: parseCookieValue(
+      request.headers.get("cookie"),
+      localeCookieName
+    ),
+    acceptLanguage: request.headers.get("accept-language"),
+  })
 }

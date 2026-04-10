@@ -17,11 +17,12 @@ export const Route = createFileRoute("/")({
     ],
   }),
   component: function IndexPage() {
-    const { isAuthenticated } = Route.useRouteContext()
+    const { isAuthenticated, locale } = Route.useRouteContext()
     const search = Route.useSearch()
     return (
       <HomePage
         isAuthenticated={isAuthenticated}
+        locale={locale}
         redirectTo={search.redirect}
       />
     )

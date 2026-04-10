@@ -1,16 +1,20 @@
 import { Link } from "@tanstack/react-router"
 import { ArrowRight } from "lucide-react"
+import type { AppLocale } from "@/lib/i18n"
 import { m } from "@/lib/i18n-client"
 import { handleSignIn } from "@/lib/auth"
 import { APP_NAME } from "@/lib/money"
+import { HomePageNavbarControls } from "@/components/home-page-navbar-controls"
 import { Button } from "@/components/ui/button"
 import { LandingFeatures } from "@/components/landing-features"
 
 export function HomePage({
   isAuthenticated,
+  locale,
   redirectTo,
 }: {
   isAuthenticated: boolean
+  locale: AppLocale
   redirectTo?: string
 }) {
   return (
@@ -31,15 +35,18 @@ export function HomePage({
           >
             {APP_NAME}
           </Link>
-          {isAuthenticated ? (
-            <Button asChild size="sm">
-              <Link to="/dashboard">{m.home_go_to_dashboard()}</Link>
-            </Button>
-          ) : (
-            <Button size="sm" onClick={() => handleSignIn(redirectTo)}>
-              {m.home_get_started()}
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            <HomePageNavbarControls locale={locale} />
+            {isAuthenticated ? (
+              <Button asChild size="sm">
+                <Link to="/dashboard">{m.home_go_to_dashboard()}</Link>
+              </Button>
+            ) : (
+              <Button size="sm" onClick={() => handleSignIn(redirectTo)}>
+                {m.home_get_started()}
+              </Button>
+            )}
+          </div>
         </div>
       </header>
 
