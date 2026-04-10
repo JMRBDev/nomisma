@@ -1,5 +1,4 @@
 import { ConvexError } from "convex/values"
-import type { AppLocale } from "../../shared/i18n"
 import type { WeekStartsOnPreference } from "../../shared/settings"
 import { groupCategories } from "./read_models_categories"
 import {
@@ -31,25 +30,20 @@ export async function getSettingsPageData(ctx: QueryCtx) {
 
 export async function getUserSettings(ctx: QueryCtx) {
   const user = await requireUser(ctx)
-  const { settings, savedLocale } = await getResolvedSettings(ctx, user._id)
+  const { settings } = await getResolvedSettings(ctx, user._id)
 
-  return {
-    settings,
-    savedLocale,
-  }
+  return { settings }
 }
 
 export async function upsertSettings(
   ctx: MutationCtx,
   args: {
     baseCurrency: string
-    locale: AppLocale
     weekStartsOn: WeekStartsOnPreference
   }
 ) {
   const user = await requireUser(ctx)
   const baseCurrency = args.baseCurrency.trim()
-  const locale = args.locale
   const weekStartsOn = args.weekStartsOn
 
   if (!baseCurrency) {
@@ -65,7 +59,6 @@ export async function upsertSettings(
     await ctx.db.replace(existingSettings._id, {
       userId: existingSettings.userId,
       baseCurrency,
-      locale,
       weekStartsOn,
       createdAt: existingSettings.createdAt,
       updatedAt: Date.now(),
@@ -76,7 +69,6 @@ export async function upsertSettings(
   return ctx.db.insert("userSettings", {
     userId: user._id,
     baseCurrency,
-    locale,
     weekStartsOn,
     createdAt: Date.now(),
     updatedAt: Date.now(),

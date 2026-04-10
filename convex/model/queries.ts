@@ -20,7 +20,6 @@ export async function getResolvedSettings(ctx: MoneyCtx, userId: string) {
 
   return {
     settingsDoc,
-    savedLocale: settingsDoc?.locale ?? null,
     settings: resolveUserSettings(settingsDoc),
   }
 }

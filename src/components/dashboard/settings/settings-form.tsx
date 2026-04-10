@@ -3,7 +3,7 @@ import { useConvexMutation } from "@convex-dev/react-query"
 import { useRouter } from "@tanstack/react-router"
 import { api } from "../../../../convex/_generated/api"
 import type { SettingsFormValues } from "@/components/dashboard/settings/settings-shared"
-import { setLocale, t  } from "@/lib/i18n"
+import { t } from "@/lib/i18n"
 import { FormErrorMessage } from "@/components/form-error-message"
 import { Button } from "@/components/ui/button"
 import {
@@ -16,7 +16,6 @@ import {
 import { Separator } from "@/components/ui/separator"
 import {
   getDefaultCurrencyOptions,
-  getLocaleOptions,
   getWeekStartsOnOptions,
 } from "@/components/dashboard/settings/settings-shared"
 import { SettingsSelect } from "@/components/dashboard/settings/settings-select"
@@ -33,7 +32,6 @@ export function SettingsForm({
   const [formError, setFormError] = useState("")
   const [pending, setPending] = useState(false)
   const defaultCurrencyOptions = getDefaultCurrencyOptions()
-  const localeOptions = getLocaleOptions()
   const weekStartsOnOptions = getWeekStartsOnOptions()
 
   const currencyOptions = defaultCurrencyOptions.some(
@@ -41,16 +39,15 @@ export function SettingsForm({
   )
     ? defaultCurrencyOptions
     : [
-        {
-          value: values.baseCurrency,
-          label: `${values.baseCurrency} (current)`,
-        },
-        ...defaultCurrencyOptions,
-      ]
+      {
+        value: values.baseCurrency,
+        label: `${values.baseCurrency} (current)`,
+      },
+      ...defaultCurrencyOptions,
+    ]
 
   const isDirty =
     values.baseCurrency !== savedValues.baseCurrency ||
-    values.locale !== savedValues.locale ||
     values.weekStartsOn !== savedValues.weekStartsOn
 
   const handleValueChange = (name: keyof SettingsFormValues, value: string) => {
@@ -74,17 +71,10 @@ export function SettingsForm({
     try {
       await upsertSettings({
         baseCurrency: values.baseCurrency,
-        locale: values.locale,
         weekStartsOn: values.weekStartsOn,
       })
+
       setSavedValues(values)
-
-      if (values.locale !== savedValues.locale) {
-        await setLocale(values.locale, { reload: false })
-        await router.invalidate()
-        return
-      }
-
       await router.invalidate()
     } catch (error) {
       setFormError(
@@ -114,24 +104,6 @@ export function SettingsForm({
             placeholder={t("settings_choose_currency")}
           />
         </Field>
-
-        <Field>
-          <FieldContent>
-            <FieldTitle className="font-heading text-lg">
-              {t("settings_language_title")}
-            </FieldTitle>
-            <FieldDescription>
-              {t("settings_language_description")}
-            </FieldDescription>
-          </FieldContent>
-          <SettingsSelect
-            value={values.locale}
-            onValueChange={(value) => handleValueChange("locale", value)}
-            options={localeOptions}
-            placeholder={t("settings_choose_language")}
-          />
-        </Field>
-
         <Field>
           <FieldContent>
             <FieldTitle className="font-heading text-lg">

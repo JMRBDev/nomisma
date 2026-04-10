@@ -1,6 +1,6 @@
 import { v } from "convex/values"
 import { mutation, query } from "./_generated/server"
-import { appLocaleValidator, weekStartsOnPreferenceValidator } from "./schema"
+import { weekStartsOnPreferenceValidator } from "./schema"
 import * as Settings from "./model/settings"
 
 export const getSettingsPageData = query({
@@ -16,7 +16,6 @@ export const getUserSettings = query({
 export const upsertSettings = mutation({
   args: {
     baseCurrency: v.string(),
-    locale: appLocaleValidator,
     weekStartsOn: weekStartsOnPreferenceValidator,
   },
   handler: (ctx, args) => Settings.upsertSettings(ctx, args),

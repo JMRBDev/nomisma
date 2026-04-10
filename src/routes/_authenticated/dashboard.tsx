@@ -15,7 +15,6 @@ type UserSettings = {
     theme: string
     colorTheme: string
   } | null
-  savedLocale: string | null
 }
 
 export const Route = createFileRoute("/_authenticated/dashboard")({

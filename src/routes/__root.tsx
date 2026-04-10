@@ -14,7 +14,7 @@ import type { QueryClient } from "@tanstack/react-query"
 import { BrowserCalendarSync } from "@/components/browser-calendar-sync"
 import { authClient } from "@/lib/auth-client"
 import { getToken } from "@/lib/auth-server"
-import { resolveRequestLocaleWithAuth, setRequestLocale } from "@/lib/i18n-server"
+import { resolveRequestLocale, setRequestLocale } from "@/lib/i18n-server"
 import { I18nProvider } from "@/lib/i18n-provider"
 import {
   BROWSER_TIME_ZONE_COOKIE_NAME,
@@ -30,11 +30,10 @@ import appCss from "@/styles/globals.css?url"
 
 const getRequestState = createServerFn({ method: "GET" }).handler(async () => {
   const token = await getToken()
-  const locale = await resolveRequestLocaleWithAuth(
+  const locale = resolveRequestLocale(
     new Request("http://nomisma.local", {
       headers: getRequestHeaders(),
     }),
-    token,
   )
 
   setRequestLocale(locale)

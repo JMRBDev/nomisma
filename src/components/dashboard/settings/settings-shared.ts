@@ -1,9 +1,7 @@
 import {
-  
-  
   resolveUserSettings
 } from "../../../../shared/settings"
-import type {UserSettingsLike, WeekStartsOnPreference} from "../../../../shared/settings";
+import type { UserSettingsLike, WeekStartsOnPreference } from "../../../../shared/settings"
 import type { AppLocale } from "../../../../shared/i18n"
 import { getCurrencyOptions } from "@/lib/currency"
 import { t } from "@/lib/i18n"
@@ -35,9 +33,13 @@ export function getLocaleOptions() {
 }
 
 export function createSettingsFormValues(
-  settings?: UserSettingsLike | null
+  settings?: UserSettingsLike | null,
+  locale?: AppLocale
 ): SettingsFormValues {
-  return resolveUserSettings(settings)
+  return {
+    ...resolveUserSettings(settings),
+    locale: locale ?? "en",
+  }
 }
 
 export function toWeekStartsOnDayIndex(
