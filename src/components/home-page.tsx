@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router"
 import { ArrowRight } from "lucide-react"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import { handleSignIn } from "@/lib/auth"
 import { APP_NAME } from "@/lib/money"
 import { Button } from "@/components/ui/button"

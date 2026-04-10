@@ -1,5 +1,5 @@
 import { useRouter } from "@tanstack/react-router"
-import { getLocale } from "@/paraglide/runtime"
+import { getLocale } from "@/lib/i18n-client"
 import type { BrowserCalendarContext } from "@/lib/browser-calendar"
 import {
   detectBrowserCalendarPreferences,

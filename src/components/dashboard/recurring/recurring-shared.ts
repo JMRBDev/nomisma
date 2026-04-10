@@ -1,5 +1,5 @@
 import { getRouteApi } from "@tanstack/react-router"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import type { RecurringFrequencyValue } from "@/lib/money"
 import { resolveValidOption as resolveValidOptionGeneric } from "@/lib/form-helpers"
 

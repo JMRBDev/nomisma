@@ -7,7 +7,7 @@ import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-s
 import { PrerequisiteEmptyState } from "@/components/prerequisite-empty-state"
 import { TransactionsEmptyState } from "@/components/dashboard/transactions/transactions-empty-state"
 import { TransactionsTable } from "@/components/dashboard/transactions/transactions-table"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 type TransactionsContentProps = {
   accountOptions: Array<unknown>

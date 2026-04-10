@@ -3,7 +3,7 @@ import type { Id } from "../../../../convex/_generated/dataModel"
 import { CategoryIconAvatar } from "@/components/dashboard/category-icon-avatar"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { TableCell, TableRow } from "@/components/ui/table"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import { cn } from "@/lib/utils"
 
 export type CategoryTableRowData = {

@@ -5,7 +5,7 @@ import type {
 import { AccountFormFields } from "@/components/dashboard/accounts/account-form-fields"
 import { DashboardFormActions } from "@/components/dashboard/dashboard-form-actions"
 import { DashboardFormDialog } from "@/components/dashboard/dashboard-form-dialog"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function AccountFormDialog({
   open,

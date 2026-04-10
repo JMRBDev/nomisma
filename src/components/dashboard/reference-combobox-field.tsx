@@ -4,7 +4,7 @@ import { useMemo } from "react"
 import type { ReactNode } from "react"
 import type { ReferenceComboboxAction } from "@/lib/reference-entities"
 import { ReferenceAutocompleteField } from "@/components/dashboard/reference-autocomplete-field"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export type ReferenceComboboxOption = {
   value: string

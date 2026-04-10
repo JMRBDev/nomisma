@@ -9,7 +9,7 @@ import { DashboardFilterSheet } from "@/components/dashboard/dashboard-filter-sh
 import { DashboardFilterSummary } from "@/components/dashboard/dashboard-filter-summary"
 import { Button } from "@/components/ui/button"
 import { NativeSelectOption } from "@/components/ui/native-select"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import {
   getTransactionStatusOptions,
   getTransactionTypeOptions,

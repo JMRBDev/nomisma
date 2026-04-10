@@ -1,7 +1,7 @@
 import { useState } from "react"
 
 import { useMountEffect } from "@/hooks/use-mount-effect"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import type { ColorTheme } from "@/lib/theme"
 import {
   DEFAULT_COLOR_THEME,

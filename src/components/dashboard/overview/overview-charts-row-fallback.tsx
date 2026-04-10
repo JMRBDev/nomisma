@@ -1,6 +1,6 @@
 import { OverviewPanelCard } from "@/components/dashboard/overview/overview-panel-card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function OverviewChartsRowFallback() {
   return (

@@ -6,7 +6,7 @@ import {
   buildPageSearchItems,
 } from "@/components/dashboard/dashboard-search-shared"
 import { useGlobalSearch } from "@/hooks/use-money-dashboard"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import {
   Command,
   CommandDialog,

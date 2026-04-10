@@ -19,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { Switch } from "@/components/ui/switch"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import { getAccountTypeOptions } from "@/lib/money"
 
 export function AccountFormFields({

@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button"
 import { useAccountCreator } from "@/hooks/use-account-creator"
 import { useAccountEditor } from "@/hooks/use-account-editor"
 import { getAccountsPageDataQueryOptions } from "@/lib/dashboard-query-options"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function AccountsPage() {
   const { data } = useSuspenseQuery(getAccountsPageDataQueryOptions())

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { getCreateOrRestoreActions } from "@/lib/reference-entities"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function RecurringSelectFields({
   values,

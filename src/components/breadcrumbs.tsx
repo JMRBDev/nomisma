@@ -1,6 +1,6 @@
 import { Fragment } from "react"
 import { Link, useMatches } from "@tanstack/react-router"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import {
   Breadcrumb,
   BreadcrumbItem,

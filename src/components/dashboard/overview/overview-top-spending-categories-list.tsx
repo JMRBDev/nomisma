@@ -1,7 +1,7 @@
 import type { OverviewTopSpendingCategory } from "@/components/dashboard/overview/overview-shared"
 import { Progress } from "@/components/ui/progress"
 import { formatCurrency } from "@/lib/money"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function OverviewTopSpendingCategoriesList({
   categories,

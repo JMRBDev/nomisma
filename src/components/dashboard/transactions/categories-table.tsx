@@ -6,7 +6,7 @@ import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { CategoryTableRow } from "@/components/dashboard/transactions/category-table-row"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { useDataTable } from "@/hooks/use-data-table"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export type CategoryTableRow = CategoryTableRowData
 

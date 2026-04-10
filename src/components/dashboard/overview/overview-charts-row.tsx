@@ -3,7 +3,7 @@ import { OverviewCategoryBreakdownChart } from "@/components/dashboard/overview/
 import { OverviewIncomeVsExpensesChart } from "@/components/dashboard/overview/overview-income-vs-expenses-chart"
 import { OverviewPanelCard } from "@/components/dashboard/overview/overview-panel-card"
 import { OverviewSpendingChart } from "@/components/dashboard/overview/overview-spending-chart"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 interface OverviewChartsRowProps {
   data: OverviewData

@@ -1,5 +1,5 @@
-import { getLocale } from "@/paraglide/runtime"
-import { m } from "@/paraglide/messages"
+import { getLocale } from "@/lib/i18n-client"
+import { m } from "@/lib/i18n-client"
 import {
   formatDayKeyLabel,
   formatMonthKeyLabel,

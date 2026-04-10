@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/chart"
 import { formatCurrency, formatDateLabel } from "@/lib/money"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
-import { getLocale } from "@/paraglide/runtime"
-import { m } from "@/paraglide/messages"
+import { getLocale } from "@/lib/i18n-client"
+import { m } from "@/lib/i18n-client"
 import { toCalendarLocale } from "@/lib/i18n"
 
 export function OverviewSpendingChart({

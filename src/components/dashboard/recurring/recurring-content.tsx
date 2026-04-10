@@ -7,7 +7,7 @@ import { RecurringSummaryCards } from "@/components/dashboard/recurring/recurrin
 import { RecurringTable } from "@/components/dashboard/recurring/recurring-table"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 interface RecurringContentProps {
   hasRecurringItems: boolean

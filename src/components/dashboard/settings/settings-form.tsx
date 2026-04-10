@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { useRouter } from "@tanstack/react-router"
-import { setLocale } from "@/paraglide/runtime"
-import { m } from "@/paraglide/messages"
+import { setLocale } from "@/lib/i18n-client"
+import { m } from "@/lib/i18n-client"
 import { api } from "../../../../convex/_generated/api"
 import type { SettingsFormValues } from "@/components/dashboard/settings/settings-shared"
 import { FormErrorMessage } from "@/components/form-error-message"
@@ -81,7 +81,8 @@ export function SettingsForm({
       setSavedValues(values)
 
       if (values.locale !== savedValues.locale) {
-        await setLocale(values.locale)
+        await setLocale(values.locale, { reload: false })
+        await router.invalidate()
         return
       }
 
@@ -103,7 +104,9 @@ export function SettingsForm({
             <FieldTitle className="font-heading text-lg">
               {m.settings_base_currency_title()}
             </FieldTitle>
-            <FieldDescription>{m.settings_base_currency_description()}</FieldDescription>
+            <FieldDescription>
+              {m.settings_base_currency_description()}
+            </FieldDescription>
           </FieldContent>
           <SettingsSelect
             value={values.baseCurrency}
@@ -118,7 +121,9 @@ export function SettingsForm({
             <FieldTitle className="font-heading text-lg">
               {m.settings_language_title()}
             </FieldTitle>
-            <FieldDescription>{m.settings_language_description()}</FieldDescription>
+            <FieldDescription>
+              {m.settings_language_description()}
+            </FieldDescription>
           </FieldContent>
           <SettingsSelect
             value={values.locale}
@@ -133,7 +138,9 @@ export function SettingsForm({
             <FieldTitle className="font-heading text-lg">
               {m.settings_week_starts_title()}
             </FieldTitle>
-            <FieldDescription>{m.settings_week_starts_description()}</FieldDescription>
+            <FieldDescription>
+              {m.settings_week_starts_description()}
+            </FieldDescription>
           </FieldContent>
           <SettingsSelect
             value={values.weekStartsOn}

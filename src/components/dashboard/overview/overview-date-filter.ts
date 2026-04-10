@@ -1,5 +1,5 @@
 import { formatDateLabel } from "@/lib/money"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import { parseDayKey, toDayKey } from "@/lib/date-keys"
 
 const ISO_DAY_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/

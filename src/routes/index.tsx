@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import { APP_NAME } from "@/lib/money"
 import { HomePage } from "@/components/home-page"
 

@@ -8,7 +8,7 @@ import { BudgetFormFields } from "@/components/dashboard/budgets/budget-form-fie
 import { DashboardFormActions } from "@/components/dashboard/dashboard-form-actions"
 import { DashboardFormDialog } from "@/components/dashboard/dashboard-form-dialog"
 import { Button } from "@/components/ui/button"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function BudgetFormDialog({
   open,

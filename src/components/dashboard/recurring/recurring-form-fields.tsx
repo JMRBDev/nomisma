@@ -15,7 +15,7 @@ import {
 import { FormErrorMessage } from "@/components/form-error-message"
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import {
   getRecurringFrequencyOptions,
   getTransactionTypeLabel,

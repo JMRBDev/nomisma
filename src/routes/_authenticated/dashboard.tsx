@@ -1,38 +1,44 @@
-import { useSuspenseQuery } from "@tanstack/react-query"
 import { Outlet, createFileRoute } from "@tanstack/react-router"
 import { parseOverviewDateFilterSearch } from "@/components/dashboard/overview/overview-date-filter"
 import { AppShell } from "@/components/app-shell"
 import { ensureAuthenticatedQueryData } from "@/lib/convex-auth"
 import { getUserSettingsQueryOptions } from "@/lib/dashboard-query-options"
-import { getLocale, setLocale } from "@/paraglide/runtime"
-import { useMountEffect } from "@/hooks/use-mount-effect"
-import { DEFAULT_WEEK_STARTS_ON } from "../../../shared/settings"
+import {
+  DEFAULT_WEEK_STARTS_ON,
+  type WeekStartsOnPreference,
+} from "../../../shared/settings"
+
+type UserSettings = {
+  settings: {
+    baseCurrency: string
+    weekStartsOn: string
+    theme: string
+    colorTheme: string
+  } | null
+  savedLocale: string | null
+}
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   staticData: {
     breadcrumb: "Overview",
   },
   validateSearch: parseOverviewDateFilterSearch,
-  loader: ({ context }) =>
-    ensureAuthenticatedQueryData(
+  loader: async ({ context }) => {
+    const userSettings = (await ensureAuthenticatedQueryData(
       context.queryClient,
       context.convexQueryClient,
       getUserSettingsQueryOptions()
-    ),
+    )) as UserSettings
+    return { userSettings }
+  },
   component: DashboardLayout,
 })
 
 function DashboardLayout() {
-  const { data: userSettings } = useSuspenseQuery(getUserSettingsQueryOptions())
-  const savedLocale = userSettings.savedLocale
+  const { userSettings } = Route.useLoaderData()
   const weekStartsOn =
-    userSettings.settings?.weekStartsOn ?? DEFAULT_WEEK_STARTS_ON
-
-  useMountEffect(() => {
-    if (savedLocale && savedLocale !== getLocale()) {
-      void setLocale(savedLocale, { reload: false })
-    }
-  })
+    (userSettings.settings?.weekStartsOn as WeekStartsOnPreference) ??
+    DEFAULT_WEEK_STARTS_ON
 
   return (
     <AppShell weekStartsOn={weekStartsOn}>

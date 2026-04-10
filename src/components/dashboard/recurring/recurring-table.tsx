@@ -9,7 +9,7 @@ import {
   getAccountDisplayName,
   getRecurringCategoryLabel,
 } from "@/lib/dashboard-i18n"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 const SORT_ACCESSORS: Record<
   string,

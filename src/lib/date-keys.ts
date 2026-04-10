@@ -1,5 +1,5 @@
 import { format, lastDayOfMonth, parseISO } from "date-fns"
-import { getLocale } from "@/paraglide/runtime"
+import { getLocale } from "@/lib/i18n-client"
 import { toCalendarLocale } from "@/lib/i18n"
 
 function padNumber(value: number) {

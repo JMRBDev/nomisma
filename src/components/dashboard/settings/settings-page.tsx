@@ -7,8 +7,8 @@ import { ThemePreferenceField } from "@/components/dashboard/settings/theme-pref
 import { createSettingsFormValues } from "@/components/dashboard/settings/settings-shared"
 import { Separator } from "@/components/ui/separator"
 import { getUserSettingsQueryOptions } from "@/lib/dashboard-query-options"
-import { m } from "@/paraglide/messages"
-import { getLocale } from "@/paraglide/runtime"
+import { m } from "@/lib/i18n-client"
+import { getLocale } from "@/lib/i18n-client"
 
 export function SettingsPage() {
   const { data: userSettings } = useSuspenseQuery(getUserSettingsQueryOptions())

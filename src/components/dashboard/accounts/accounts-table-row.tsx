@@ -11,7 +11,7 @@ import { AccountIconAvatar } from "@/components/dashboard/account-icon-avatar"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { formatCurrency } from "@/lib/money"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function AccountsTableRow({
   account,

@@ -1,5 +1,5 @@
 import type { ChartConfig } from "@/components/ui/chart"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export const spendingChartConfig = {
   amount: {

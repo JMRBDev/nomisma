@@ -14,7 +14,7 @@ import {
   getAccountTypeLabel as getAccountTypeLabelFromLocale,
   type AccountTypeValue,
 } from "@/lib/money"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import { pickRandomItem } from "@/lib/random"
 
 const accountsRouteApi = getRouteApi("/_authenticated/dashboard/accounts")

@@ -6,7 +6,7 @@ import {
 } from "lucide-react"
 import { OverviewMetricCard } from "@/components/dashboard/overview/overview-metric-card"
 import { formatCurrency } from "@/lib/money"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function OverviewSummaryCards({
   currentMoney = 0,

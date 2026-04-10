@@ -14,15 +14,24 @@ import type { QueryClient } from "@tanstack/react-query"
 import { BrowserCalendarSync } from "@/components/browser-calendar-sync"
 import { authClient } from "@/lib/auth-client"
 import { getToken } from "@/lib/auth-server"
-import { m } from "@/paraglide/messages"
-import { getLocale } from "@/paraglide/runtime"
+import {
+  resolveAuthenticatedRequestLocale,
+  setRequestLocale,
+} from "@/lib/i18n-server"
+import { I18nProvider, m } from "@/lib/i18n-provider"
 import {
   BROWSER_LOCALE_COOKIE_NAME,
   BROWSER_TIME_ZONE_COOKIE_NAME,
   getBrowserCalendarBootstrapScript,
   resolveBrowserCalendarContext,
 } from "@/lib/browser-calendar"
-import { toCalendarLocale } from "@/lib/i18n"
+import {
+  buildLocaleCookieValue,
+  localeCookieName,
+  normalizeAppLocale,
+  resolveLocaleFromAcceptLanguage,
+  toCalendarLocale,
+} from "@/lib/i18n"
 import { APP_NAME } from "@/lib/money"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
@@ -31,10 +40,19 @@ import appCss from "@/styles/globals.css?url"
 
 const getRequestState = createServerFn({ method: "GET" }).handler(async () => {
   const token = await getToken()
-  const locale = getLocale()
+  const cookieLocale = normalizeAppLocale(getCookie(localeCookieName))
+  const locale =
+    cookieLocale ??
+    (token ? await resolveAuthenticatedRequestLocale(token) : null) ??
+    resolveLocaleFromAcceptLanguage(getRequestHeader("accept-language"))
+
+  setRequestLocale(locale)
   const calendarContext = resolveBrowserCalendarContext({
     timeZone: getCookie(BROWSER_TIME_ZONE_COOKIE_NAME),
-    locale: toCalendarLocale(locale) ?? getCookie(BROWSER_LOCALE_COOKIE_NAME) ?? getRequestHeader("accept-language"),
+    locale:
+      toCalendarLocale(locale) ??
+      getCookie(BROWSER_LOCALE_COOKIE_NAME) ??
+      getRequestHeader("accept-language"),
   })
 
   return {
@@ -107,10 +125,12 @@ function RootComponent() {
       authClient={authClient}
       initialToken={context.token}
     >
-      <RootDocument>
-        <BrowserCalendarSync calendarContext={context.calendarContext} />
-        <Outlet />
-      </RootDocument>
+      <I18nProvider locale={context.locale as "en" | "es"}>
+        <RootDocument>
+          <BrowserCalendarSync calendarContext={context.calendarContext} />
+          <Outlet />
+        </RootDocument>
+      </I18nProvider>
     </ConvexBetterAuthProvider>
   )
 }
@@ -124,6 +144,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{document.documentElement.setAttribute('data-color-theme',localStorage.getItem('nomisma-color-theme')||'zinc')}catch(e){}})()`,
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `document.documentElement.lang=${JSON.stringify(locale)};document.cookie=${JSON.stringify(buildLocaleCookieValue(locale))}`,
           }}
         />
         <script

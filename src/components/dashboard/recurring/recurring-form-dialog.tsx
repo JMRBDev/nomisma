@@ -9,7 +9,7 @@ import { RecurringFormFields } from "@/components/dashboard/recurring/recurring-
 import { DashboardFormActions } from "@/components/dashboard/dashboard-form-actions"
 import { DashboardFormDialog } from "@/components/dashboard/dashboard-form-dialog"
 import { getCategoryOptions } from "@/components/dashboard/recurring/recurring-shared"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function RecurringFormDialog({
   open,

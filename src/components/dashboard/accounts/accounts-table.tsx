@@ -6,7 +6,7 @@ import { AccountsTableRow } from "@/components/dashboard/accounts/accounts-table
 import { TableCell, TableRow } from "@/components/ui/table"
 import { useDataTable } from "@/hooks/use-data-table"
 import { formatCurrency } from "@/lib/money"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 const SORT_ACCESSORS: Record<string, (row: AccountRecord) => string | number> =
   {

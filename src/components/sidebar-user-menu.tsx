@@ -1,5 +1,5 @@
 import { ChevronsUpDownIcon, LogOutIcon } from "lucide-react"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import { UserInfoPreview } from "@/components/user-info-preview"
 import {
   DropdownMenu,

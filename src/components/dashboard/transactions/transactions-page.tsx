@@ -22,7 +22,7 @@ import { useDateFilter } from "@/hooks/use-date-filter"
 import { useDeleteConfirmation } from "@/hooks/use-delete-confirmation"
 import { useTransactionReferenceHandlers } from "@/hooks/use-transaction-reference-handlers"
 import { getTransactionsPageDataQueryOptions } from "@/lib/dashboard-query-options"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function TransactionsPage() {
   const { hasDateFilter, filterLabel, dateRange } = useDateFilter()

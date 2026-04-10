@@ -9,7 +9,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function AccountsEmptyState({
   hasArchivedAccounts,

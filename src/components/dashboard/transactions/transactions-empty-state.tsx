@@ -9,7 +9,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { Button } from "@/components/ui/button"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function TransactionsEmptyState({
   hasFilters,

@@ -7,7 +7,7 @@ import { TableCell, TableRow } from "@/components/ui/table"
 import { getBudgetCategoryLabel } from "@/lib/dashboard-i18n"
 import { cn } from "@/lib/utils"
 import { formatCurrency, getBudgetTone } from "@/lib/money"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function BudgetsTableRow({
   budget,

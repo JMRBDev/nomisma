@@ -15,7 +15,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { useCategoryManager } from "@/hooks/use-category-manager"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 const transactionsRouteApi = getRouteApi(
   "/_authenticated/dashboard/transactions"

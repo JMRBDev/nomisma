@@ -1,5 +1,5 @@
 import { useTheme } from "next-themes"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import type { ThemePreference } from "@/lib/theme"
 
 import { useIsClient } from "@/hooks/use-is-client"

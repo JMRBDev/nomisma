@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button"
 import { useCalendarContext } from "@/hooks/use-calendar-context"
 import { useDateFilter } from "@/hooks/use-date-filter"
 import { getOverviewDataQueryOptions } from "@/lib/dashboard-query-options"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 const LazyOverviewChartsRow = lazy(async () => ({
   default: (await import("@/components/dashboard/overview/overview-charts-row"))

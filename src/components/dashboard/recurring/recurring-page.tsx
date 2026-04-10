@@ -14,7 +14,7 @@ import { useCalendarContext } from "@/hooks/use-calendar-context"
 import { useCategoryReferenceActions } from "@/hooks/use-category-reference-actions"
 import { useDateFilter } from "@/hooks/use-date-filter"
 import { getRecurringPageDataQueryOptions } from "@/lib/dashboard-query-options"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function RecurringPage() {
   const { hasDateFilter, filterLabel, dateRange } = useDateFilter()

@@ -6,7 +6,7 @@ import {
   startOfWeek,
   subMonths,
 } from "date-fns"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import type { WeekStartsOnPreference } from "@/components/dashboard/settings/settings-shared"
 import type {
   OverviewDateFilterPreset,

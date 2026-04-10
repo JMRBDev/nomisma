@@ -4,7 +4,7 @@ import { AccountsTable } from "@/components/dashboard/accounts/accounts-table"
 import { DashboardSummaryCard } from "@/components/dashboard/dashboard-summary-card"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatCurrency } from "@/lib/money"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 interface AccountsContentProps {
   activeAccounts: Array<AccountRecord>

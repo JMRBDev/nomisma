@@ -3,7 +3,7 @@ import { DashboardSummaryCard } from "@/components/dashboard/dashboard-summary-c
 import { canConfirmRecurringItem } from "@/components/dashboard/recurring/recurring-shared"
 import { formatDateLabel } from "@/lib/money"
 import { getRecurringFrequencyLabel } from "@/lib/money"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 interface RecurringSummaryCardsProps {
   recurringItems: Array<RecurringRecord>

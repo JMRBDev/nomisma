@@ -1,6 +1,6 @@
 import { FileQuestionIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import { Button } from "@/components/ui/button"
 import {
   Empty,

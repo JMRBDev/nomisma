@@ -10,7 +10,7 @@ import { DashboardFormDialog } from "@/components/dashboard/dashboard-form-dialo
 import { Button } from "@/components/ui/button"
 import { TransactionFormFields } from "@/components/dashboard/transactions/transaction-form-fields"
 import { getCategoryOptions } from "@/components/dashboard/transactions/transactions-shared"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function TransactionFormDialog({
   open,

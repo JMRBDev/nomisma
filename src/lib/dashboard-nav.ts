@@ -7,7 +7,7 @@ import {
   TargetIcon,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 type DashboardNavItem = {
   exact?: true

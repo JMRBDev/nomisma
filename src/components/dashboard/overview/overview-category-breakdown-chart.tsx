@@ -12,7 +12,7 @@ import {
 import { getOverviewCategoryLabel } from "@/lib/dashboard-i18n"
 import { formatCurrency } from "@/lib/money"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function OverviewCategoryBreakdownChart({
   data,

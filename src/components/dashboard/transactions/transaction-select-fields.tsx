@@ -7,7 +7,7 @@ import type {
 import { resolveValidOption } from "@/components/dashboard/transactions/transactions-shared"
 import { ReferenceComboboxField } from "@/components/dashboard/reference-combobox-field"
 import { getCreateOrRestoreActions } from "@/lib/reference-entities"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function TransactionSelectFields({
   values,

@@ -2,7 +2,7 @@ import { Suspense, lazy, startTransition, useState } from "react"
 import { SearchIcon } from "lucide-react"
 import { useMountEffect } from "@/hooks/use-mount-effect"
 import { Button } from "@/components/ui/button"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 const loadDashboardSearchDialog = () =>
   import("@/components/dashboard/dashboard-search-dialog")
 const LazyDashboardSearchDialog = lazy(async () => ({

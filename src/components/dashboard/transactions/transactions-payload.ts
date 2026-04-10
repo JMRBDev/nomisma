@@ -12,7 +12,7 @@ import {
 } from "@/components/dashboard/transactions/transactions-shared"
 import { getFirstOptionId } from "@/lib/form-helpers"
 import { toAmountInput, todayInputValue } from "@/lib/money"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export type TransactionEditorOptions = {
   accountOptions: Array<AccountOption>

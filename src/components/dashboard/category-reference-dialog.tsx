@@ -1,6 +1,6 @@
 import type { useCategoryReferenceActions } from "@/hooks/use-category-reference-actions"
 import { CategoryFormDialog } from "@/components/dashboard/transactions/category-form-dialog"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function CategoryReferenceDialog({
   categoryActions,

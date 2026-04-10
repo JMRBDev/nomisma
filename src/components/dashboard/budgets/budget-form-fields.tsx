@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { FormErrorMessage } from "@/components/form-error-message"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function BudgetFormFields({
   values,

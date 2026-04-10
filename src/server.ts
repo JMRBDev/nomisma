@@ -1,15 +1,39 @@
+import { AsyncLocalStorage } from "node:async_hooks"
 import handler from "@tanstack/react-start/server-entry"
-import { paraglideMiddleware } from "@/paraglide/server"
-import { shouldHandleI18n } from "@/lib/i18n"
+import {
+  buildLocaleCookieValue,
+  getLocaleRedirectPath,
+  resolveLocaleFromRequest,
+  type AppLocale,
+} from "@/lib/i18n"
+
+type RequestLocaleStore = {
+  locale: AppLocale
+}
+
+const localeStore = new AsyncLocalStorage<RequestLocaleStore>()
+
+;(globalThis as { __nomismaLocaleStore?: typeof localeStore }).__nomismaLocaleStore =
+  localeStore
 
 export default {
-  async fetch(request: Request) {
-    const { pathname } = new URL(request.url)
+  fetch(request: Request) {
+    const url = new URL(request.url)
+    const localeRedirect = getLocaleRedirectPath(url.pathname)
 
-    if (!shouldHandleI18n(pathname)) {
-      return handler.fetch(request)
+    if (localeRedirect) {
+      url.pathname = localeRedirect.pathname
+
+      return new Response(null, {
+        status: 308,
+        headers: {
+          location: url.toString(),
+          "set-cookie": buildLocaleCookieValue(localeRedirect.locale),
+        },
+      })
     }
 
-    return paraglideMiddleware(request, () => handler.fetch(request))
+    const locale = resolveLocaleFromRequest(request)
+    return localeStore.run({ locale }, () => handler.fetch(request))
   },
 }

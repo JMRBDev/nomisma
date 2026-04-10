@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { Textarea } from "@/components/ui/textarea"
 import { getCategoryOptions } from "@/components/dashboard/transactions/transactions-shared"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import {
   getTransactionStatusOptions,
   getTransactionTypeOptions,

@@ -1,6 +1,6 @@
 import type { AppLocale } from "../../../../shared/i18n"
 import { getCurrencyOptions } from "@/lib/currency"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import {
   resolveUserSettings,
   type UserSettingsLike,

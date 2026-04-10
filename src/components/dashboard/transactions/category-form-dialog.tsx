@@ -16,7 +16,7 @@ import {
   FieldTitle,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function CategoryFormDialog({
   open,

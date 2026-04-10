@@ -1,5 +1,5 @@
 import { CalendarDays, PieChart, Wallet } from "lucide-react"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function LandingFeatures() {
   const features = [

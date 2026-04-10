@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import { cn } from "@/lib/utils"
 
 export type DashboardTableAction = {

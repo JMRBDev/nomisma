@@ -1,5 +1,5 @@
 import type { DateRange } from "react-day-picker"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 import type {
   OverviewDateFilterPreset,
   OverviewDateFilterValues,

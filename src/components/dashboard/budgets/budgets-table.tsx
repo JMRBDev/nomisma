@@ -8,7 +8,7 @@ import { useDataTable } from "@/hooks/use-data-table"
 import { getBudgetCategoryLabel } from "@/lib/dashboard-i18n"
 import { cn } from "@/lib/utils"
 import { formatCurrency } from "@/lib/money"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 const SORT_ACCESSORS: Record<string, (row: BudgetRecord) => string | number> = {
   categoryName: (row) => getBudgetCategoryLabel(row).toLowerCase(),

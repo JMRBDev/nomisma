@@ -1,7 +1,7 @@
 import { getRouteApi } from "@tanstack/react-router"
 import type { Id } from "../../../../convex/_generated/dataModel"
 import { toAmountInput } from "@/lib/money"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 const budgetsRouteApi = getRouteApi("/_authenticated/dashboard/budgets")
 

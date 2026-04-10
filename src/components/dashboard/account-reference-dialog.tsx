@@ -1,6 +1,6 @@
 import type { useAccountReferenceActions } from "@/hooks/use-account-reference-actions"
 import { AccountFormDialog } from "@/components/dashboard/accounts/account-form-dialog"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function AccountReferenceDialog({
   accountActions,

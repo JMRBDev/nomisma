@@ -6,7 +6,7 @@ import {
   getRecurringFrequencyLabel,
   getTransactionTypeLabel,
 } from "@/lib/money"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 export function getAccountDisplayName(name?: string | null) {
   return name ?? m.common_unknown_account()

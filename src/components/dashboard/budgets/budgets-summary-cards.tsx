@@ -1,7 +1,7 @@
 import type { BudgetRecord } from "@/components/dashboard/budgets/budgets-shared"
 import { DashboardSummaryCard } from "@/components/dashboard/dashboard-summary-card"
 import { formatCurrency } from "@/lib/money"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 interface BudgetsSummaryCardsProps {
   budgets: Array<BudgetRecord>

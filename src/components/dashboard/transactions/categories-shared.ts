@@ -11,7 +11,7 @@ import type { LucideIcon } from "lucide-react"
 import type { IconOption } from "@/components/picker-shared"
 import { COLOR_OPTIONS } from "@/components/picker-shared"
 import { pickRandomItem } from "@/lib/random"
-import { m } from "@/paraglide/messages"
+import { m } from "@/lib/i18n-client"
 
 const transactionsRouteApi = getRouteApi(
   "/_authenticated/dashboard/transactions"
