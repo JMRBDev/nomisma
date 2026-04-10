@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useRouter } from "@tanstack/react-router"
-import { LanguagesIcon, MoonIcon, SunIcon } from "lucide-react"
+import { MoonIcon, SunIcon } from "lucide-react"
 import { useTheme } from "next-themes"
 import type { AppLocale } from "@/lib/i18n"
 import { setLocale, t } from "@/lib/i18n"
@@ -37,7 +37,7 @@ export function HomePageNavbarControls({
     setLocalePending(true)
 
     try {
-      await setLocale(nextLocale, { reload: false })
+      setLocale(nextLocale, { reload: false })
       await router.invalidate()
     } finally {
       setLocalePending(false)
@@ -56,15 +56,12 @@ export function HomePageNavbarControls({
         disabled={localePending}
       >
         <SelectTrigger
-          size="sm"
-          className="w-30 gap-2 rounded-full border-border bg-background/70"
           aria-label={t("settings_language_title")}
         >
-          <LanguagesIcon className="size-4 text-muted-foreground" />
           <SelectValue placeholder={t("settings_choose_language")} />
         </SelectTrigger>
 
-        <SelectContent>
+        <SelectContent position="popper">
           <SelectGroup>
             {localeOptions.map((option) => (
               <SelectItem key={option.value} value={option.value}>
@@ -77,9 +74,8 @@ export function HomePageNavbarControls({
 
       <Button
         type="button"
-        variant="outline"
-        size="icon-sm"
-        className="rounded-full bg-background/70"
+        variant="secondary"
+        size="icon"
         onClick={handleThemeToggle}
         disabled={!isClient}
         aria-label={isDarkTheme ? t("theme_light") : t("theme_dark")}
