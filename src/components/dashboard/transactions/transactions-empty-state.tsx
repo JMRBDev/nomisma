@@ -9,15 +9,15 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { Button } from "@/components/ui/button"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function TransactionsEmptyState({
   hasFilters,
   onAddTransaction,
   onClearFilters,
-  title = m.transactions_empty_title(),
-  description = m.transactions_empty_description(),
-  actionLabel = m.transactions_add_transaction(),
+  title = t("transactions_empty_title"),
+  description = t("transactions_empty_description"),
+  actionLabel = t("transactions_add_transaction"),
 }: {
   hasFilters: boolean
   onAddTransaction: () => void
@@ -30,11 +30,11 @@ export function TransactionsEmptyState({
     return (
       <FilteredResultsEmptyState
         icon={ReceiptTextIcon}
-        title={m.transactions_empty_filtered_title()}
-        description={m.transactions_empty_filtered_description()}
+        title={t("transactions_empty_filtered_title")}
+        description={t("transactions_empty_filtered_description")}
         action={
           <Button variant="outline" onClick={onClearFilters}>
-            {m.common_clear_filters()}
+            {t("common_clear_filters")}
           </Button>
         }
       />

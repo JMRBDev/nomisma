@@ -6,7 +6,7 @@ import { AccountsTableRow } from "@/components/dashboard/accounts/accounts-table
 import { TableCell, TableRow } from "@/components/ui/table"
 import { useDataTable } from "@/hooks/use-data-table"
 import { formatCurrency } from "@/lib/money"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 const SORT_ACCESSORS: Record<string, (row: AccountRecord) => string | number> =
   {
@@ -21,25 +21,25 @@ const COLUMNS: Array<DashboardTableColumn> = [
   {
     id: "name",
     column: "name",
-    header: m.common_account(),
+    header: t("common_account"),
     alwaysVisible: true,
   },
-  { id: "type", column: "type", header: m.common_type() },
+  { id: "type", column: "type", header: t("common_type") },
   {
     id: "includeInTotals",
-    header: m.accounts_table_totals(),
+    header: t("accounts_table_totals"),
     className: "text-center",
   },
   {
     id: "currentBalance",
     column: "currentBalance",
-    header: m.accounts_table_current(),
+    header: t("accounts_table_current"),
     className: "text-right",
     alwaysVisible: true,
   },
   {
     id: "actions",
-    header: m.common_actions(),
+    header: t("common_actions"),
     className: "text-right",
     alwaysVisible: true,
   },
@@ -85,7 +85,7 @@ export function AccountsTable({
         <TableRow>
           <TableCell>
             <span className="text-muted-foreground">
-              {m.accounts_table_total({
+              {t("accounts_table_total", {
                 count: table.allSortedData.length,
               })}
             </span>

@@ -6,7 +6,7 @@ import { DashboardTable } from "@/components/dashboard/dashboard-table"
 import { CategoryTableRow } from "@/components/dashboard/transactions/category-table-row"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { useDataTable } from "@/hooks/use-data-table"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export type CategoryTableRow = CategoryTableRowData
 
@@ -21,18 +21,18 @@ const SORT_ACCESSORS: Record<
 const COLUMN_VISIBILITY_STORAGE_KEY = "nomisma-table-columns:categories"
 
 const COLUMNS: Array<DashboardTableColumn> = [
-  { id: "name", column: "name", header: m.common_name(), alwaysVisible: true },
-  { id: "status", header: m.common_status() },
+  { id: "name", column: "name", header: t("common_name"), alwaysVisible: true },
+  { id: "status", header: t("common_status") },
   {
     id: "transactionCount",
     column: "transactionCount",
-    header: m.nav_transactions(),
+    header: t("nav_transactions"),
     className: "text-right",
     alwaysVisible: true,
   },
   {
     id: "actions",
-    header: m.common_actions(),
+    header: t("common_actions"),
     className: "text-right",
     alwaysVisible: true,
   },
@@ -71,7 +71,7 @@ export function CategoriesTable({
         <TableRow>
           <TableCell>
             <span className="text-muted-foreground">
-              {m.categories_table_footer({
+              {t("categories_table_footer", {
                 active: aggregates.activeCount,
                 archived: table.allSortedData.length - aggregates.activeCount,
               })}

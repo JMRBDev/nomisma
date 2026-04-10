@@ -47,6 +47,7 @@ export async function resolveAuthenticatedRequestLocale(token: string) {
     logger: false,
   })
   const userSettings = await client.query(api.settings.getUserSettings, {})
+
   return normalizeAppLocale(userSettings.savedLocale) ?? null
 }
 
@@ -72,7 +73,7 @@ export function resolvePreferredRequestLocale(input: {
 
 export async function resolveRequestLocaleWithAuth(
   request: Request,
-  token?: string | null
+  token?: string | null,
 ) {
   const savedLocale = token
     ? await resolveAuthenticatedRequestLocale(token)
@@ -82,7 +83,7 @@ export async function resolveRequestLocaleWithAuth(
     savedLocale,
     cookieLocale: parseCookieValue(
       request.headers.get("cookie"),
-      localeCookieName
+      localeCookieName,
     ),
     acceptLanguage: request.headers.get("accept-language"),
   })

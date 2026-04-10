@@ -15,7 +15,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { useCategoryManager } from "@/hooks/use-category-manager"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 const transactionsRouteApi = getRouteApi(
   "/_authenticated/dashboard/transactions"
@@ -53,7 +53,7 @@ export function CategoriesSection({
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">
-            {m.categories_section_title()}
+            {t("categories_section_title")}
           </CardTitle>
 
           <CardAction>
@@ -62,7 +62,7 @@ export function CategoriesSection({
               variant="outline"
               onClick={() => categoryDialog.openCreateDialog()}
             >
-              {m.categories_add()}
+              {t("categories_add")}
               <PlusIcon />
             </Button>
           </CardAction>
@@ -74,14 +74,14 @@ export function CategoriesSection({
                 <EmptyMedia variant="icon">
                   <TagIcon className="size-5" />
                 </EmptyMedia>
-                <EmptyTitle>{m.categories_empty_title()}</EmptyTitle>
+                <EmptyTitle>{t("categories_empty_title")}</EmptyTitle>
                 <EmptyDescription>
-                  {m.categories_empty_description()}
+                  {t("categories_empty_description")}
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
                 <Button onClick={() => categoryDialog.openCreateDialog()}>
-                  {m.categories_add()}
+                  {t("categories_add")}
                   <PlusIcon />
                 </Button>
               </EmptyContent>

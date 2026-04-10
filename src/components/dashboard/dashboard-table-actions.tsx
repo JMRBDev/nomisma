@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
 export type DashboardTableAction = {
@@ -21,7 +21,7 @@ export type DashboardTableAction = {
 
 export function DashboardTableActions({
   actions,
-  triggerLabel = m.common_actions(),
+  triggerLabel = t("common_actions"),
   className,
 }: {
   actions: Array<DashboardTableAction>

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 import { APP_NAME } from "@/lib/money"
 import { HomePage } from "@/components/home-page"
 
@@ -9,10 +9,10 @@ export const Route = createFileRoute("/")({
   }),
   head: () => ({
     meta: [
-      { title: `${APP_NAME} — ${m.app_tagline()}` },
+      { title: `${APP_NAME} — ${t("app_tagline")}` },
       {
         name: "description",
-        content: m.home_hero_description(),
+        content: t("home_hero_description"),
       },
     ],
   }),

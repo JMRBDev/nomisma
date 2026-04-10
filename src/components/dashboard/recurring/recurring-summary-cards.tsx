@@ -1,9 +1,8 @@
 import type { RecurringRecord } from "@/components/dashboard/recurring/recurring-shared"
 import { DashboardSummaryCard } from "@/components/dashboard/dashboard-summary-card"
 import { canConfirmRecurringItem } from "@/components/dashboard/recurring/recurring-shared"
-import { formatDateLabel } from "@/lib/money"
-import { getRecurringFrequencyLabel } from "@/lib/money"
-import { m } from "@/lib/i18n-client"
+import { formatDateLabel, getRecurringFrequencyLabel  } from "@/lib/money"
+import { t } from "@/lib/i18n"
 
 interface RecurringSummaryCardsProps {
   recurringItems: Array<RecurringRecord>
@@ -30,24 +29,24 @@ export function RecurringSummaryCards({
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <DashboardSummaryCard
-        title={m.recurring_summary_active_title()}
+        title={t("recurring_summary_active_title")}
         value={recurringItems.length.toString()}
-        description={m.recurring_summary_active_description({
+        description={t("recurring_summary_active_description", {
           expenses: activeExpenseCount,
           income: activeIncomeCount,
         })}
       />
       <DashboardSummaryCard
-        title={m.recurring_summary_due_now_title()}
+        title={t("recurring_summary_due_now_title")}
         value={dueNowCount.toString()}
-        description={m.recurring_summary_due_now_description({
+        description={t("recurring_summary_due_now_description", {
           overdue: overdueCount,
           dueSoon: dueSoonCount,
         })}
         toneClassName={dueNowCount > 0 ? "text-destructive" : undefined}
       />
       <DashboardSummaryCard
-        title={m.recurring_summary_next_title()}
+        title={t("recurring_summary_next_title")}
         value={
           recurringItems.length > 0 ? formatDateLabel(nextItem.nextDueDate) : ""
         }

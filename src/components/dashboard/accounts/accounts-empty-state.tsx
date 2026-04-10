@@ -9,7 +9,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function AccountsEmptyState({
   hasArchivedAccounts,
@@ -21,12 +21,12 @@ export function AccountsEmptyState({
   if (hasArchivedAccounts) {
     return (
       <FilteredResultsEmptyState
-        title={m.accounts_no_active_title()}
-        description={m.accounts_no_active_description()}
+        title={t("accounts_no_active_title")}
+        description={t("accounts_no_active_description")}
         icon={WalletCardsIcon}
         action={
           <div className="flex justify-center px-6 pb-6">
-            <Button onClick={onAddAccount}>{m.accounts_add_account()}</Button>
+            <Button onClick={onAddAccount}>{t("accounts_add_account")}</Button>
           </div>
         }
       />
@@ -39,13 +39,13 @@ export function AccountsEmptyState({
         <EmptyMedia variant="icon">
           <WalletCardsIcon className="size-5" />
         </EmptyMedia>
-        <EmptyTitle>{m.accounts_first_empty_title()}</EmptyTitle>
+        <EmptyTitle>{t("accounts_first_empty_title")}</EmptyTitle>
         <EmptyDescription>
-          {m.accounts_first_empty_description()}
+          {t("accounts_first_empty_description")}
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button onClick={onAddAccount}>{m.accounts_add_account()}</Button>
+        <Button onClick={onAddAccount}>{t("accounts_add_account")}</Button>
       </EmptyContent>
     </Empty>
   )

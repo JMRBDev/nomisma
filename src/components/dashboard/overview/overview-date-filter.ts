@@ -1,5 +1,5 @@
 import { formatDateLabel } from "@/lib/money"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 import { parseDayKey, toDayKey } from "@/lib/date-keys"
 
 const ISO_DAY_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/
@@ -112,5 +112,5 @@ export function getOverviewDateFilterLabel(values: OverviewDateFilterValues) {
   if (values.fromDate && values.toDate) {
     return `${formatDateLabel(values.fromDate)} - ${formatDateLabel(values.toDate)}`
   }
-  return m.date_filter_all_dates()
+  return t("date_filter_all_dates")
 }

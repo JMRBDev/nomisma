@@ -11,7 +11,7 @@ import { AccountIconAvatar } from "@/components/dashboard/account-icon-avatar"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { formatCurrency } from "@/lib/money"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function AccountsTableRow({
   account,
@@ -68,13 +68,13 @@ export function AccountsTableRow({
             actions={[
               {
                 id: "edit",
-                label: m.common_edit(),
+                label: t("common_edit"),
                 icon: PencilIcon,
                 onSelect: () => onEdit(account),
               },
               {
                 id: "toggle-archived",
-                label: archived ? m.common_restore() : m.common_archive(),
+                label: archived ? t("common_restore") : t("common_archive"),
                 icon: archived ? ArchiveRestoreIcon : ArchiveIcon,
                 disabled: pendingAccountId === account._id,
                 onSelect: () => onToggleArchived(account._id, !archived),

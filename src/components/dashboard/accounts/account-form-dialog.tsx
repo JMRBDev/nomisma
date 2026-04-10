@@ -5,7 +5,7 @@ import type {
 import { AccountFormFields } from "@/components/dashboard/accounts/account-form-fields"
 import { DashboardFormActions } from "@/components/dashboard/dashboard-form-actions"
 import { DashboardFormDialog } from "@/components/dashboard/dashboard-form-dialog"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function AccountFormDialog({
   open,
@@ -45,11 +45,11 @@ export function AccountFormDialog({
       onOpenChange={onOpenChange}
       title={
         title ??
-        (editing ? m.accounts_form_edit_title() : m.accounts_add_account())
+        (editing ? t("accounts_form_edit_title") : t("accounts_add_account"))
       }
       description={
         description ??
-        m.accounts_form_description()
+        t("accounts_form_description")
       }
     >
       <form className="space-y-4" onSubmit={onSubmit}>
@@ -66,9 +66,9 @@ export function AccountFormDialog({
           formError={formError}
           submitLabel={
             submitLabel ??
-            (editing ? m.settings_save_changes() : m.accounts_form_save())
+            (editing ? t("settings_save_changes") : t("accounts_form_save"))
           }
-          pendingLabel={m.common_saving()}
+          pendingLabel={t("common_saving")}
         />
       </form>
     </DashboardFormDialog>

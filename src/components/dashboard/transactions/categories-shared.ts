@@ -11,7 +11,7 @@ import type { LucideIcon } from "lucide-react"
 import type { IconOption } from "@/components/picker-shared"
 import { COLOR_OPTIONS } from "@/components/picker-shared"
 import { pickRandomItem } from "@/lib/random"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 const transactionsRouteApi = getRouteApi(
   "/_authenticated/dashboard/transactions"
@@ -34,28 +34,28 @@ export type CategoryFieldErrors = Partial<
 export const CATEGORY_ICON_OPTIONS: Array<IconOption> = [
   {
     name: "shopping-cart",
-    label: m.categories_icon_shopping(),
+    label: t("categories_icon_shopping"),
     icon: ShoppingCartIcon,
   },
   {
     name: "utensils-crossed",
-    label: m.categories_icon_food(),
+    label: t("categories_icon_food"),
     icon: UtensilsCrossedIcon,
   },
-  { name: "house", label: m.categories_icon_home(), icon: HouseIcon },
+  { name: "house", label: t("categories_icon_home"), icon: HouseIcon },
   {
     name: "car-front",
-    label: m.categories_icon_transport(),
+    label: t("categories_icon_transport"),
     icon: CarFrontIcon,
   },
   {
     name: "briefcase-business",
-    label: m.categories_icon_work(),
+    label: t("categories_icon_work"),
     icon: BriefcaseBusinessIcon,
   },
   {
     name: "badge-dollar-sign",
-    label: m.categories_icon_income(),
+    label: t("categories_icon_income"),
     icon: BadgeDollarSignIcon,
   },
 ]
@@ -99,15 +99,15 @@ export function validateCategoryValues(
   const errors: CategoryFieldErrors = {}
 
   if (!values.name.trim()) {
-    errors.name = m.categories_error_name_required()
+    errors.name = t("categories_error_name_required")
   }
 
   if (!values.color.trim()) {
-    errors.color = m.categories_error_color_required()
+    errors.color = t("categories_error_color_required")
   }
 
   if (!values.icon.trim()) {
-    errors.icon = m.categories_error_icon_required()
+    errors.icon = t("categories_error_icon_required")
   }
 
   return errors

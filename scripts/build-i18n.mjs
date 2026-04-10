@@ -7,7 +7,7 @@ const outputFile = path.join(
   rootDir,
   "src",
   "lib",
-  "i18n-messages.generated.ts"
+  "i18n-types.generated.ts"
 )
 
 function sortEntries(value) {
@@ -32,6 +32,12 @@ async function buildLocale(locale) {
     for (const [key, value] of Object.entries(messages)) {
       const flattenedKey = `${namespace}_${key}`
 
+      if (typeof value !== "string") {
+        throw new Error(
+          `Message "${flattenedKey}" for locale "${locale}" must be a string.`
+        )
+      }
+
       if (flattenedKey in entries) {
         throw new Error(
           `Duplicate message key "${flattenedKey}" for locale "${locale}".`
@@ -45,6 +51,37 @@ async function buildLocale(locale) {
   return sortEntries(entries)
 }
 
+function validateDictionaries(dictionaries) {
+  const [baseLocale, ...otherLocales] = Object.keys(dictionaries)
+
+  if (!baseLocale) {
+    throw new Error("No locales found in the i18n directory.")
+  }
+
+  const baseKeys = new Set(Object.keys(dictionaries[baseLocale]))
+
+  for (const locale of otherLocales) {
+    const localeKeys = new Set(Object.keys(dictionaries[locale]))
+    const missingKeys = [...baseKeys].filter((key) => !localeKeys.has(key))
+    const extraKeys = [...localeKeys].filter((key) => !baseKeys.has(key))
+
+    if (missingKeys.length > 0 || extraKeys.length > 0) {
+      const details = [
+        missingKeys.length > 0
+          ? `missing keys: ${missingKeys.join(", ")}`
+          : null,
+        extraKeys.length > 0 ? `extra keys: ${extraKeys.join(", ")}` : null,
+      ]
+        .filter(Boolean)
+        .join("; ")
+
+      throw new Error(
+        `Locale "${locale}" does not match locale "${baseLocale}": ${details}`
+      )
+    }
+  }
+}
+
 const locales = (await readdir(messagesDir, { withFileTypes: true }))
   .filter((entry) => entry.isDirectory() && !entry.name.startsWith("."))
   .map((entry) => entry.name)
@@ -56,11 +93,14 @@ for (const locale of locales) {
   dictionaries[locale] = await buildLocale(locale)
 }
 
-const source = `export const dictionaries = ${JSON.stringify(
-  sortEntries(dictionaries),
-  null,
-  2
-)} as const\n`
+validateDictionaries(dictionaries)
+
+const translationKeys = Object.keys(dictionaries[locales[0]] ?? {}).sort(
+  (left, right) => left.localeCompare(right)
+)
+
+const source = `export type TranslationKey =
+${translationKeys.map((key) => `  | ${JSON.stringify(key)}`).join("\n")}\n`
 
 await mkdir(path.dirname(outputFile), { recursive: true })
 await writeFile(outputFile, source)

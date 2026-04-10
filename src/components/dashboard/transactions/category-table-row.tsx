@@ -3,7 +3,7 @@ import type { Id } from "../../../../convex/_generated/dataModel"
 import { CategoryIconAvatar } from "@/components/dashboard/category-icon-avatar"
 import { DashboardTableActions } from "@/components/dashboard/dashboard-table-actions"
 import { TableCell, TableRow } from "@/components/ui/table"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
 export type CategoryTableRowData = {
@@ -40,8 +40,8 @@ export function CategoryTableRow({
         <TableCell>
           <span className={cn(category.archived && "text-muted-foreground")}>
             {category.archived
-              ? m.common_archived_status()
-              : m.common_active_status()}
+              ? t("common_archived_status")
+              : t("common_active_status")}
           </span>
         </TableCell>
       )}
@@ -56,15 +56,15 @@ export function CategoryTableRow({
             actions={[
               {
                 id: "edit",
-                label: m.common_edit(),
+                label: t("common_edit"),
                 icon: PencilIcon,
                 onSelect: () => onEdit(category),
               },
               {
                 id: "toggle-archived",
                 label: category.archived
-                  ? m.common_restore()
-                  : m.common_archive(),
+                  ? t("common_restore")
+                  : t("common_archive"),
                 icon: category.archived ? ArchiveRestoreIcon : ArchiveIcon,
                 onSelect: () =>
                   onToggleArchived(category._id, !category.archived),

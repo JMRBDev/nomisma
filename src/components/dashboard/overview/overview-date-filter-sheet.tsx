@@ -1,10 +1,10 @@
 import type { DateRange } from "react-day-picker"
-import { m } from "@/lib/i18n-client"
 import type {
   OverviewDateFilterPreset,
   OverviewDateFilterValues,
 } from "@/components/dashboard/overview/overview-date-filter"
 import type { WeekStartsOnPreference } from "@/components/dashboard/settings/settings-shared"
+import { t } from "@/lib/i18n"
 import { DashboardFilterSheet } from "@/components/dashboard/dashboard-filter-sheet"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -54,8 +54,8 @@ export function OverviewDateFilterSheet({
     <DashboardFilterSheet
       open={open}
       onOpenChange={onOpenChange}
-      title={m.date_filter_title()}
-      description={m.date_filter_description()}
+      title={t("date_filter_title")}
+      description={t("date_filter_description")}
     >
       <div className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -103,11 +103,11 @@ export function OverviewDateFilterSheet({
               <div className="mt-4 flex items-center justify-end gap-2">
                 {canReset ? (
                   <Button size="sm" variant="outline" onClick={onReset}>
-                    {m.common_clear_all()}
+                    {t("common_clear_all")}
                   </Button>
                 ) : null}
                 <Button size="sm" onClick={onApply} disabled={!canApply}>
-                  {m.common_apply()}
+                  {t("common_apply")}
                 </Button>
               </div>
             }

@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button"
 import { useAccountCreator } from "@/hooks/use-account-creator"
 import { useAccountEditor } from "@/hooks/use-account-editor"
 import { getAccountsPageDataQueryOptions } from "@/lib/dashboard-query-options"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function AccountsPage() {
   const { data } = useSuspenseQuery(getAccountsPageDataQueryOptions())
@@ -73,7 +73,7 @@ export function AccountsPage() {
       setConfirmArchiveId(null)
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : m.accounts_update_error()
+        error instanceof Error ? error.message : t("accounts_update_error")
       )
       setConfirmArchiveId(null)
     } finally {
@@ -84,11 +84,11 @@ export function AccountsPage() {
   return (
     <DashboardPageSection>
       <DashboardPageHeader
-        title={m.nav_accounts()}
+        title={t("nav_accounts")}
         action={
           <DashboardPageActions>
             <Button onClick={() => creator.openDialog()}>
-              {m.accounts_add_account()}
+              {t("accounts_add_account")}
               <PlusIcon />
             </Button>
           </DashboardPageActions>
@@ -136,18 +136,18 @@ export function AccountsPage() {
         }}
         title={
           confirmArchiveId?.archived
-            ? m.accounts_archive_title()
-            : m.accounts_restore_title()
+            ? t("accounts_archive_title")
+            : t("accounts_restore_title")
         }
         description={
           confirmArchiveId?.archived
-            ? m.accounts_archive_description()
-            : m.accounts_restore_description()
+            ? t("accounts_archive_description")
+            : t("accounts_restore_description")
         }
         confirmLabel={
           confirmArchiveId?.archived
-            ? m.accounts_archive_confirm()
-            : m.accounts_restore_confirm()
+            ? t("accounts_archive_confirm")
+            : t("accounts_restore_confirm")
         }
         onConfirm={handleArchiveConfirm}
         pending={pendingArchiveId !== null}

@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { FormErrorMessage } from "@/components/form-error-message"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function BudgetFormFields({
   values,
@@ -43,8 +43,8 @@ export function BudgetFormFields({
       query,
       createKey: "create-category",
       unarchiveKey: "unarchive-category",
-      createDescription: m.budgets_category_reference_description(),
-      unarchiveDescription: m.budgets_category_restore_description(),
+      createDescription: t("budgets_category_reference_description"),
+      unarchiveDescription: t("budgets_category_restore_description"),
       onCreate: onCreateCategory,
       onUnarchive: (category) => onUnarchiveCategory(category._id),
     })
@@ -54,12 +54,12 @@ export function BudgetFormFields({
     <FieldGroup>
       <ReferenceComboboxField
         id="budget-category"
-        label={m.budgets_table_target()}
+        label={t("budgets_table_target")}
         value={resolveBudgetCategoryValue(values.categoryId, categoryOptions)}
         options={[
           {
             value: TOTAL_BUDGET_VALUE,
-            label: m.budgets_total_spending(),
+            label: t("budgets_total_spending"),
           },
           ...categoryOptions.map((category) => ({
             value: category._id,
@@ -67,16 +67,16 @@ export function BudgetFormFields({
           })),
         ]}
         error={errors.categoryId}
-        placeholder={m.budgets_category_placeholder()}
-        emptyMessage={m.budgets_empty_targets()}
-        description={m.budgets_target_description()}
+        placeholder={t("budgets_category_placeholder")}
+        emptyMessage={t("budgets_empty_targets")}
+        description={t("budgets_target_description")}
         onValueChange={(nextValue) => onValueChange("categoryId", nextValue)}
         getActions={getCategoryActions}
       />
 
       <Field>
         <FieldLabel htmlFor="budget-limit">
-          <FieldTitle>{m.budgets_monthly_limit()}</FieldTitle>
+          <FieldTitle>{t("budgets_monthly_limit")}</FieldTitle>
         </FieldLabel>
         <Input
           id="budget-limit"

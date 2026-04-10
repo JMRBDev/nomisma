@@ -6,7 +6,7 @@ import {
   buildPageSearchItems,
 } from "@/components/dashboard/dashboard-search-shared"
 import { useGlobalSearch } from "@/hooks/use-money-dashboard"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 import {
   Command,
   CommandDialog,
@@ -61,10 +61,10 @@ export function DashboardSearchDialog({
   }, [items])
 
   const emptyLabel = !normalizedQuery
-    ? m.search_empty_idle()
+    ? t("search_empty_idle")
     : deferredNormalizedQuery !== normalizedQuery || isFetching
-      ? m.search_searching()
-      : m.search_empty_results()
+      ? t("search_searching")
+      : t("search_empty_results")
 
   return (
     <CommandDialog
@@ -75,14 +75,14 @@ export function DashboardSearchDialog({
           setQuery("")
         }
       }}
-      title={m.search_title()}
-      description={m.search_description()}
+      title={t("search_title")}
+      description={t("search_description")}
     >
       <Command shouldFilter={false}>
         <CommandInput
           value={query}
           onValueChange={setQuery}
-          placeholder={m.search_placeholder()}
+          placeholder={t("search_placeholder")}
         />
         <CommandList>
           <CommandEmpty>{emptyLabel}</CommandEmpty>

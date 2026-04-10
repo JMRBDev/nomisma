@@ -10,7 +10,7 @@ import { DashboardFormDialog } from "@/components/dashboard/dashboard-form-dialo
 import { Button } from "@/components/ui/button"
 import { TransactionFormFields } from "@/components/dashboard/transactions/transaction-form-fields"
 import { getCategoryOptions } from "@/components/dashboard/transactions/transactions-shared"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function TransactionFormDialog({
   open,
@@ -69,10 +69,10 @@ export function TransactionFormDialog({
       onOpenChange={onOpenChange}
       title={
         editing
-          ? m.transactions_form_edit_title()
-          : m.transactions_add_transaction()
+          ? t("transactions_form_edit_title")
+          : t("transactions_add_transaction")
       }
-      description={m.transactions_form_description()}
+      description={t("transactions_form_description")}
     >
       <form className="space-y-4" onSubmit={onSubmit}>
         <TransactionFormFields
@@ -93,7 +93,7 @@ export function TransactionFormDialog({
 
         {values.type !== "transfer" && resolvedCategoryOptions.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            {m.transactions_form_create_category_hint()}
+            {t("transactions_form_create_category_hint")}
           </p>
         ) : null}
 
@@ -102,13 +102,13 @@ export function TransactionFormDialog({
           formError={formError}
           submitLabel={
             editing
-              ? m.transactions_form_update_submit()
-              : m.transactions_form_save_submit()
+              ? t("transactions_form_update_submit")
+              : t("transactions_form_save_submit")
           }
           secondaryAction={
             editing ? (
               <Button type="button" variant="outline" onClick={onStartNew}>
-                {m.transactions_form_new_transaction()}
+                {t("transactions_form_new_transaction")}
               </Button>
             ) : null
           }

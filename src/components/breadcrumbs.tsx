@@ -1,6 +1,6 @@
 import { Fragment } from "react"
 import { Link, useMatches } from "@tanstack/react-router"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -50,17 +50,17 @@ function translateBreadcrumb(routeId: string, label: string) {
   switch (routeId) {
     case "/_authenticated/dashboard":
     case "/_authenticated/dashboard/":
-      return m.nav_overview()
+      return t("nav_overview")
     case "/_authenticated/dashboard/accounts":
-      return m.nav_accounts()
+      return t("nav_accounts")
     case "/_authenticated/dashboard/transactions":
-      return m.nav_transactions()
+      return t("nav_transactions")
     case "/_authenticated/dashboard/budgets":
-      return m.nav_budgets()
+      return t("nav_budgets")
     case "/_authenticated/dashboard/recurring":
-      return m.nav_recurring()
+      return t("nav_recurring")
     case "/_authenticated/dashboard/settings":
-      return m.nav_settings()
+      return t("nav_settings")
     default:
       return label
   }

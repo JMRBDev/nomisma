@@ -1,12 +1,10 @@
-import { getLocale } from "@/lib/i18n-client"
-import { m } from "@/lib/i18n-client"
+import { getLocale, t , toCalendarLocale  } from "@/lib/i18n"
 import {
   formatDayKeyLabel,
   formatMonthKeyLabel,
   toDayKey,
   toMonthKey,
 } from "@/lib/date-keys"
-import { toCalendarLocale } from "@/lib/i18n"
 
 export const APP_NAME = "Nomisma"
 
@@ -46,13 +44,13 @@ export type RecurringFrequencyValue =
 export function getAccountTypeLabel(value: AccountTypeValue) {
   switch (value) {
     case "savings":
-      return m.account_type_savings()
+      return t("account_type_savings")
     case "cash":
-      return m.account_type_cash()
+      return t("account_type_cash")
     case "wallet":
-      return m.account_type_wallet()
+      return t("account_type_wallet")
     default:
-      return m.account_type_checking()
+      return t("account_type_checking")
   }
 }
 
@@ -66,11 +64,11 @@ export function getAccountTypeOptions() {
 export function getTransactionTypeLabel(value: TransactionTypeValue) {
   switch (value) {
     case "income":
-      return m.transaction_type_income()
+      return t("transaction_type_income")
     case "transfer":
-      return m.transaction_type_transfer()
+      return t("transaction_type_transfer")
     default:
-      return m.transaction_type_expense()
+      return t("transaction_type_expense")
   }
 }
 
@@ -83,8 +81,8 @@ export function getTransactionTypeOptions() {
 
 export function getTransactionStatusLabel(value: TransactionStatusValue) {
   return value === "planned"
-    ? m.transaction_status_planned()
-    : m.transaction_status_posted()
+    ? t("transaction_status_planned")
+    : t("transaction_status_posted")
 }
 
 export function getTransactionStatusOptions() {
@@ -97,13 +95,13 @@ export function getTransactionStatusOptions() {
 export function getRecurringFrequencyLabel(value: RecurringFrequencyValue) {
   switch (value) {
     case "weekly":
-      return m.recurring_frequency_weekly()
+      return t("recurring_frequency_weekly")
     case "monthly":
-      return m.recurring_frequency_monthly()
+      return t("recurring_frequency_monthly")
     case "yearly":
-      return m.recurring_frequency_yearly()
+      return t("recurring_frequency_yearly")
     default:
-      return m.recurring_frequency_daily()
+      return t("recurring_frequency_daily")
   }
 }
 

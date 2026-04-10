@@ -8,7 +8,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { Button } from "@/components/ui/button"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function RecurringEmptyState({
   onAddRecurring,
@@ -21,14 +21,14 @@ export function RecurringEmptyState({
         <EmptyMedia variant="icon">
           <RepeatIcon className="size-5" />
         </EmptyMedia>
-        <EmptyTitle>{m.recurring_empty_title()}</EmptyTitle>
+        <EmptyTitle>{t("recurring_empty_title")}</EmptyTitle>
         <EmptyDescription>
-          {m.recurring_empty_description()}
+          {t("recurring_empty_description")}
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
         <Button onClick={onAddRecurring}>
-          {m.recurring_add_item()}
+          {t("recurring_add_item")}
           <PlusIcon />
         </Button>
       </EmptyContent>

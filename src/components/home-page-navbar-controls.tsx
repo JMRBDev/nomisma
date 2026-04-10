@@ -3,7 +3,7 @@ import { useRouter } from "@tanstack/react-router"
 import { LanguagesIcon, MoonIcon, SunIcon } from "lucide-react"
 import { useTheme } from "next-themes"
 import type { AppLocale } from "@/lib/i18n"
-import { setLocale, m } from "@/lib/i18n-client"
+import { setLocale, t } from "@/lib/i18n"
 import { useIsClient } from "@/hooks/use-is-client"
 import { getLocaleOptions } from "@/components/dashboard/settings/settings-shared"
 import { Button } from "@/components/ui/button"
@@ -57,11 +57,11 @@ export function HomePageNavbarControls({
       >
         <SelectTrigger
           size="sm"
-          className="w-[7.5rem] gap-2 rounded-full border-border bg-background/70"
-          aria-label={m.settings_language_title()}
+          className="w-30 gap-2 rounded-full border-border bg-background/70"
+          aria-label={t("settings_language_title")}
         >
           <LanguagesIcon className="size-4 text-muted-foreground" />
-          <SelectValue placeholder={m.settings_choose_language()} />
+          <SelectValue placeholder={t("settings_choose_language")} />
         </SelectTrigger>
 
         <SelectContent>
@@ -82,8 +82,8 @@ export function HomePageNavbarControls({
         className="rounded-full bg-background/70"
         onClick={handleThemeToggle}
         disabled={!isClient}
-        aria-label={isDarkTheme ? m.theme_light() : m.theme_dark()}
-        title={isDarkTheme ? m.theme_light() : m.theme_dark()}
+        aria-label={isDarkTheme ? t("theme_light") : t("theme_dark")}
+        title={isDarkTheme ? t("theme_light") : t("theme_dark")}
       >
         {isDarkTheme ? <SunIcon /> : <MoonIcon />}
       </Button>

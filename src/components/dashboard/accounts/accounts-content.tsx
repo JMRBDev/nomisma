@@ -4,7 +4,7 @@ import { AccountsTable } from "@/components/dashboard/accounts/accounts-table"
 import { DashboardSummaryCard } from "@/components/dashboard/dashboard-summary-card"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatCurrency } from "@/lib/money"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 interface AccountsContentProps {
   activeAccounts: Array<AccountRecord>
@@ -36,16 +36,16 @@ export function AccountsContent({
       <>
         <div className="grid gap-4 md:grid-cols-2">
           <DashboardSummaryCard
-            title={m.accounts_summary_active_balance_title()}
+            title={t("accounts_summary_active_balance_title")}
             value={formatCurrency(totalBalance, currency)}
-            description={m.accounts_summary_active_balance_description({
+            description={t("accounts_summary_active_balance_description", {
               count: activeAccounts.length,
             })}
           />
           <DashboardSummaryCard
-            title={m.accounts_summary_included_title()}
+            title={t("accounts_summary_included_title")}
             value={formatCurrency(includedBalance, currency)}
-            description={m.accounts_summary_included_description()}
+            description={t("accounts_summary_included_description")}
           />
         </div>
 
@@ -53,7 +53,7 @@ export function AccountsContent({
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">
-                {m.accounts_active_section_title()}
+                {t("accounts_active_section_title")}
               </CardTitle>
             </CardHeader>
 
@@ -79,7 +79,7 @@ export function AccountsContent({
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">
-                {m.accounts_archived_section_title()}
+                {t("accounts_archived_section_title")}
               </CardTitle>
             </CardHeader>
 

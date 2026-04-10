@@ -10,9 +10,7 @@ import {
 } from "@/components/ui/chart"
 import { formatCurrency, formatDateLabel } from "@/lib/money"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
-import { getLocale } from "@/lib/i18n-client"
-import { m } from "@/lib/i18n-client"
-import { toCalendarLocale } from "@/lib/i18n"
+import { getLocale, t , toCalendarLocale  } from "@/lib/i18n"
 
 function formatPeriodLabel(period: string, isSingleMonth: boolean): string {
   const locale = toCalendarLocale(getLocale())
@@ -42,8 +40,8 @@ export function OverviewIncomeVsExpensesChart({
   if (data.length === 0) {
     return (
       <FilteredResultsEmptyState
-        title={m.overview_charts_comparison_empty_title()}
-        description={m.overview_charts_comparison_empty_description()}
+        title={t("overview_charts_comparison_empty_title")}
+        description={t("overview_charts_comparison_empty_description")}
         icon={BarChart3Icon}
       />
     )

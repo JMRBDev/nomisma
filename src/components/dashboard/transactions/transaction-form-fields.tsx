@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { Textarea } from "@/components/ui/textarea"
 import { getCategoryOptions } from "@/components/dashboard/transactions/transactions-shared"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 import {
   getTransactionStatusOptions,
   getTransactionTypeOptions,
@@ -44,7 +44,7 @@ export function TransactionFormFields({
       <div className="grid gap-4 sm:grid-cols-2">
         <Field>
           <FieldLabel htmlFor="transaction-type">
-            <FieldTitle>{m.common_type()}</FieldTitle>
+            <FieldTitle>{t("common_type")}</FieldTitle>
           </FieldLabel>
           <NativeSelect
             id="transaction-type"
@@ -62,7 +62,7 @@ export function TransactionFormFields({
         </Field>
         <Field>
           <FieldLabel htmlFor="transaction-status">
-            <FieldTitle>{m.common_status()}</FieldTitle>
+            <FieldTitle>{t("common_status")}</FieldTitle>
           </FieldLabel>
           <NativeSelect
             id="transaction-status"
@@ -80,7 +80,7 @@ export function TransactionFormFields({
         </Field>
         <Field>
           <FieldLabel htmlFor="transaction-amount">
-            <FieldTitle>{m.common_amount()}</FieldTitle>
+            <FieldTitle>{t("common_amount")}</FieldTitle>
           </FieldLabel>
           <Input
             id="transaction-amount"
@@ -94,7 +94,7 @@ export function TransactionFormFields({
         </Field>
         <Field>
           <FieldLabel htmlFor="transaction-date">
-            <FieldTitle>{m.common_date()}</FieldTitle>
+            <FieldTitle>{t("common_date")}</FieldTitle>
           </FieldLabel>
           <Input
             id="transaction-date"
@@ -121,7 +121,7 @@ export function TransactionFormFields({
       />
       <Field>
         <FieldLabel htmlFor="transaction-description">
-          <FieldTitle>{m.common_description()}</FieldTitle>
+          <FieldTitle>{t("common_description")}</FieldTitle>
         </FieldLabel>
         <Input
           id="transaction-description"
@@ -129,20 +129,20 @@ export function TransactionFormFields({
           onChange={(event) => onValueChange("description", event.target.value)}
           placeholder={
             values.type === "transfer"
-              ? m.transaction_form_transfer_placeholder()
-              : m.transaction_form_expense_placeholder()
+              ? t("transaction_form_transfer_placeholder")
+              : t("transaction_form_expense_placeholder")
           }
         />
       </Field>
       <Field>
         <FieldLabel htmlFor="transaction-note">
-          <FieldTitle>{m.common_note()}</FieldTitle>
+          <FieldTitle>{t("common_note")}</FieldTitle>
         </FieldLabel>
         <Textarea
           id="transaction-note"
           value={values.note}
           onChange={(event) => onValueChange("note", event.target.value)}
-          placeholder={m.transaction_form_note_placeholder()}
+          placeholder={t("transaction_form_note_placeholder")}
         />
       </Field>
     </FieldGroup>

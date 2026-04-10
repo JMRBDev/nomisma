@@ -1,7 +1,7 @@
 import type { OverviewTopSpendingCategory } from "@/components/dashboard/overview/overview-shared"
 import { Progress } from "@/components/ui/progress"
 import { formatCurrency } from "@/lib/money"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function OverviewTopSpendingCategoriesList({
   categories,
@@ -24,7 +24,7 @@ export function OverviewTopSpendingCategoriesList({
               <div className="space-y-1">
                 <p className="font-medium">{category.categoryName}</p>
                 <p className="text-sm text-muted-foreground">
-                  {m.overview_top_spending_share({
+                  {t("overview_top_spending_share", {
                     percent: Math.round(share),
                   })}
                 </p>

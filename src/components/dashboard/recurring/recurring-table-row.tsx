@@ -21,7 +21,7 @@ import {
   getRecurringTone,
   getTransactionTone,
 } from "@/lib/money"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
 export function RecurringTableRow({
@@ -111,15 +111,15 @@ export function RecurringTableRow({
             actions={[
               {
                 id: "edit",
-                label: m.common_edit(),
+                label: t("common_edit"),
                 icon: PencilIcon,
                 onSelect: () => onEdit(item),
               },
               {
                 id: "toggle",
                 label: item.active
-                  ? m.common_deactivate()
-                  : m.common_activate(),
+                  ? t("common_deactivate")
+                  : t("common_activate"),
                 icon: item.active ? PowerOffIcon : PowerIcon,
                 onSelect: () => onToggle(item._id, !item.active),
               },
@@ -127,7 +127,7 @@ export function RecurringTableRow({
                 ? [
                     {
                       id: "confirm",
-                      label: pending ? m.common_saving() : m.common_confirm(),
+                      label: pending ? t("common_saving") : t("common_confirm"),
                       icon: CheckCircle2Icon,
                       disabled: pending,
                       onSelect: () => onConfirm(item._id),

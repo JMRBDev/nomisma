@@ -12,7 +12,7 @@ import {
   getTransactionTone,
   getTransactionTypeLabel,
 } from "@/lib/money"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
 export function TransactionsTableRow({
@@ -99,13 +99,13 @@ export function TransactionsTableRow({
             actions={[
               {
                 id: "edit",
-                label: m.common_edit(),
+                label: t("common_edit"),
                 icon: PencilIcon,
                 onSelect: () => onEdit(transaction),
               },
               {
                 id: "delete",
-                label: m.common_delete(),
+                label: t("common_delete"),
                 icon: Trash2Icon,
                 variant: "destructive",
                 onSelect: () => onDelete(transaction._id),

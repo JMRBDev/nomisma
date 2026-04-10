@@ -14,7 +14,7 @@ import {
   getSearchRecurringSubtitle,
   getSearchTransactionSubtitle,
 } from "@/lib/dashboard-i18n"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 import { getMainNavItems, getSecondaryNavItems } from "@/lib/dashboard-nav"
 
 export type SearchItem = {
@@ -43,7 +43,7 @@ export function buildPageSearchItems(navigate: ReturnType<typeof useNavigate>) {
   const navItems = [...getMainNavItems(), ...getSecondaryNavItems()]
 
   return navItems.map<SearchItem>((item) => ({
-    group: m.search_group_pages(),
+    group: t("search_group_pages"),
     icon: item.icon,
     id: `page-${item.label.toLowerCase()}`,
     onSelect: () => {
@@ -66,7 +66,7 @@ export function buildEntitySearchItems(
 ) {
   return [
     ...results.transactions.map<SearchItem>((item) => ({
-      group: m.search_group_transactions(),
+      group: t("search_group_transactions"),
       icon: ReceiptTextIcon,
       id: `transaction-${item.id}`,
       onSelect: () => {
@@ -80,7 +80,7 @@ export function buildEntitySearchItems(
       value: `${item.title} ${getSearchTransactionSubtitle(item)}`.trim(),
     })),
     ...results.accounts.map<SearchItem>((item) => ({
-      group: m.search_group_accounts(),
+      group: t("search_group_accounts"),
       icon: PiggyBankIcon,
       id: `account-${item.id}`,
       onSelect: () => {
@@ -94,7 +94,7 @@ export function buildEntitySearchItems(
       value: `${item.title} ${getSearchAccountSubtitle(item)}`.trim(),
     })),
     ...results.budgets.map<SearchItem>((item) => ({
-      group: m.search_group_budgets(),
+      group: t("search_group_budgets"),
       icon: TargetIcon,
       id: `budget-${item.id}`,
       onSelect: () => {
@@ -108,7 +108,7 @@ export function buildEntitySearchItems(
       value: `${getSearchBudgetTitle(item)} ${getSearchBudgetSubtitle(item)}`.trim(),
     })),
     ...results.recurring.map<SearchItem>((item) => ({
-      group: m.search_group_recurring(),
+      group: t("search_group_recurring"),
       icon: RepeatIcon,
       id: `recurring-${item.id}`,
       onSelect: () => {

@@ -7,21 +7,21 @@ import {
 } from "@tanstack/react-router"
 import * as React from "react"
 import { createServerFn } from "@tanstack/react-start"
-import { getCookie, getRequestHeader } from "@tanstack/react-start/server"
+import { getCookie, getRequestHeaders } from "@tanstack/react-start/server"
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react"
 import type { ConvexQueryClient } from "@convex-dev/react-query"
 import type { QueryClient } from "@tanstack/react-query"
 import { BrowserCalendarSync } from "@/components/browser-calendar-sync"
 import { authClient } from "@/lib/auth-client"
 import { getToken } from "@/lib/auth-server"
-import { resolveAuthenticatedRequestLocale, resolvePreferredRequestLocale, setRequestLocale } from "@/lib/i18n-server"
-import { I18nProvider, m } from "@/lib/i18n-provider"
+import { resolveRequestLocaleWithAuth, setRequestLocale } from "@/lib/i18n-server"
+import { I18nProvider } from "@/lib/i18n-provider"
 import {
   BROWSER_TIME_ZONE_COOKIE_NAME,
   getBrowserCalendarBootstrapScript,
   resolveBrowserCalendarContext,
 } from "@/lib/browser-calendar"
-import { buildLocaleCookieValue, toCalendarLocale } from "@/lib/i18n"
+import { buildLocaleCookieValue, t, toCalendarLocale } from "@/lib/i18n"
 import { APP_NAME } from "@/lib/money"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
@@ -30,14 +30,12 @@ import appCss from "@/styles/globals.css?url"
 
 const getRequestState = createServerFn({ method: "GET" }).handler(async () => {
   const token = await getToken()
-  const savedLocale = token
-    ? await resolveAuthenticatedRequestLocale(token)
-    : null
-  const locale = resolvePreferredRequestLocale({
-    savedLocale,
-    cookieLocale: getCookie("nomisma-app-locale"),
-    acceptLanguage: getRequestHeader("accept-language"),
-  })
+  const locale = await resolveRequestLocaleWithAuth(
+    new Request("http://nomisma.local", {
+      headers: getRequestHeaders(),
+    }),
+    token,
+  )
 
   setRequestLocale(locale)
   const calendarContext = resolveBrowserCalendarContext({
@@ -63,7 +61,7 @@ export const Route = createRootRouteWithContext<{
       { name: "theme-color", content: "#ffffff", media: "(prefers-color-scheme: light)" },
       { name: "theme-color", content: "#0a0a0a", media: "(prefers-color-scheme: dark)" },
       { title: APP_NAME },
-      { name: "description", content: m.app_description() },
+      { name: "description", content: t("app_description") },
     ],
     links: [{ rel: "stylesheet", href: appCss }, { rel: "icon", href: "/favicon.ico" }],
   }),

@@ -1,6 +1,6 @@
 import type { useAccountReferenceActions } from "@/hooks/use-account-reference-actions"
 import { AccountFormDialog } from "@/components/dashboard/accounts/account-form-dialog"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function AccountReferenceDialog({
   accountActions,
@@ -18,9 +18,9 @@ export function AccountReferenceDialog({
       errors={accountActions.creator.errors}
       formError={accountActions.creator.formError}
       pending={accountActions.creator.pending}
-      title={m.accounts_finish_setup_title()}
+      title={t("accounts_finish_setup_title")}
       description={description}
-      submitLabel={m.accounts_create_and_select()}
+      submitLabel={t("accounts_create_and_select")}
       onValueChange={accountActions.creator.handleValueChange}
       onIncludeInTotalsChange={accountActions.creator.handleIncludeInTotalsChange}
     />

@@ -6,7 +6,7 @@ import {
 } from "lucide-react"
 import { OverviewMetricCard } from "@/components/dashboard/overview/overview-metric-card"
 import { formatCurrency } from "@/lib/money"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function OverviewSummaryCards({
   currentMoney = 0,
@@ -30,37 +30,37 @@ export function OverviewSummaryCards({
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       <OverviewMetricCard
-        title={m.overview_summary_total_title()}
+        title={t("overview_summary_total_title")}
         value={formatCurrency(currentMoney, currency)}
         description={
           hasAccounts
-            ? m.overview_summary_total_description()
-            : m.overview_summary_total_empty_description()
+            ? t("overview_summary_total_description")
+            : t("overview_summary_total_empty_description")
         }
         icon={<WalletCardsIcon className="size-4" />}
       />
       <OverviewMetricCard
-        title={m.overview_summary_income_title()}
+        title={t("overview_summary_income_title")}
         value={formatCurrency(income, currency)}
-        description={m.overview_summary_income_description({
+        description={t("overview_summary_income_description", {
           activity: activityLabel,
         })}
         icon={<PiggyBankIcon className="size-4" />}
         valueClassName="text-success"
       />
       <OverviewMetricCard
-        title={m.overview_summary_expenses_title()}
+        title={t("overview_summary_expenses_title")}
         value={formatCurrency(expenses, currency)}
-        description={m.overview_summary_expenses_description({
+        description={t("overview_summary_expenses_description", {
           activity: activityLabel,
         })}
         icon={<ReceiptTextIcon className="size-4" />}
         valueClassName="text-destructive"
       />
       <OverviewMetricCard
-        title={m.overview_summary_net_title()}
+        title={t("overview_summary_net_title")}
         value={formatCurrency(net, currency)}
-        description={m.overview_summary_net_description({
+        description={t("overview_summary_net_description", {
           activity: activityLabel,
         })}
         icon={<TargetIcon className="size-4" />}

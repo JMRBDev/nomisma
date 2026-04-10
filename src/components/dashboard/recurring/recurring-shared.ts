@@ -1,6 +1,6 @@
 import { getRouteApi } from "@tanstack/react-router"
-import { m } from "@/lib/i18n-client"
 import type { RecurringFrequencyValue } from "@/lib/money"
+import { t } from "@/lib/i18n"
 import { resolveValidOption as resolveValidOptionGeneric } from "@/lib/form-helpers"
 
 const recurringRouteApi = getRouteApi("/_authenticated/dashboard/recurring")
@@ -44,14 +44,14 @@ export const resolveValidOption = resolveValidOptionGeneric
 
 export function getRecurringStatusLabel(status: RecurringRecord["status"]) {
   if (status === "overdue") {
-    return m.recurring_status_overdue()
+    return t("recurring_status_overdue")
   }
 
   if (status === "dueSoon") {
-    return m.recurring_status_due_soon()
+    return t("recurring_status_due_soon")
   }
 
-  return m.recurring_status_upcoming()
+  return t("recurring_status_upcoming")
 }
 
 export function canConfirmRecurringItem(item: RecurringRecord, today: string) {

@@ -1,11 +1,12 @@
+import {
+  
+  
+  resolveUserSettings
+} from "../../../../shared/settings"
+import type {UserSettingsLike, WeekStartsOnPreference} from "../../../../shared/settings";
 import type { AppLocale } from "../../../../shared/i18n"
 import { getCurrencyOptions } from "@/lib/currency"
-import { m } from "@/lib/i18n-client"
-import {
-  resolveUserSettings,
-  type UserSettingsLike,
-  type WeekStartsOnPreference,
-} from "../../../../shared/settings"
+import { t } from "@/lib/i18n"
 
 export type SettingsFormValues = {
   baseCurrency: string
@@ -21,15 +22,15 @@ export function getDefaultCurrencyOptions() {
 
 export function getWeekStartsOnOptions() {
   return [
-    { value: "sunday", label: m.week_start_sunday() },
-    { value: "monday", label: m.week_start_monday() },
+    { value: "sunday", label: t("week_start_sunday") },
+    { value: "monday", label: t("week_start_monday") },
   ] as const
 }
 
 export function getLocaleOptions() {
   return [
-    { value: "en", label: m.locale_english() },
-    { value: "es", label: m.locale_spanish() },
+    { value: "en", label: t("locale_english") },
+    { value: "es", label: t("locale_spanish") },
   ] as const
 }
 

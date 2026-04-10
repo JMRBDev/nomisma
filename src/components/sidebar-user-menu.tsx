@@ -1,5 +1,5 @@
 import { ChevronsUpDownIcon, LogOutIcon } from "lucide-react"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 import { UserInfoPreview } from "@/components/user-info-preview"
 import {
   DropdownMenu,
@@ -51,7 +51,7 @@ export function SidebarUserMenu({
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={onSignOut}>
               <LogOutIcon />
-              {m.common_sign_out()}
+              {t("common_sign_out")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -8,7 +8,7 @@ import { useDataTable } from "@/hooks/use-data-table"
 import { getBudgetCategoryLabel } from "@/lib/dashboard-i18n"
 import { cn } from "@/lib/utils"
 import { formatCurrency } from "@/lib/money"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 const SORT_ACCESSORS: Record<string, (row: BudgetRecord) => string | number> = {
   categoryName: (row) => getBudgetCategoryLabel(row).toLowerCase(),
@@ -24,32 +24,32 @@ const COLUMNS: Array<DashboardTableColumn> = [
   {
     id: "categoryName",
     column: "categoryName",
-    header: m.budgets_table_target(),
+    header: t("budgets_table_target"),
     alwaysVisible: true,
   },
   {
     id: "limitAmount",
     column: "limitAmount",
-    header: m.budgets_table_planned(),
+    header: t("budgets_table_planned"),
     className: "text-right",
   },
   {
     id: "spent",
     column: "spent",
-    header: m.budgets_table_spent(),
+    header: t("budgets_table_spent"),
     className: "text-right",
   },
   {
     id: "remaining",
     column: "remaining",
-    header: m.budgets_table_remaining(),
+    header: t("budgets_table_remaining"),
     className: "text-right",
     alwaysVisible: true,
   },
-  { id: "status", column: "status", header: m.common_status() },
+  { id: "status", column: "status", header: t("common_status") },
   {
     id: "actions",
-    header: m.common_actions(),
+    header: t("common_actions"),
     className: "text-right",
     alwaysVisible: true,
   },
@@ -95,7 +95,7 @@ export function BudgetsTable({
         <TableRow>
           <TableCell>
             <span className="text-muted-foreground">
-              {m.budgets_table_total({
+              {t("budgets_table_total", {
                 count: table.allSortedData.length,
               })}
             </span>

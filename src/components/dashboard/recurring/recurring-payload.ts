@@ -13,7 +13,7 @@ import {
 } from "@/components/dashboard/recurring/recurring-shared"
 import { getFirstOptionId } from "@/lib/form-helpers"
 import { toAmountInput, todayInputValue } from "@/lib/money"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export type RecurringEditorOptions = {
   accountOptions: Array<RecurringAccountOption>
@@ -65,25 +65,25 @@ export function validateRecurringValues(
   const validCategoryOptions = getCategoryOptions(values.type, categoryOptions)
 
   if (!resolveValidOption(values.accountId, accountOptions)) {
-    errors.accountId = m.recurring_error_no_account()
+    errors.accountId = t("recurring_error_no_account")
   }
 
   if (!resolveValidOption(values.categoryId, validCategoryOptions)) {
-    errors.categoryId = m.recurring_error_no_category()
+    errors.categoryId = t("recurring_error_no_category")
   }
 
   if (Number(values.amount || "0") <= 0) {
-    errors.amount = m.common_error_amount_positive()
+    errors.amount = t("common_error_amount_positive")
   }
 
   if (!values.startDate) {
-    errors.startDate = m.recurring_error_start_date()
+    errors.startDate = t("recurring_error_start_date")
   }
 
   if (!values.nextDueDate) {
-    errors.nextDueDate = m.recurring_error_first_due_date()
+    errors.nextDueDate = t("recurring_error_first_due_date")
   } else if (values.startDate && values.nextDueDate < values.startDate) {
-    errors.nextDueDate = m.recurring_error_first_due_date_after_start()
+    errors.nextDueDate = t("recurring_error_first_due_date_after_start")
   }
 
   if (
@@ -91,7 +91,7 @@ export function validateRecurringValues(
     values.nextDueDate &&
     values.endDate < values.nextDueDate
   ) {
-    errors.endDate = m.recurring_error_end_date_after_due()
+    errors.endDate = t("recurring_error_end_date_after_due")
   }
 
   return errors

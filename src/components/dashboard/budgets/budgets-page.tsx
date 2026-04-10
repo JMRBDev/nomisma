@@ -22,7 +22,7 @@ import { useCalendarContext } from "@/hooks/use-calendar-context"
 import { useCategoryReferenceActions } from "@/hooks/use-category-reference-actions"
 import { useDeleteConfirmation } from "@/hooks/use-delete-confirmation"
 import { getBudgetsPageDataQueryOptions } from "@/lib/dashboard-query-options"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function BudgetsPage() {
   const calendarContext = useCalendarContext()
@@ -56,7 +56,7 @@ export function BudgetsPage() {
         setPendingBudgetId(null)
       }
     },
-    errorMessage: m.budgets_delete_error(),
+    errorMessage: t("budgets_delete_error"),
   })
   const categoryOptions = data.categories.active
   const allCategoryOptions = data.categories.all
@@ -68,11 +68,11 @@ export function BudgetsPage() {
   return (
     <DashboardPageSection>
       <DashboardPageHeader
-        title={m.nav_budgets()}
+        title={t("nav_budgets")}
         action={
           <DashboardPageActions>
             <Button onClick={() => dialog.openCreateDialog()}>
-              {m.budgets_add_budget()}
+              {t("budgets_add_budget")}
               <PlusIcon />
             </Button>
           </DashboardPageActions>
@@ -139,12 +139,12 @@ export function BudgetsPage() {
       />
       <CategoryReferenceDialog
         categoryActions={categoryActions}
-        description={m.budgets_category_reference_description()}
+        description={t("budgets_category_reference_description")}
       />
       <DeleteConfirmDialog
         {...deleteConfirmation.dialogProps}
-        title={m.budgets_delete_title()}
-        description={m.budgets_delete_description()}
+        title={t("budgets_delete_title")}
+        description={t("budgets_delete_description")}
       />
     </DashboardPageSection>
   )

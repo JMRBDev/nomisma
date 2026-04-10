@@ -9,12 +9,13 @@ import {
 import { getRouteApi } from "@tanstack/react-router"
 import type { LucideIcon } from "lucide-react"
 import type { IconOption } from "@/components/picker-shared"
+import type {AccountTypeValue} from "@/lib/money";
 import { COLOR_OPTIONS } from "@/components/picker-shared"
 import {
-  getAccountTypeLabel as getAccountTypeLabelFromLocale,
-  type AccountTypeValue,
+  
+  getAccountTypeLabel as getAccountTypeLabelFromLocale
 } from "@/lib/money"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 import { pickRandomItem } from "@/lib/random"
 
 const accountsRouteApi = getRouteApi("/_authenticated/dashboard/accounts")
@@ -25,12 +26,12 @@ export type AccountRecord = AccountsData["accounts"]["active"][number]
 export type AccountType = AccountTypeValue
 
 export const ACCOUNT_ICON_OPTIONS: Array<IconOption> = [
-  { name: "piggy-bank", label: m.accounts_icon_savings(), icon: PiggyBankIcon },
-  { name: "credit-card", label: m.accounts_icon_card(), icon: CreditCardIcon },
-  { name: "landmark", label: m.accounts_icon_bank(), icon: LandmarkIcon },
-  { name: "hand-coins", label: m.accounts_icon_cash(), icon: HandCoinsIcon },
-  { name: "wallet", label: m.accounts_icon_wallet(), icon: WalletIcon },
-  { name: "receipt-text", label: m.accounts_icon_bills(), icon: ReceiptTextIcon },
+  { name: "piggy-bank", label: t("accounts_icon_savings"), icon: PiggyBankIcon },
+  { name: "credit-card", label: t("accounts_icon_card"), icon: CreditCardIcon },
+  { name: "landmark", label: t("accounts_icon_bank"), icon: LandmarkIcon },
+  { name: "hand-coins", label: t("accounts_icon_cash"), icon: HandCoinsIcon },
+  { name: "wallet", label: t("accounts_icon_wallet"), icon: WalletIcon },
+  { name: "receipt-text", label: t("accounts_icon_bills"), icon: ReceiptTextIcon },
 ]
 
 export const ACCOUNT_ICON_MAP = ACCOUNT_ICON_OPTIONS.reduce<
@@ -93,21 +94,21 @@ export function validateAccountValues(
   const openingBalance = Number(values.openingBalance || "0")
 
   if (!values.name.trim()) {
-    errors.name = m.accounts_error_name_required()
+    errors.name = t("accounts_error_name_required")
   }
 
   if (!Number.isFinite(openingBalance)) {
-    errors.openingBalance = m.accounts_error_opening_balance_number()
+    errors.openingBalance = t("accounts_error_opening_balance_number")
   } else if (openingBalance < 0) {
-    errors.openingBalance = m.accounts_error_opening_balance_negative()
+    errors.openingBalance = t("accounts_error_opening_balance_negative")
   }
 
   if (!values.color.trim()) {
-    errors.color = m.accounts_error_color_required()
+    errors.color = t("accounts_error_color_required")
   }
 
   if (!values.icon.trim()) {
-    errors.icon = m.accounts_error_icon_required()
+    errors.icon = t("accounts_error_icon_required")
   }
 
   return errors

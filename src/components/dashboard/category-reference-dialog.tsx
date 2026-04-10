@@ -1,6 +1,6 @@
 import type { useCategoryReferenceActions } from "@/hooks/use-category-reference-actions"
 import { CategoryFormDialog } from "@/components/dashboard/transactions/category-form-dialog"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function CategoryReferenceDialog({
   categoryActions,
@@ -19,9 +19,9 @@ export function CategoryReferenceDialog({
       formError={categoryActions.manager.dialog.formError}
       pending={categoryActions.manager.dialog.pending}
       isEditing={categoryActions.manager.dialog.isEditing}
-      title={m.categories_finish_setup_title()}
+      title={t("categories_finish_setup_title")}
       description={description}
-      submitLabel={m.categories_create_and_select()}
+      submitLabel={t("categories_create_and_select")}
       onValueChange={categoryActions.manager.dialog.handleValueChange}
     />
   )

@@ -1,7 +1,7 @@
 import { getRouteApi } from "@tanstack/react-router"
 import type { Id } from "../../../../convex/_generated/dataModel"
 import { toAmountInput } from "@/lib/money"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 const budgetsRouteApi = getRouteApi("/_authenticated/dashboard/budgets")
 
@@ -60,14 +60,14 @@ export function validateBudgetValues(
   const errors: BudgetFieldErrors = {}
 
   if (Number(values.limitAmount || "0") <= 0) {
-    errors.limitAmount = m.budgets_error_amount_positive()
+    errors.limitAmount = t("budgets_error_amount_positive")
   }
 
   if (
     values.categoryId !== TOTAL_BUDGET_VALUE &&
     !categoryOptions.some((category) => category._id === values.categoryId)
   ) {
-    errors.categoryId = m.budgets_error_category_invalid()
+    errors.categoryId = t("budgets_error_category_invalid")
   }
 
   return errors
@@ -88,7 +88,7 @@ export function buildBudgetPayload(
 }
 
 export function getBudgetStatusLabel(status: BudgetRecord["status"]) {
-  if (status === "over") return m.budgets_status_over()
-  if (status === "near") return m.budgets_status_near()
-  return m.budgets_status_healthy()
+  if (status === "over") return t("budgets_status_over")
+  if (status === "near") return t("budgets_status_near")
+  return t("budgets_status_healthy")
 }

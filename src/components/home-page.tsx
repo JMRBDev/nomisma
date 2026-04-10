@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router"
 import { ArrowRight } from "lucide-react"
 import type { AppLocale } from "@/lib/i18n"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 import { handleSignIn } from "@/lib/auth"
 import { APP_NAME } from "@/lib/money"
 import { HomePageNavbarControls } from "@/components/home-page-navbar-controls"
@@ -39,11 +39,11 @@ export function HomePage({
             <HomePageNavbarControls locale={locale} />
             {isAuthenticated ? (
               <Button asChild size="sm">
-                <Link to="/dashboard">{m.home_go_to_dashboard()}</Link>
+                <Link to="/dashboard">{t("home_go_to_dashboard")}</Link>
               </Button>
             ) : (
               <Button size="sm" onClick={() => handleSignIn(redirectTo)}>
-                {m.home_get_started()}
+                {t("home_get_started")}
               </Button>
             )}
           </div>
@@ -60,13 +60,13 @@ export function HomePage({
             className="font-heading text-4xl leading-tight tracking-tight sm:text-5xl md:text-6xl"
             style={{ animation: "fadeUp 0.7s ease-out 0ms both" }}
           >
-            {m.home_hero_title()}
+            {t("home_hero_title")}
           </h1>
           <p
             className="mx-auto mt-6 max-w-md text-lg text-muted-foreground"
             style={{ animation: "fadeUp 0.7s ease-out 100ms both" }}
           >
-            {m.home_hero_description()}
+            {t("home_hero_description")}
           </p>
           <div
             className="mt-10 flex flex-col items-center gap-3"
@@ -75,19 +75,19 @@ export function HomePage({
             {isAuthenticated ? (
               <Button asChild size="lg">
                 <Link to="/dashboard">
-                  {m.home_go_to_dashboard()}
+                  {t("home_go_to_dashboard")}
                   <ArrowRight />
                 </Link>
               </Button>
             ) : (
               <Button size="lg" onClick={() => handleSignIn(redirectTo)}>
-                {m.home_get_started_free()}
+                {t("home_get_started_free")}
                 <ArrowRight />
               </Button>
             )}
             {!isAuthenticated && (
               <p className="text-sm text-muted-foreground">
-                {m.home_sign_in_hint()}
+                {t("home_sign_in_hint")}
               </p>
             )}
           </div>
@@ -101,7 +101,7 @@ export function HomePage({
           className="font-heading text-3xl tracking-tight"
           style={{ animation: "fadeUp 0.7s ease-out 700ms both" }}
         >
-          {m.home_cta_title()}
+          {t("home_cta_title")}
         </h2>
         <div
           className="mt-8"
@@ -110,13 +110,13 @@ export function HomePage({
           {isAuthenticated ? (
             <Button asChild size="lg">
               <Link to="/dashboard">
-                {m.home_go_to_dashboard()}
+                {t("home_go_to_dashboard")}
                 <ArrowRight />
               </Link>
             </Button>
           ) : (
             <Button size="lg" onClick={() => handleSignIn(redirectTo)}>
-              {m.home_get_started_free()}
+              {t("home_get_started_free")}
               <ArrowRight />
             </Button>
           )}

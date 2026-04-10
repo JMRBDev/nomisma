@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { getCreateOrRestoreActions } from "@/lib/reference-entities"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function RecurringSelectFields({
   values,
@@ -48,8 +48,8 @@ export function RecurringSelectFields({
       query,
       createKey: "create-account",
       unarchiveKey: "unarchive-account",
-      createDescription: m.recurring_account_reference_description(),
-      unarchiveDescription: m.recurring_account_restore_description(),
+      createDescription: t("recurring_account_reference_description"),
+      unarchiveDescription: t("recurring_account_restore_description"),
       onCreate: onCreateAccount,
       onUnarchive: (account) => onUnarchiveAccount(account._id),
     })
@@ -61,8 +61,8 @@ export function RecurringSelectFields({
       query,
       createKey: "create-category",
       unarchiveKey: "unarchive-category",
-      createDescription: m.recurring_category_reference_description(),
-      unarchiveDescription: m.recurring_category_restore_description(),
+      createDescription: t("recurring_category_reference_description"),
+      unarchiveDescription: t("recurring_category_restore_description"),
       onCreate: onCreateCategory,
       onUnarchive: (category) => onUnarchiveCategory(category._id),
     })
@@ -74,8 +74,8 @@ export function RecurringSelectFields({
         id="recurring-account"
         label={
           values.type === "income"
-            ? m.recurring_deposit_account()
-            : m.recurring_payment_account()
+            ? t("recurring_deposit_account")
+            : t("recurring_payment_account")
         }
         value={resolveValidOption(values.accountId, accountOptions)}
         options={accountOptions.map((account) => ({
@@ -83,30 +83,30 @@ export function RecurringSelectFields({
           label: account.name,
         }))}
         error={errors.accountId}
-        placeholder={m.recurring_search_account_placeholder()}
-        emptyMessage={m.transactions_no_accounts_found()}
+        placeholder={t("recurring_search_account_placeholder")}
+        emptyMessage={t("transactions_no_accounts_found")}
         onValueChange={(nextValue) => onValueChange("accountId", nextValue)}
         getActions={getAccountActions}
       />
 
       <ReferenceComboboxField
         id="recurring-category"
-        label={m.common_category()}
+        label={t("common_category")}
         value={resolveValidOption(values.categoryId, categoryOptions)}
         options={categoryOptions.map((category) => ({
           value: category._id,
           label: category.name,
         }))}
         error={errors.categoryId}
-        placeholder={m.recurring_search_category_placeholder()}
-        emptyMessage={m.transactions_no_categories_found()}
+        placeholder={t("recurring_search_category_placeholder")}
+        emptyMessage={t("transactions_no_categories_found")}
         onValueChange={(nextValue) => onValueChange("categoryId", nextValue)}
         getActions={getCategoryActions}
       />
 
       <Field>
         <FieldLabel htmlFor="recurring-start-date">
-          <FieldTitle>{m.recurring_start_date()}</FieldTitle>
+          <FieldTitle>{t("recurring_start_date")}</FieldTitle>
         </FieldLabel>
         <Input
           id="recurring-start-date"
@@ -119,7 +119,7 @@ export function RecurringSelectFields({
 
       <Field>
         <FieldLabel htmlFor="recurring-next-due-date">
-          <FieldTitle>{m.recurring_first_due_date()}</FieldTitle>
+          <FieldTitle>{t("recurring_first_due_date")}</FieldTitle>
         </FieldLabel>
         <Input
           id="recurring-next-due-date"
@@ -132,7 +132,7 @@ export function RecurringSelectFields({
 
       <Field>
         <FieldLabel htmlFor="recurring-end-date">
-          <FieldTitle>{m.recurring_end_date()}</FieldTitle>
+          <FieldTitle>{t("recurring_end_date")}</FieldTitle>
         </FieldLabel>
         <Input
           id="recurring-end-date"
@@ -141,7 +141,7 @@ export function RecurringSelectFields({
           onChange={(event) => onValueChange("endDate", event.target.value)}
         />
         <FieldDescription>
-          {m.recurring_end_date_description()}
+          {t("recurring_end_date_description")}
         </FieldDescription>
         <FormErrorMessage error={errors.endDate} />
       </Field>

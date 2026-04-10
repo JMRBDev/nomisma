@@ -8,7 +8,7 @@ import { BudgetFormFields } from "@/components/dashboard/budgets/budget-form-fie
 import { DashboardFormActions } from "@/components/dashboard/dashboard-form-actions"
 import { DashboardFormDialog } from "@/components/dashboard/dashboard-form-dialog"
 import { Button } from "@/components/ui/button"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function BudgetFormDialog({
   open,
@@ -47,8 +47,8 @@ export function BudgetFormDialog({
     <DashboardFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={editing ? m.budgets_form_edit_title() : m.budgets_add_budget()}
-      description={m.budgets_form_description({ month: monthLabel })}
+      title={editing ? t("budgets_form_edit_title") : t("budgets_add_budget")}
+      description={t("budgets_form_description", { month: monthLabel })}
     >
       <form className="space-y-4" onSubmit={onSubmit}>
         <BudgetFormFields
@@ -65,7 +65,7 @@ export function BudgetFormDialog({
           pending={pending}
           formError={formError}
           submitLabel={
-            editing ? m.settings_save_changes() : m.budgets_form_save()
+            editing ? t("settings_save_changes") : t("budgets_form_save")
           }
           secondaryAction={
             editing && onDelete ? (
@@ -75,7 +75,7 @@ export function BudgetFormDialog({
                 onClick={onDelete}
                 disabled={pending}
               >
-                {m.budgets_form_delete()}
+                {t("budgets_form_delete")}
               </Button>
             ) : null
           }

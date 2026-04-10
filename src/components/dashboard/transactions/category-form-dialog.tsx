@@ -16,7 +16,7 @@ import {
   FieldTitle,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function CategoryFormDialog({
   open,
@@ -51,19 +51,19 @@ export function CategoryFormDialog({
       onOpenChange={onOpenChange}
       title={
         title ??
-        (isEditing ? m.categories_form_edit_title() : m.categories_add())
+        (isEditing ? t("categories_form_edit_title") : t("categories_add"))
       }
       description={
         description ??
         (isEditing
-          ? m.categories_form_edit_description()
-          : m.categories_form_create_description())
+          ? t("categories_form_edit_description")
+          : t("categories_form_create_description"))
       }
     >
       <form className="space-y-4" onSubmit={onSubmit}>
         <Field>
           <FieldLabel htmlFor="category-name">
-            <FieldTitle>{m.account_form_name_and_appearance()}</FieldTitle>
+            <FieldTitle>{t("account_form_name_and_appearance")}</FieldTitle>
           </FieldLabel>
 
           <div className="flex gap-2 items-center">
@@ -78,7 +78,7 @@ export function CategoryFormDialog({
             />
             <Input
               id="category-name"
-              placeholder={m.categories_form_placeholder()}
+              placeholder={t("categories_form_placeholder")}
               value={values.name}
               onChange={(event) => onValueChange("name", event.target.value)}
             />
@@ -91,9 +91,9 @@ export function CategoryFormDialog({
           formError={formError}
           submitLabel={
             submitLabel ??
-            (isEditing ? m.settings_save_changes() : m.categories_create())
+            (isEditing ? t("settings_save_changes") : t("categories_create"))
           }
-          pendingLabel={m.common_saving()}
+          pendingLabel={t("common_saving")}
         />
       </form>
     </DashboardFormDialog>

@@ -9,7 +9,7 @@ import {
   getAccountDisplayName,
   getTransactionCategoryLabel,
 } from "@/lib/dashboard-i18n"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 const SORT_ACCESSORS: Record<
   string,
@@ -19,7 +19,7 @@ const SORT_ACCESSORS: Record<
   description: (row) => row.description.toLowerCase(),
   accountName: (row) => getAccountDisplayName(row.accountName).toLowerCase(),
   categoryName: (row) =>
-    (getTransactionCategoryLabel(row) ?? m.transaction_type_transfer()).toLowerCase(),
+    (getTransactionCategoryLabel(row) ?? t("transaction_type_transfer")).toLowerCase(),
   type: (row) => row.type,
   status: (row) => row.status,
   amount: (row) => {
@@ -32,21 +32,21 @@ const SORT_ACCESSORS: Record<
 const COLUMN_VISIBILITY_STORAGE_KEY = "nomisma-table-columns:transactions"
 
 const BASE_COLUMNS: Array<DashboardTableColumn> = [
-  { id: "date", column: "date", header: m.common_date(), alwaysVisible: true },
+  { id: "date", column: "date", header: t("common_date"), alwaysVisible: true },
   {
     id: "description",
     column: "description",
-    header: m.common_description(),
+    header: t("common_description"),
     alwaysVisible: true,
   },
-  { id: "accountName", column: "accountName", header: m.common_account() },
-  { id: "categoryName", column: "categoryName", header: m.common_category() },
-  { id: "type", column: "type", header: m.common_type() },
-  { id: "status", column: "status", header: m.common_status() },
+  { id: "accountName", column: "accountName", header: t("common_account") },
+  { id: "categoryName", column: "categoryName", header: t("common_category") },
+  { id: "type", column: "type", header: t("common_type") },
+  { id: "status", column: "status", header: t("common_status") },
   {
     id: "amount",
     column: "amount",
-    header: m.common_amount(),
+    header: t("common_amount"),
     className: "text-right",
     alwaysVisible: true,
   },
@@ -54,7 +54,7 @@ const BASE_COLUMNS: Array<DashboardTableColumn> = [
 
 const ACTIONS_COLUMN: DashboardTableColumn = {
   id: "actions",
-  header: m.common_actions(),
+  header: t("common_actions"),
   className: "text-right",
   alwaysVisible: true,
 }
@@ -93,9 +93,10 @@ export function TransactionsTable({
   const aggregates = useMemo(() => {
     let totalIncome = 0
     let totalExpense = 0
-    for (const t of table.allSortedData) {
-      if (t.type === "income") totalIncome += t.amount
-      else if (t.type === "expense") totalExpense += t.amount
+    for (const transaction of table.allSortedData) {
+      if (transaction.type === "income") totalIncome += transaction.amount
+      else if (transaction.type === "expense")
+        totalExpense += transaction.amount
     }
     return { totalIncome, totalExpense, net: totalIncome - totalExpense }
   }, [table.allSortedData])

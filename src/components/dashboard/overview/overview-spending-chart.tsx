@@ -8,9 +8,7 @@ import {
 } from "@/components/ui/chart"
 import { formatCurrency, formatDateLabel } from "@/lib/money"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
-import { getLocale } from "@/lib/i18n-client"
-import { m } from "@/lib/i18n-client"
-import { toCalendarLocale } from "@/lib/i18n"
+import { getLocale, t , toCalendarLocale  } from "@/lib/i18n"
 
 export function OverviewSpendingChart({
   data,
@@ -33,8 +31,8 @@ export function OverviewSpendingChart({
   if (data.length === 0) {
     return (
       <FilteredResultsEmptyState
-        title={m.overview_charts_spending_empty_title()}
-        description={m.overview_charts_spending_empty_description()}
+        title={t("overview_charts_spending_empty_title")}
+        description={t("overview_charts_spending_empty_description")}
         icon={TrendingUpIcon}
       />
     )

@@ -15,7 +15,7 @@ import {
 import { FormErrorMessage } from "@/components/form-error-message"
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 import {
   getRecurringFrequencyOptions,
   getTransactionTypeLabel,
@@ -56,7 +56,7 @@ export function RecurringFormFields({
       <div className="grid gap-4 sm:grid-cols-2">
         <Field>
           <FieldLabel htmlFor="recurring-type">
-            <FieldTitle>{m.common_type()}</FieldTitle>
+            <FieldTitle>{t("common_type")}</FieldTitle>
           </FieldLabel>
           <NativeSelect
             id="recurring-type"
@@ -75,7 +75,7 @@ export function RecurringFormFields({
         </Field>
         <Field>
           <FieldLabel htmlFor="recurring-frequency">
-            <FieldTitle>{m.common_frequency()}</FieldTitle>
+            <FieldTitle>{t("common_frequency")}</FieldTitle>
           </FieldLabel>
           <NativeSelect
             id="recurring-frequency"
@@ -91,7 +91,7 @@ export function RecurringFormFields({
         </Field>
         <Field>
           <FieldLabel htmlFor="recurring-amount">
-            <FieldTitle>{m.common_amount()}</FieldTitle>
+            <FieldTitle>{t("common_amount")}</FieldTitle>
           </FieldLabel>
           <Input
             id="recurring-amount"
@@ -119,7 +119,7 @@ export function RecurringFormFields({
       </div>
       <Field>
         <FieldLabel htmlFor="recurring-description">
-          <FieldTitle>{m.common_description()}</FieldTitle>
+          <FieldTitle>{t("common_description")}</FieldTitle>
         </FieldLabel>
         <Input
           id="recurring-description"
@@ -127,8 +127,8 @@ export function RecurringFormFields({
           onChange={(event) => onValueChange("description", event.target.value)}
           placeholder={
             values.type === "income"
-              ? m.recurring_income_placeholder()
-              : m.recurring_expense_placeholder()
+              ? t("recurring_income_placeholder")
+              : t("recurring_expense_placeholder")
           }
         />
       </Field>

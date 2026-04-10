@@ -6,10 +6,10 @@ import {
   getRecurringFrequencyLabel,
   getTransactionTypeLabel,
 } from "@/lib/money"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function getAccountDisplayName(name?: string | null) {
-  return name ?? m.common_unknown_account()
+  return name ?? t("common_unknown_account")
 }
 
 export function getBudgetCategoryLabel(input: {
@@ -18,10 +18,10 @@ export function getBudgetCategoryLabel(input: {
   categoryMissing?: boolean
 }) {
   if (input.categoryId === undefined) {
-    return m.budgets_total_spending()
+    return t("budgets_total_spending")
   }
 
-  return input.categoryName ?? m.common_deleted_category()
+  return input.categoryName ?? t("common_deleted_category")
 }
 
 export function getRecurringCategoryLabel(input: {
@@ -29,7 +29,7 @@ export function getRecurringCategoryLabel(input: {
   categoryMissing?: boolean
 }) {
   return input.categoryName ??
-    (input.categoryMissing ? m.common_deleted_category() : m.common_unknown_category())
+    (input.categoryMissing ? t("common_deleted_category") : t("common_unknown_category"))
 }
 
 export function getTransactionCategoryLabel(input: {
@@ -37,15 +37,15 @@ export function getTransactionCategoryLabel(input: {
   categoryDisplayState: "named" | "deleted" | "uncategorized" | "none"
 }) {
   if (input.categoryDisplayState === "named") {
-    return input.categoryName ?? m.common_uncategorized()
+    return input.categoryName ?? t("common_uncategorized")
   }
 
   if (input.categoryDisplayState === "deleted") {
-    return m.common_deleted_category()
+    return t("common_deleted_category")
   }
 
   if (input.categoryDisplayState === "uncategorized") {
-    return m.common_uncategorized()
+    return t("common_uncategorized")
   }
 
   return undefined
@@ -56,18 +56,18 @@ export function getOverviewCategoryLabel(input: {
   categoryName?: string | null
 }) {
   if (input.labelKind === "category") {
-    return input.categoryName ?? m.common_deleted_category()
+    return input.categoryName ?? t("common_deleted_category")
   }
 
   if (input.labelKind === "deleted") {
-    return m.common_deleted_category()
+    return t("common_deleted_category")
   }
 
   if (input.labelKind === "uncategorized") {
-    return m.common_uncategorized()
+    return t("common_uncategorized")
   }
 
-  return m.common_other()
+  return t("common_other")
 }
 
 export function getOverviewAlertCopy(
@@ -94,8 +94,8 @@ export function getOverviewAlertCopy(
       categoryMissing: alert.categoryMissing,
     })
     return {
-      title: m.overview_alert_budget_over_title({ category }),
-      description: m.overview_alert_budget_over_description({
+      title: t("overview_alert_budget_over_title", { category }),
+      description: t("overview_alert_budget_over_description", {
         remaining: formatCurrency(alert.remaining ?? 0, currency),
       }),
     }
@@ -108,8 +108,8 @@ export function getOverviewAlertCopy(
       categoryMissing: alert.categoryMissing,
     })
     return {
-      title: m.overview_alert_budget_near_title({ category }),
-      description: m.overview_alert_budget_near_description({
+      title: t("overview_alert_budget_near_title", { category }),
+      description: t("overview_alert_budget_near_description", {
         remaining: formatCurrency(alert.remaining ?? 0, currency),
       }),
     }
@@ -117,30 +117,30 @@ export function getOverviewAlertCopy(
 
   if (alert.alertType === "recurringDueSoon") {
     return {
-      title: m.overview_alert_recurring_title(),
-      description: m.overview_alert_recurring_description(),
+      title: t("overview_alert_recurring_title"),
+      description: t("overview_alert_recurring_description"),
     }
   }
 
   if (alert.alertType === "cashflow") {
     return {
-      title: m.overview_alert_cashflow_title(),
-      description: m.overview_alert_cashflow_description(),
+      title: t("overview_alert_cashflow_title"),
+      description: t("overview_alert_cashflow_description"),
     }
   }
 
   if (alert.alertType === "uncategorizedTransactions") {
     return {
-      title: m.overview_alert_uncategorized_title(),
-      description: m.overview_alert_uncategorized_description({
+      title: t("overview_alert_uncategorized_title"),
+      description: t("overview_alert_uncategorized_description", {
         count: alert.count ?? 0,
       }),
     }
   }
 
   return {
-    title: m.overview_alert_first_account_title(),
-    description: m.overview_alert_first_account_description(),
+    title: t("overview_alert_first_account_title"),
+    description: t("overview_alert_first_account_description"),
   }
 }
 
@@ -170,8 +170,8 @@ export function getSearchAccountSubtitle(result: {
   const type = getAccountTypeLabel(result.type)
 
   return result.archived
-    ? m.search_account_subtitle_archived({ type })
-    : m.search_account_subtitle({ type })
+    ? t("search_account_subtitle_archived", { type })
+    : t("search_account_subtitle", { type })
 }
 
 export function getSearchBudgetTitle(result: {
@@ -179,14 +179,14 @@ export function getSearchBudgetTitle(result: {
   isTotal: boolean
 }) {
   if (result.isTotal) {
-    return m.budgets_total_spending()
+    return t("budgets_total_spending")
   }
 
-  return result.title ?? m.common_deleted_category()
+  return result.title ?? t("common_deleted_category")
 }
 
 export function getSearchBudgetSubtitle(result: { month: string }) {
-  return m.search_budget_subtitle({
+  return t("search_budget_subtitle", {
     month: formatMonthLabel(result.month),
   })
 }

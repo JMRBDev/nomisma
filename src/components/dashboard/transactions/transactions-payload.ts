@@ -12,7 +12,7 @@ import {
 } from "@/components/dashboard/transactions/transactions-shared"
 import { getFirstOptionId } from "@/lib/form-helpers"
 import { toAmountInput, todayInputValue } from "@/lib/money"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export type TransactionEditorOptions = {
   accountOptions: Array<AccountOption>
@@ -60,26 +60,26 @@ export function validateTransactionValues(
   const resolvedAccountId = resolveValidOption(values.accountId, accountOptions)
 
   if (!resolvedAccountId) {
-    errors.accountId = m.transactions_error_no_account()
+    errors.accountId = t("transactions_error_no_account")
   }
 
   if (Number(values.amount || "0") <= 0) {
-    errors.amount = m.common_error_amount_positive()
+    errors.amount = t("common_error_amount_positive")
   }
 
   if (!values.date) {
-    errors.date = m.common_error_pick_date()
+    errors.date = t("common_error_pick_date")
   }
 
   if (values.type === "transfer") {
     if (!values.toAccountId) {
-      errors.toAccountId = m.transactions_error_destination_required()
+      errors.toAccountId = t("transactions_error_destination_required")
     } else if (values.toAccountId === resolvedAccountId) {
-      errors.toAccountId = m.transactions_error_destination_different()
+      errors.toAccountId = t("transactions_error_destination_different")
     } else if (
       !accountOptions.some((account) => account._id === values.toAccountId)
     ) {
-      errors.toAccountId = m.transactions_error_destination_invalid()
+      errors.toAccountId = t("transactions_error_destination_invalid")
     }
 
     return errors
@@ -88,7 +88,7 @@ export function validateTransactionValues(
   const validCategoryOptions = getCategoryOptions(values.type, categoryOptions)
 
   if (!resolveValidOption(values.categoryId, validCategoryOptions)) {
-    errors.categoryId = m.transactions_error_no_category()
+    errors.categoryId = t("transactions_error_no_category")
   }
 
   return errors

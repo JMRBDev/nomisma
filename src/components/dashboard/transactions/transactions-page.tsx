@@ -22,7 +22,7 @@ import { useDateFilter } from "@/hooks/use-date-filter"
 import { useDeleteConfirmation } from "@/hooks/use-delete-confirmation"
 import { useTransactionReferenceHandlers } from "@/hooks/use-transaction-reference-handlers"
 import { getTransactionsPageDataQueryOptions } from "@/lib/dashboard-query-options"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function TransactionsPage() {
   const { hasDateFilter, filterLabel, dateRange } = useDateFilter()
@@ -47,7 +47,7 @@ export function TransactionsPage() {
   const transactionReferences = useTransactionReferenceHandlers(transactionEditor)
   const deleteConfirmation = useDeleteConfirmation<TransactionRecord["_id"]>({
     onConfirm: (id) => deleteTx({ transactionId: id }),
-    errorMessage: m.transactions_delete_error(),
+    errorMessage: t("transactions_delete_error"),
   })
   const searchFilter = useTransactionSearchFilter({
     dateRange,
@@ -69,7 +69,7 @@ export function TransactionsPage() {
   return (
     <DashboardPageSection>
       <DashboardPageHeader
-        title={m.nav_transactions()}
+        title={t("nav_transactions")}
         action={
           <DashboardPageActions>
             <DashboardFilterButton
@@ -77,7 +77,7 @@ export function TransactionsPage() {
               onClick={() => setFiltersSheetOpen((open) => !open)}
             />
             <Button onClick={() => transactionEditor.openCreateDialog()}>
-              {m.transactions_add_transaction()}
+              {t("transactions_add_transaction")}
               <PlusIcon />
             </Button>
           </DashboardPageActions>
@@ -132,11 +132,11 @@ export function TransactionsPage() {
       />
       <AccountReferenceDialog
         accountActions={transactionReferences.accountActions}
-        description={m.transactions_account_reference_description()}
+        description={t("transactions_account_reference_description")}
       />
       <CategoryReferenceDialog
         categoryActions={transactionReferences.categoryActions}
-        description={m.transactions_category_reference_description()}
+        description={t("transactions_category_reference_description")}
       />
     </DashboardPageSection>
   )

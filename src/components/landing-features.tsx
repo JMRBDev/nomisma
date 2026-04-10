@@ -1,22 +1,22 @@
 import { CalendarDays, PieChart, Wallet } from "lucide-react"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function LandingFeatures() {
   const features = [
     {
       icon: Wallet,
-      title: m.landing_feature_accounts_title(),
-      description: m.landing_feature_accounts_description(),
+      title: t("landing_feature_accounts_title"),
+      description: t("landing_feature_accounts_description"),
     },
     {
       icon: PieChart,
-      title: m.landing_feature_budgets_title(),
-      description: m.landing_feature_budgets_description(),
+      title: t("landing_feature_budgets_title"),
+      description: t("landing_feature_budgets_description"),
     },
     {
       icon: CalendarDays,
-      title: m.landing_feature_bills_title(),
-      description: m.landing_feature_bills_description(),
+      title: t("landing_feature_bills_title"),
+      description: t("landing_feature_bills_description"),
     },
   ]
 
@@ -27,7 +27,7 @@ export function LandingFeatures() {
           className="text-center font-heading text-3xl tracking-tight"
           style={{ animation: "fadeUp 0.7s ease-out 300ms both" }}
         >
-          {m.landing_features_heading()}
+          {t("landing_features_heading")}
         </h2>
         <div className="mt-16 grid gap-8 sm:grid-cols-2 md:grid-cols-3">
           {features.map((feature, i) => (

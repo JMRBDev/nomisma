@@ -9,7 +9,7 @@ import { RecurringFormFields } from "@/components/dashboard/recurring/recurring-
 import { DashboardFormActions } from "@/components/dashboard/dashboard-form-actions"
 import { DashboardFormDialog } from "@/components/dashboard/dashboard-form-dialog"
 import { getCategoryOptions } from "@/components/dashboard/recurring/recurring-shared"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function RecurringFormDialog({
   open,
@@ -57,9 +57,9 @@ export function RecurringFormDialog({
       open={open}
       onOpenChange={onOpenChange}
       title={
-        editing ? m.recurring_form_edit_title() : m.recurring_add_item()
+        editing ? t("recurring_form_edit_title") : t("recurring_add_item")
       }
-      description={m.recurring_form_description()}
+      description={t("recurring_form_description")}
     >
       <form className="space-y-4" onSubmit={onSubmit}>
         <RecurringFormFields
@@ -79,7 +79,7 @@ export function RecurringFormDialog({
 
         {resolvedCategoryOptions.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            {m.recurring_form_create_category_hint()}
+            {t("recurring_form_create_category_hint")}
           </p>
         ) : null}
 
@@ -88,8 +88,8 @@ export function RecurringFormDialog({
           formError={formError}
           submitLabel={
             editing
-              ? m.recurring_form_update_submit()
-              : m.recurring_form_save_submit()
+              ? t("recurring_form_update_submit")
+              : t("recurring_form_save_submit")
           }
         />
       </form>

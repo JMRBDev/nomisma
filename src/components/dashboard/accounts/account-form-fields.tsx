@@ -19,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { Switch } from "@/components/ui/switch"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 import { getAccountTypeOptions } from "@/lib/money"
 
 export function AccountFormFields({
@@ -45,7 +45,7 @@ export function AccountFormFields({
       <div className="grid gap-4 sm:grid-cols-2">
         <Field>
           <FieldLabel htmlFor="category-name">
-            <FieldTitle>{m.account_form_name_and_appearance()}</FieldTitle>
+            <FieldTitle>{t("account_form_name_and_appearance")}</FieldTitle>
           </FieldLabel>
 
           <div className="flex gap-2 items-center">
@@ -62,7 +62,7 @@ export function AccountFormFields({
               id="account-name"
               value={values.name}
               onChange={(event) => onValueChange("name", event.target.value)}
-              placeholder={m.account_form_name_placeholder()}
+              placeholder={t("account_form_name_placeholder")}
             />
           </div>
           <FormErrorMessage error={errors.name} />
@@ -70,7 +70,7 @@ export function AccountFormFields({
 
         <Field>
           <FieldLabel htmlFor="account-type">
-            <FieldTitle>{m.common_type()}</FieldTitle>
+            <FieldTitle>{t("common_type")}</FieldTitle>
           </FieldLabel>
           <NativeSelect
             id="account-type"
@@ -90,7 +90,7 @@ export function AccountFormFields({
         {!editing && (
           <Field>
             <FieldLabel htmlFor="account-opening-balance">
-              <FieldTitle>{m.account_form_opening_balance()}</FieldTitle>
+              <FieldTitle>{t("account_form_opening_balance")}</FieldTitle>
             </FieldLabel>
             <Input
               id="account-opening-balance"
@@ -109,15 +109,15 @@ export function AccountFormFields({
 
       <Field orientation="responsive">
         <div className="space-y-1">
-          <FieldTitle>{m.account_form_include_in_totals()}</FieldTitle>
+          <FieldTitle>{t("account_form_include_in_totals")}</FieldTitle>
           <FieldDescription>
-            {m.account_form_include_in_totals_description()}
+            {t("account_form_include_in_totals_description")}
           </FieldDescription>
         </div>
         <Switch
           checked={values.includeInTotals}
           onCheckedChange={onIncludeInTotalsChange}
-          aria-label={m.account_form_include_in_totals()}
+          aria-label={t("account_form_include_in_totals")}
         />
       </Field>
     </FieldGroup>

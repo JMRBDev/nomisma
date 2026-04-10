@@ -7,7 +7,7 @@ import { TableCell, TableRow } from "@/components/ui/table"
 import { getBudgetCategoryLabel } from "@/lib/dashboard-i18n"
 import { cn } from "@/lib/utils"
 import { formatCurrency, getBudgetTone } from "@/lib/money"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function BudgetsTableRow({
   budget,
@@ -41,8 +41,8 @@ export function BudgetsTableRow({
               </div>
               <p className="text-xs text-muted-foreground">
                 {budget.categoryId
-                  ? m.budgets_row_category_description()
-                  : m.budgets_row_total_description()}
+                  ? t("budgets_row_category_description")
+                  : t("budgets_row_total_description")}
               </p>
             </div>
             <div className="space-y-1">
@@ -58,7 +58,7 @@ export function BudgetsTableRow({
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                {m.budgets_row_progress({
+                {t("budgets_row_progress", {
                   percent: Math.round(budget.progress * 100),
                 })}
               </p>
@@ -96,14 +96,14 @@ export function BudgetsTableRow({
             actions={[
               {
                 id: "edit",
-                label: m.common_edit(),
+                label: t("common_edit"),
                 icon: PencilIcon,
                 disabled: pending,
                 onSelect: () => onEdit(budget),
               },
               {
                 id: "delete",
-                label: m.common_delete(),
+                label: t("common_delete"),
                 icon: Trash2Icon,
                 disabled: pending,
                 variant: "destructive",

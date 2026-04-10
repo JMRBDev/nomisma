@@ -1,6 +1,6 @@
 import { TableCell, TableRow } from "@/components/ui/table"
 import { formatCurrency } from "@/lib/money"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
 export function IncomeExpenseNetFooter({
@@ -20,18 +20,18 @@ export function IncomeExpenseNetFooter({
         <span className="text-muted-foreground">
           {showBreakdown && (
             <>
-              {`${m.overview_summary_income_title()}: `}
+              {`${t("overview_summary_income_title")}: `}
               <span className="font-medium text-success">
                 {formatCurrency(aggregates.totalIncome, currency)}
               </span>
-              {` · ${m.overview_summary_expenses_title()}: `}
+              {` · ${t("overview_summary_expenses_title")}: `}
               <span className="font-medium text-destructive">
                 {formatCurrency(aggregates.totalExpense, currency)}
               </span>
               {" · "}
             </>
           )}
-          {`${m.overview_summary_net_title()}: `}
+          {`${t("overview_summary_net_title")}: `}
           <span
             className={cn(
               "font-medium",

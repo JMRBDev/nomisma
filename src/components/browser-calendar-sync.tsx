@@ -1,12 +1,11 @@
 import { useRouter } from "@tanstack/react-router"
-import { getLocale } from "@/lib/i18n-client"
 import type { BrowserCalendarContext } from "@/lib/browser-calendar"
+import { getLocale, toCalendarLocale  } from "@/lib/i18n"
 import {
   detectBrowserCalendarPreferences,
   writeBrowserCalendarCookies,
 } from "@/lib/browser-calendar"
 import { useMountEffect } from "@/hooks/use-mount-effect"
-import { toCalendarLocale } from "@/lib/i18n"
 
 export function BrowserCalendarSync({
   calendarContext,

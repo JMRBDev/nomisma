@@ -1,10 +1,9 @@
 import { useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { useRouter } from "@tanstack/react-router"
-import { setLocale } from "@/lib/i18n-client"
-import { m } from "@/lib/i18n-client"
 import { api } from "../../../../convex/_generated/api"
 import type { SettingsFormValues } from "@/components/dashboard/settings/settings-shared"
+import { setLocale, t  } from "@/lib/i18n"
 import { FormErrorMessage } from "@/components/form-error-message"
 import { Button } from "@/components/ui/button"
 import {
@@ -89,7 +88,7 @@ export function SettingsForm({
       await router.invalidate()
     } catch (error) {
       setFormError(
-        error instanceof Error ? error.message : m.settings_save_error()
+        error instanceof Error ? error.message : t("settings_save_error")
       )
     } finally {
       setPending(false)
@@ -102,51 +101,51 @@ export function SettingsForm({
         <Field>
           <FieldContent>
             <FieldTitle className="font-heading text-lg">
-              {m.settings_base_currency_title()}
+              {t("settings_base_currency_title")}
             </FieldTitle>
             <FieldDescription>
-              {m.settings_base_currency_description()}
+              {t("settings_base_currency_description")}
             </FieldDescription>
           </FieldContent>
           <SettingsSelect
             value={values.baseCurrency}
             onValueChange={(value) => handleValueChange("baseCurrency", value)}
             options={currencyOptions}
-            placeholder={m.settings_choose_currency()}
+            placeholder={t("settings_choose_currency")}
           />
         </Field>
 
         <Field>
           <FieldContent>
             <FieldTitle className="font-heading text-lg">
-              {m.settings_language_title()}
+              {t("settings_language_title")}
             </FieldTitle>
             <FieldDescription>
-              {m.settings_language_description()}
+              {t("settings_language_description")}
             </FieldDescription>
           </FieldContent>
           <SettingsSelect
             value={values.locale}
             onValueChange={(value) => handleValueChange("locale", value)}
             options={localeOptions}
-            placeholder={m.settings_choose_language()}
+            placeholder={t("settings_choose_language")}
           />
         </Field>
 
         <Field>
           <FieldContent>
             <FieldTitle className="font-heading text-lg">
-              {m.settings_week_starts_title()}
+              {t("settings_week_starts_title")}
             </FieldTitle>
             <FieldDescription>
-              {m.settings_week_starts_description()}
+              {t("settings_week_starts_description")}
             </FieldDescription>
           </FieldContent>
           <SettingsSelect
             value={values.weekStartsOn}
             onValueChange={(value) => handleValueChange("weekStartsOn", value)}
             options={weekStartsOnOptions}
-            placeholder={m.settings_choose_day()}
+            placeholder={t("settings_choose_day")}
           />
         </Field>
       </FieldGroup>
@@ -162,10 +161,10 @@ export function SettingsForm({
           onClick={handleReset}
           disabled={!isDirty || pending}
         >
-          {m.common_reset()}
+          {t("common_reset")}
         </Button>
         <Button type="submit" disabled={!isDirty || pending}>
-          {pending ? m.common_saving() : m.settings_save_changes()}
+          {pending ? t("common_saving") : t("settings_save_changes")}
         </Button>
       </div>
     </form>

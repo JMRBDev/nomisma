@@ -9,7 +9,7 @@ import {
   getAccountDisplayName,
   getRecurringCategoryLabel,
 } from "@/lib/dashboard-i18n"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 const SORT_ACCESSORS: Record<
   string,
@@ -30,23 +30,23 @@ const BASE_COLUMNS: Array<DashboardTableColumn> = [
   {
     id: "nextDueDate",
     column: "nextDueDate",
-    header: m.recurring_table_next_due(),
+    header: t("recurring_table_next_due"),
     alwaysVisible: true,
   },
   {
     id: "description",
     column: "description",
-    header: m.common_description(),
+    header: t("common_description"),
     alwaysVisible: true,
   },
-  { id: "accountName", column: "accountName", header: m.common_account() },
-  { id: "categoryName", column: "categoryName", header: m.common_category() },
-  { id: "frequency", column: "frequency", header: m.recurring_table_schedule() },
-  { id: "status", column: "status", header: m.common_status() },
+  { id: "accountName", column: "accountName", header: t("common_account") },
+  { id: "categoryName", column: "categoryName", header: t("common_category") },
+  { id: "frequency", column: "frequency", header: t("recurring_table_schedule") },
+  { id: "status", column: "status", header: t("common_status") },
   {
     id: "amount",
     column: "amount",
-    header: m.common_amount(),
+    header: t("common_amount"),
     className: "text-right",
     alwaysVisible: true,
   },
@@ -54,7 +54,7 @@ const BASE_COLUMNS: Array<DashboardTableColumn> = [
 
 const ACTIONS_COLUMN: DashboardTableColumn = {
   id: "actions",
-  header: m.common_actions(),
+  header: t("common_actions"),
   className: "text-right",
   alwaysVisible: true,
 }

@@ -14,7 +14,7 @@ import { useCalendarContext } from "@/hooks/use-calendar-context"
 import { useCategoryReferenceActions } from "@/hooks/use-category-reference-actions"
 import { useDateFilter } from "@/hooks/use-date-filter"
 import { getRecurringPageDataQueryOptions } from "@/lib/dashboard-query-options"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function RecurringPage() {
   const { hasDateFilter, filterLabel, dateRange } = useDateFilter()
@@ -53,11 +53,11 @@ export function RecurringPage() {
   return (
     <DashboardPageSection>
       <DashboardPageHeader
-        title={m.nav_recurring()}
+        title={t("nav_recurring")}
         action={
           <DashboardPageActions>
             <Button onClick={() => dialog.openCreateDialog()}>
-              {m.recurring_add_item()}
+              {t("recurring_add_item")}
               <PlusIcon />
             </Button>
           </DashboardPageActions>
@@ -120,11 +120,11 @@ export function RecurringPage() {
       />
       <AccountReferenceDialog
         accountActions={accountActions}
-        description={m.recurring_account_reference_description()}
+        description={t("recurring_account_reference_description")}
       />
       <CategoryReferenceDialog
         categoryActions={categoryActions}
-        description={m.recurring_category_reference_description()}
+        description={t("recurring_category_reference_description")}
       />
     </DashboardPageSection>
   )

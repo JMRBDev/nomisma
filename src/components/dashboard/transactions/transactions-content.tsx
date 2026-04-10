@@ -7,7 +7,7 @@ import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-s
 import { PrerequisiteEmptyState } from "@/components/prerequisite-empty-state"
 import { TransactionsEmptyState } from "@/components/dashboard/transactions/transactions-empty-state"
 import { TransactionsTable } from "@/components/dashboard/transactions/transactions-table"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 type TransactionsContentProps = {
   accountOptions: Array<unknown>
@@ -45,9 +45,9 @@ export function TransactionsContent({
     return (
       <PrerequisiteEmptyState
         icon={<ReceiptTextIcon className="size-5" />}
-        title={m.transactions_prerequisite_title()}
-        description={m.transactions_prerequisite_description()}
-        ctaLabel={m.accounts_add_account()}
+        title={t("transactions_prerequisite_title")}
+        description={t("transactions_prerequisite_description")}
+        ctaLabel={t("accounts_add_account")}
         ctaTo="/dashboard/accounts"
       />
     )
@@ -63,19 +63,19 @@ export function TransactionsContent({
                 icon={ReceiptTextIcon}
                 title={
                   hasDateFilter
-                    ? m.transactions_empty_date_range_title()
-                    : m.transactions_empty_filtered_title()
+                    ? t("transactions_empty_date_range_title")
+                    : t("transactions_empty_filtered_title")
                 }
                 description={
                   hasDateFilter
-                    ? m.transactions_empty_date_range_description({
+                    ? t("transactions_empty_date_range_description", {
                         filter: filterLabel,
                       })
-                    : m.transactions_empty_header_description()
+                    : t("transactions_empty_header_description")
                 }
                 action={
                   <Button variant="outline" onClick={onClearFilters}>
-                    {m.common_clear_filters()}
+                    {t("common_clear_filters")}
                   </Button>
                 }
               />
@@ -84,9 +84,9 @@ export function TransactionsContent({
                 hasFilters={false}
                 onAddTransaction={onAddTransaction}
                 onClearFilters={onClearFilters}
-                title={m.transactions_empty_title()}
-                description={m.transactions_empty_description()}
-                actionLabel={m.transactions_add_transaction()}
+                title={t("transactions_empty_title")}
+                description={t("transactions_empty_description")}
+                actionLabel={t("transactions_add_transaction")}
               />
             )
           ) : (
@@ -101,8 +101,8 @@ export function TransactionsContent({
       </Card>
       <DeleteConfirmDialog
         {...deleteDialogProps}
-        title={m.transactions_delete_title()}
-        description={m.transactions_delete_description()}
+        title={t("transactions_delete_title")}
+        description={t("transactions_delete_description")}
       />
     </>
   )

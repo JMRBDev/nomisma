@@ -1,8 +1,8 @@
 import { useState } from "react"
 
-import { useMountEffect } from "@/hooks/use-mount-effect"
-import { m } from "@/lib/i18n-client"
 import type { ColorTheme } from "@/lib/theme"
+import { useMountEffect } from "@/hooks/use-mount-effect"
+import { t } from "@/lib/i18n"
 import {
   DEFAULT_COLOR_THEME,
   getColorTheme,
@@ -37,10 +37,10 @@ export function ColorThemeField() {
     <Field>
       <FieldContent>
         <FieldTitle className="font-heading text-lg">
-          {m.settings_color_theme_title()}
+          {t("settings_color_theme_title")}
         </FieldTitle>
         <FieldDescription>
-          {m.settings_color_theme_description()}
+          {t("settings_color_theme_description")}
         </FieldDescription>
       </FieldContent>
 

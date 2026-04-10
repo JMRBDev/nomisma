@@ -9,7 +9,7 @@ import { DashboardFilterSheet } from "@/components/dashboard/dashboard-filter-sh
 import { DashboardFilterSummary } from "@/components/dashboard/dashboard-filter-summary"
 import { Button } from "@/components/ui/button"
 import { NativeSelectOption } from "@/components/ui/native-select"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 import {
   getTransactionStatusOptions,
   getTransactionTypeOptions,
@@ -43,31 +43,31 @@ export function TransactionFiltersSheet({
     <DashboardFilterSheet
       open={open}
       onOpenChange={onOpenChange}
-      description={m.transactions_filter_description()}
+      description={t("transactions_filter_description")}
       footer={
         <DashboardFilterSummary
           icon={FunnelIcon}
           action={
             activeFilterCount > 0 ? (
               <Button size="sm" variant="ghost" onClick={onReset}>
-                {m.common_clear_all()}
+                {t("common_clear_all")}
               </Button>
             ) : null
           }
         >
-          <span>{m.transactions_matching_count({ count: matchCount })}</span>
+          <span>{t("transactions_matching_count", { count: matchCount })}</span>
         </DashboardFilterSummary>
       }
     >
       <div className="grid gap-4">
         <DashboardFilterSelectField
           id="mobile-filter-type"
-          label={m.common_type()}
+          label={t("common_type")}
           value={values.type}
           onChange={(value) => onChange("type", value)}
         >
           <NativeSelectOption value="all">
-            {m.transactions_all_types()}
+            {t("transactions_all_types")}
           </NativeSelectOption>
           {transactionTypeOptions.map((option) => (
             <NativeSelectOption key={option.value} value={option.value}>
@@ -78,12 +78,12 @@ export function TransactionFiltersSheet({
 
         <DashboardFilterSelectField
           id="mobile-filter-status"
-          label={m.common_status()}
+          label={t("common_status")}
           value={values.status}
           onChange={(value) => onChange("status", value)}
         >
           <NativeSelectOption value="all">
-            {m.transactions_all_statuses()}
+            {t("transactions_all_statuses")}
           </NativeSelectOption>
           {transactionStatusOptions.map((option) => (
             <NativeSelectOption key={option.value} value={option.value}>
@@ -94,12 +94,12 @@ export function TransactionFiltersSheet({
 
         <DashboardFilterSelectField
           id="mobile-filter-account"
-          label={m.common_account()}
+          label={t("common_account")}
           value={values.accountId}
           onChange={(value) => onChange("accountId", value)}
         >
           <NativeSelectOption value="all">
-            {m.transactions_all_accounts()}
+            {t("transactions_all_accounts")}
           </NativeSelectOption>
           {accountOptions.map((account) => (
             <NativeSelectOption key={account._id} value={account._id}>
@@ -110,12 +110,12 @@ export function TransactionFiltersSheet({
 
         <DashboardFilterSelectField
           id="mobile-filter-category"
-          label={m.common_category()}
+          label={t("common_category")}
           value={values.categoryId}
           onChange={(value) => onChange("categoryId", value)}
         >
           <NativeSelectOption value="all">
-            {m.transactions_all_categories()}
+            {t("transactions_all_categories")}
           </NativeSelectOption>
           {categoryOptions.map((category) => (
             <NativeSelectOption key={category._id} value={category._id}>

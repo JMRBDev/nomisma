@@ -1,7 +1,7 @@
 import { AlertTriangleIcon, RefreshCwIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import type { ErrorComponentProps } from "@tanstack/react-router"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 import { Button } from "@/components/ui/button"
 import {
   Empty,
@@ -24,17 +24,17 @@ export function ErrorPage({ error, reset }: ErrorComponentProps) {
           <EmptyMedia variant="icon">
             <AlertTriangleIcon />
           </EmptyMedia>
-          <EmptyTitle>{m.error_title()}</EmptyTitle>
-          <EmptyDescription>{m.error_description()}</EmptyDescription>
+          <EmptyTitle>{t("error_title")}</EmptyTitle>
+          <EmptyDescription>{t("error_description")}</EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => reset()}>
               <RefreshCwIcon />
-              {m.error_reload()}
+              {t("error_reload")}
             </Button>
             <Button asChild>
-              <Link to="/dashboard">{m.error_go_to_overview()}</Link>
+              <Link to="/dashboard">{t("error_go_to_overview")}</Link>
             </Button>
           </div>
           {import.meta.env.DEV && (

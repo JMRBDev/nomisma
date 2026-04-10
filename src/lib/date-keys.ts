@@ -1,6 +1,5 @@
 import { format, lastDayOfMonth, parseISO } from "date-fns"
-import { getLocale } from "@/lib/i18n-client"
-import { toCalendarLocale } from "@/lib/i18n"
+import { getLocale, toCalendarLocale  } from "@/lib/i18n"
 
 function padNumber(value: number) {
   return value.toString().padStart(2, "0")

@@ -1,20 +1,20 @@
 import type { ChartConfig } from "@/components/ui/chart"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export const spendingChartConfig = {
   amount: {
-    label: m.overview_summary_expenses_title(),
+    label: t("overview_summary_expenses_title"),
     color: "#fb7185",
   },
 } satisfies ChartConfig
 
 export const incomeExpensesChartConfig = {
   income: {
-    label: m.overview_summary_income_title(),
+    label: t("overview_summary_income_title"),
     color: "var(--color-success)",
   },
   expenses: {
-    label: m.overview_summary_expenses_title(),
+    label: t("overview_summary_expenses_title"),
     color: "#fb7185",
   },
 } satisfies ChartConfig

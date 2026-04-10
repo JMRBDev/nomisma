@@ -2,7 +2,8 @@ import { Suspense, lazy, startTransition, useState } from "react"
 import { SearchIcon } from "lucide-react"
 import { useMountEffect } from "@/hooks/use-mount-effect"
 import { Button } from "@/components/ui/button"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
+
 const loadDashboardSearchDialog = () =>
   import("@/components/dashboard/dashboard-search-dialog")
 const LazyDashboardSearchDialog = lazy(async () => ({
@@ -46,10 +47,10 @@ export function DashboardSearch() {
         onPointerEnter={() => {
           void loadDashboardSearchDialog()
         }}
-        aria-label={m.search_open_dashboard_search()}
+        aria-label={t("search_open_dashboard_search")}
       >
         <SearchIcon className="size-4" />
-        <span className="sr-only">{m.search_open_dashboard_search()}</span>
+        <span className="sr-only">{t("search_open_dashboard_search")}</span>
       </Button>
 
       {open ? (

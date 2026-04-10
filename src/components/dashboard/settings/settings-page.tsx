@@ -7,8 +7,7 @@ import { ThemePreferenceField } from "@/components/dashboard/settings/theme-pref
 import { createSettingsFormValues } from "@/components/dashboard/settings/settings-shared"
 import { Separator } from "@/components/ui/separator"
 import { getUserSettingsQueryOptions } from "@/lib/dashboard-query-options"
-import { m } from "@/lib/i18n-client"
-import { getLocale } from "@/lib/i18n-client"
+import { getLocale, t  } from "@/lib/i18n"
 
 export function SettingsPage() {
   const { data: userSettings } = useSuspenseQuery(getUserSettingsQueryOptions())
@@ -20,7 +19,7 @@ export function SettingsPage() {
   return (
     <DashboardPageSection>
       <div className="flex flex-col gap-3">
-        <DashboardPageHeader title={m.nav_settings()} />
+        <DashboardPageHeader title={t("nav_settings")} />
       </div>
 
       <div className="flex flex-col gap-4">

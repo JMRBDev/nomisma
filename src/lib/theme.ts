@@ -1,4 +1,4 @@
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export const THEME_STORAGE_KEY = "nomisma-theme"
 
@@ -63,9 +63,9 @@ export function isValidColorTheme(value: string): value is ColorTheme {
 
 export function getThemeOptions() {
   return [
-    { value: "system", label: m.theme_system() },
-    { value: "light", label: m.theme_light() },
-    { value: "dark", label: m.theme_dark() },
+    { value: "system", label: t("theme_system") },
+    { value: "light", label: t("theme_light") },
+    { value: "dark", label: t("theme_dark") },
   ] as const
 }
 
@@ -79,11 +79,11 @@ export function getColorThemeOptions() {
 export function getColorThemeLabel(value: ColorTheme) {
   switch (value) {
     case "olive":
-      return m.color_theme_olive()
+      return t("color_theme_olive")
     case "mist":
-      return m.color_theme_mist()
+      return t("color_theme_mist")
     default:
-      return m.color_theme_zinc()
+      return t("color_theme_zinc")
   }
 }
 

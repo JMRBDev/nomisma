@@ -1,6 +1,6 @@
 import { useTheme } from "next-themes"
-import { m } from "@/lib/i18n-client"
 import type { ThemePreference } from "@/lib/theme"
+import { t } from "@/lib/i18n"
 
 import { useIsClient } from "@/hooks/use-is-client"
 import { getThemeOptions, themeValues } from "@/lib/theme"
@@ -30,10 +30,10 @@ export function ThemePreferenceField() {
     <Field>
       <FieldContent>
         <FieldTitle className="font-heading text-lg">
-          {m.settings_appearance_title()}
+          {t("settings_appearance_title")}
         </FieldTitle>
         <FieldDescription>
-          {m.settings_appearance_description()}
+          {t("settings_appearance_description")}
         </FieldDescription>
       </FieldContent>
 
@@ -43,7 +43,7 @@ export function ThemePreferenceField() {
         disabled={!isClient}
       >
         <SelectTrigger className="w-full sm:w-56">
-          <SelectValue placeholder={m.settings_choose_theme()} />
+          <SelectValue placeholder={t("settings_choose_theme")} />
         </SelectTrigger>
 
         <SelectContent>

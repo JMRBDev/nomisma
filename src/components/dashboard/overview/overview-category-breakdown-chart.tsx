@@ -12,7 +12,7 @@ import {
 import { getOverviewCategoryLabel } from "@/lib/dashboard-i18n"
 import { formatCurrency } from "@/lib/money"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
-import { m } from "@/lib/i18n-client"
+import { t } from "@/lib/i18n"
 
 export function OverviewCategoryBreakdownChart({
   data,
@@ -29,8 +29,8 @@ export function OverviewCategoryBreakdownChart({
   if (data.length === 0) {
     return (
       <FilteredResultsEmptyState
-        title={m.overview_charts_breakdown_empty_title()}
-        description={m.overview_charts_breakdown_empty_description()}
+        title={t("overview_charts_breakdown_empty_title")}
+        description={t("overview_charts_breakdown_empty_description")}
         icon={PieChartIcon}
       />
     )
