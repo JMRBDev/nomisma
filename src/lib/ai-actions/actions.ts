@@ -1,28 +1,72 @@
+/* eslint-disable max-lines */
 import { tool } from "ai"
+import { accountCreateDefinition } from "./action-account"
 import { budgetAdjustDefinition, budgetCreateDefinition } from "./action-budget"
+import {
+  categoryCreateDefinition,
+  categoryUpdateDefinition,
+} from "./action-category"
 import { categorizeDefinition } from "./action-categorize"
 import { resolveRouteScope } from "./actions-helpers"
 import {
   recurringCreateDefinition,
   recurringMarkDefinition,
 } from "./action-recurring"
+import {
+  recurringConfirmDefinition,
+  recurringCreateRuleDefinition,
+  recurringPauseDefinition,
+  recurringResumeDefinition,
+  recurringUpdateDefinition,
+} from "./action-recurring-rule"
+import {
+  transactionAutocategorizeDefinition,
+  transactionCreateDefinition,
+  transactionDeleteDefinition,
+  transactionUpdateDefinition,
+} from "./action-transaction"
 import type { AiActionDefinition, PlannerContext } from "./actions-types"
 import type { FrontendHints } from "@/lib/ai-actions/shared"
 
 export type { AiActionDefinition, PlannerContext } from "./actions-types"
 
 const chatToolTitleOverrides: Record<string, string> = {
+  AccountCreate: "Create account",
   BudgetCreate: "Create budget",
   BudgetAdjust: "Adjust budget",
+  CategoryCreate: "Create category",
+  CategoryUpdate: "Update category",
+  RecurringConfirmDue: "Confirm recurring item",
+  RecurringCreate: "Create recurring item",
+  RecurringPause: "Pause recurring item",
+  RecurringResume: "Resume recurring item",
+  RecurringUpdate: "Update recurring item",
   TransactionCategorize: "Categorize transactions",
+  TransactionAutocategorizeUncategorized:
+    "Auto-categorize uncategorized transactions",
+  TransactionCreate: "Create transaction",
+  TransactionDelete: "Delete transaction",
   ReminderCreateFromTransaction: "Create reminder from transaction",
   TransactionMarkRecurring: "Mark transaction as recurring",
+  TransactionUpdate: "Update transaction",
 }
 
 const actionDefinitions: Array<AiActionDefinition> = [
+  transactionCreateDefinition,
+  transactionUpdateDefinition,
+  transactionDeleteDefinition,
+  transactionAutocategorizeDefinition,
   categorizeDefinition,
+  accountCreateDefinition,
+  categoryCreateDefinition,
+  categoryUpdateDefinition,
   budgetCreateDefinition,
   budgetAdjustDefinition,
+  recurringCreateRuleDefinition,
+  recurringUpdateDefinition,
+  recurringPauseDefinition,
+  recurringResumeDefinition,
+  recurringConfirmDefinition,
   recurringCreateDefinition,
   recurringMarkDefinition,
 ]

@@ -19,6 +19,18 @@ export const categorizeTransactions = mutation({
   handler: (ctx, args) => AiActions.categorizeTransactions(ctx, args),
 })
 
+export const autoCategorizeTransactions = mutation({
+  args: {
+    assignments: v.array(
+      v.object({
+        transactionId: v.id("transactions"),
+        categoryId: v.id("categories"),
+      })
+    ),
+  },
+  handler: (ctx, args) => AiActions.autoCategorizeTransactions(ctx, args),
+})
+
 export const createRecurringRuleFromTransaction = mutation({
   args: {
     transactionId: v.id("transactions"),

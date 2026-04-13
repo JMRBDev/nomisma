@@ -74,6 +74,13 @@ function buildAssistantContextPrompt(
       locale: context.locale,
       baseCurrency: context.settings?.baseCurrency ?? null,
       route: hints.route ?? null,
+      accounts: context.accounts.map((account) => ({
+        id: account.id,
+        name: account.name,
+        type: account.type,
+        archived: account.archived,
+        includeInTotals: account.includeInTotals,
+      })),
       selectedTransactions: context.selectedTransactions,
       currentMonthBudgets: context.budgets
         .filter((budget) => budget.month === context.currentMonth)
@@ -83,6 +90,9 @@ function buildAssistantContextPrompt(
         name: category.name,
         archived: category.archived,
       })),
+      recurringRules: context.recurringRules
+        .filter((rule) => rule.active)
+        .slice(0, 25),
       recentTransactions: context.recentTransactions.slice(0, 25),
     },
     null,

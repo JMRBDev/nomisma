@@ -1,3 +1,4 @@
+import type { TransactionFormValues } from "@/components/dashboard/transactions/transactions-shared"
 import { Field, FieldLabel, FieldTitle } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -7,8 +8,11 @@ export function TransactionTextFields({
   values,
   onValueChange,
 }: {
-  values: { description: string; note: string; type: string }
-  onValueChange: (field: string, value: string) => void
+  values: Pick<TransactionFormValues, "description" | "note" | "type">
+  onValueChange: (
+    field: keyof Pick<TransactionFormValues, "description" | "note">,
+    value: string
+  ) => void
 }) {
   return (
     <>

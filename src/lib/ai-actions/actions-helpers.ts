@@ -48,6 +48,35 @@ export function resolveAmount(value: unknown) {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : null
 }
 
+export function resolveNonNegativeAmount(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value) && value >= 0) {
+    return value
+  }
+
+  if (typeof value !== "string") {
+    return null
+  }
+
+  const normalized = value.replace(",", ".")
+  const match = normalized.match(/-?\d+(?:\.\d+)?/)
+
+  if (!match) {
+    return null
+  }
+
+  const parsed = Number(match[0])
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null
+}
+
+export function resolveDate(value: unknown, fallback?: string) {
+  if (typeof value !== "string" || value.trim() === "") {
+    return fallback ?? null
+  }
+
+  const normalized = value.trim()
+  return /^\d{4}-\d{2}-\d{2}$/.test(normalized) ? normalized : null
+}
+
 export function resolveRouteScope(route?: string): RouteScope | null {
   if (!route) return null
   if (route.includes("/accounts")) return "accounts"
