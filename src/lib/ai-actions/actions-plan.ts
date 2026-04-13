@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { resolveRouteScope } from "./actions-helpers"
 import {
   actionDefinitions,
@@ -20,6 +21,7 @@ import type {
   RouteScope,
 } from "./actions-types"
 import type { FrontendHints } from "@/lib/ai-actions/shared"
+import type { AiLogger } from "@/lib/ai-chat/logger"
 import type { UIMessage } from "ai"
 
 function selectIntentActions(
@@ -103,7 +105,8 @@ function buildAnswerContextPlan(
 
 export function planAssistantTurn(
   messages: Array<UIMessage>,
-  hints: FrontendHints
+  hints: FrontendHints,
+  log: AiLogger
 ): AssistantTurnPlan {
   const routeScope = resolveRouteScope(hints.route)
   const recentMessages = messages.slice(-4)
@@ -116,8 +119,21 @@ export function planAssistantTurn(
   const hasActionVerb = text !== "" && actionIntentPattern.test(text)
   const isInformational = informationalPattern.test(text)
   const hasDomainContext = domains.length > 0
-  const mode =
+  const mode: "action" | "answer" =
     activeToolFlow || (hasActionVerb && !isInformational) ? "action" : "answer"
+
+  log.info("PLAN", "Turn planning analysis", {
+    lastUserText: text.slice(0, 100),
+    routeScope,
+    domains,
+    activeToolFlow,
+    hasActionVerb,
+    isInformational,
+    hasDomainContext,
+    mode,
+    messageCount: messages.length,
+    recentMessageCount: recentMessages.length,
+  })
 
   const referencedActions = getReferencedActions(recentMessages)
   const domainFallbackActions =
@@ -137,14 +153,32 @@ export function planAssistantTurn(
         ])
       : []
 
-  return {
+  log.info("PLAN", "Action selection", {
+    intentActionKeys: intentActions.map((a) => a.key),
+    referencedActionKeys: referencedActions.map((a) => a.key),
+    domainFallbackActionKeys: domainFallbackActions.map((a) => a.key),
+    finalActionKeys: actions.map((a) => a.key),
+  })
+
+  const context =
+    actions.length > 0
+      ? buildContextFromActions(actions)
+      : buildAnswerContextPlan(text, domains, hints)
+
+  const result = {
     actions,
-    context:
-      actions.length > 0
-        ? buildContextFromActions(actions)
-        : buildAnswerContextPlan(text, domains, hints),
+    context,
     keepRecentToolMessageCount: activeToolFlow ? 4 : mode === "action" ? 2 : 0,
     lastUserText: text,
     mode,
   }
+
+  log.info("PLAN", "Turn plan finalized", {
+    mode: result.mode,
+    actionCount: result.actions.length,
+    keepRecentToolMessageCount: result.keepRecentToolMessageCount,
+    contextPlan: result.context,
+  })
+
+  return result
 }

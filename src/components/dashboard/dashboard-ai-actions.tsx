@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { useCallback, useRef, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import { useChat } from "@ai-sdk/react"
@@ -28,6 +29,7 @@ export function DashboardAiActions() {
   const [input, setInput] = useState("")
   const isNearBottomRef = useRef(true)
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
+
   const {
     messages,
     sendMessage,
@@ -38,15 +40,41 @@ export function DashboardAiActions() {
   } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/chat",
-      body: getCurrentFrontendHints,
+      body: () => {
+        const hints = getCurrentFrontendHints()
+        console.info("[AI][CLIENT] Sending request with hints", {
+          route: hints.route,
+          selectedIds: hints.selectedIds?.length ?? 0,
+        })
+        return hints
+      },
     }),
-    sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithApprovalResponses,
+    sendAutomaticallyWhen: (message) => {
+      const result =
+        lastAssistantMessageIsCompleteWithApprovalResponses(message)
+      if (result) {
+        console.info("[AI][CLIENT] Auto-sending after approval responses")
+      }
+      return result
+    },
     onFinish: async ({ message, isAbort, isError }) => {
+      console.info("[AI][CLIENT] onFinish", {
+        isAbort,
+        isError,
+        messageParts: message.parts.length,
+        partTypes: message.parts.map((p) => p.type),
+      })
       if (isAbort || isError) return
       const successMessages = getMutationSuccessMessages(message)
       if (successMessages.length === 0) return
+      console.info("[AI][CLIENT] Mutation success messages", successMessages)
       toast.success(successMessages[successMessages.length - 1])
       await queryClient.invalidateQueries()
+    },
+    onError: (err) => {
+      console.error("[AI][CLIENT] useChat error", {
+        message: err.message,
+      })
     },
   })
   const isBusy = status === "submitted" || status === "streaming"
@@ -68,6 +96,10 @@ export function DashboardAiActions() {
   const handleSubmit = async () => {
     const trimmedInput = input.trim()
     if (!trimmedInput || isBusy) return
+    console.info("[AI][CLIENT] Sending message", {
+      text: trimmedInput.slice(0, 100),
+      currentMessageCount: messages.length,
+    })
     setInput("")
     isNearBottomRef.current = true
     await sendMessage({ text: trimmedInput })

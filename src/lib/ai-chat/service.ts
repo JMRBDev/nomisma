@@ -17,6 +17,7 @@ import type {
   PlannerContext,
 } from "@/lib/ai-actions/actions"
 import type { FrontendHints } from "@/lib/ai-actions/shared"
+import type { AiLogger } from "@/lib/ai-chat/logger"
 import {
   createTools,
   getChatToolTitle,
@@ -213,13 +214,16 @@ function prepareMessagesForModel(
   }
 }
 
-async function requireClient() {
+async function requireClient(log: AiLogger) {
+  const start = Date.now()
   const client = await createAuthedConvexServerClient()
 
   if (!client) {
+    log.error("AUTH", "No authenticated client — user is not signed in")
     throw new Error("You must be signed in to use the assistant.")
   }
 
+  log.timing("requireClient", start, "Authenticated Convex client created")
   return client
 }
 
@@ -227,9 +231,23 @@ async function getAssistantContext(
   client: ConvexHttpClient,
   request: Request,
   hints: FrontendHints,
-  plan: AssistantContextPlan
+  plan: AssistantContextPlan,
+  log: AiLogger
 ): Promise<PlannerContext> {
+  const start = Date.now()
   const { locale, calendarContext } = resolveAiRequestContext(request)
+  log.step("CONTEXT", "Fetching planner context from Convex", {
+    locale,
+    today: calendarContext.today,
+    currentMonth: calendarContext.currentMonth,
+    includeAccounts: plan.includeAccounts,
+    includeBudgets: plan.includeBudgets,
+    includeCategories: plan.includeCategories,
+    includeRecentTransactions: plan.includeRecentTransactions,
+    includeRecurringRules: plan.includeRecurringRules,
+    selectedIds: hints.selectedIds,
+  })
+
   const plannerContext = await client.query(api.aiActions.getPlannerContext, {
     currentMonth: calendarContext.currentMonth,
     includeAccounts: plan.includeAccounts,
@@ -239,6 +257,17 @@ async function getAssistantContext(
     includeRecurringRules: plan.includeRecurringRules,
     recentTransactionsLimit: RECENT_TRANSACTION_LIMIT,
     selectedIds: hints.selectedIds,
+  })
+
+  log.timing("CONTEXT", start, "Planner context fetched")
+  log.debug("CONTEXT", "Planner context details", {
+    accounts: plannerContext.accounts.length,
+    categories: plannerContext.categories.length,
+    budgets: plannerContext.budgets.length,
+    recurringRules: plannerContext.recurringRules.length,
+    recentTransactions: plannerContext.recentTransactions.length,
+    selectedTransactions: plannerContext.selectedTransactions.length,
+    settingsBaseCurrency: plannerContext.settings.baseCurrency,
   })
 
   return {
@@ -361,7 +390,8 @@ function streamAssistantResponse(
     system: NonNullable<Parameters<typeof streamText>[0]["system"]>
     tools: ToolSet
   },
-  turnPlan: AssistantTurnPlan
+  turnPlan: AssistantTurnPlan,
+  log: AiLogger
 ) {
   const fastModel = turnPlan.mode === "answer" ? getAssistantFastModel() : null
   const primaryModel = getAssistantModel()
@@ -373,19 +403,38 @@ function streamAssistantResponse(
       ? [primaryModel, fallbackModel]
       : [primaryModel]
 
+  log.step("MODEL", "Streaming response", {
+    mode: turnPlan.mode,
+    modelCascade: models.map(
+      (m) => (m as { modelId?: string }).modelId ?? "unknown"
+    ),
+    toolCount: Object.keys(parameters.tools).length,
+    messageCount: parameters.messages.length,
+  })
+
   let lastError: unknown
 
   for (const model of models) {
+    const modelId = (model as { modelId?: string }).modelId ?? "unknown"
     try {
-      return streamText({
+      log.info("MODEL", `Attempting model: ${modelId}`)
+      const result = streamText({
         ...parameters,
         model: model!,
       })
+      log.info("MODEL", `Successfully started stream with model: ${modelId}`)
+      return result
     } catch (error) {
       lastError = error
+      log.warn("MODEL", `Model ${modelId} failed, trying next`, {
+        error: error instanceof Error ? error.message : String(error),
+      })
     }
   }
 
+  log.error("MODEL", "All models failed", {
+    error: lastError instanceof Error ? lastError.message : String(lastError),
+  })
   throw lastError ?? new Error("No assistant model is configured.")
 }
 
@@ -442,44 +491,94 @@ function createLookupTransactionsTool(context: PlannerContext) {
   })
 }
 
-export async function chatWithAssistant(request: Request) {
+export async function chatWithAssistant(request: Request, log: AiLogger) {
+  const totalStart = Date.now()
   try {
-    const client = await requireClient()
+    log.step("START", "Beginning chatWithAssistant pipeline")
+
+    log.step("AUTH", "Creating authenticated Convex client")
+    const client = await requireClient(log)
+
+    log.step("PARSE", "Parsing and validating request body")
+    const bodyParseStart = Date.now()
     const body = ChatRequestSchema.parse(await request.json())
-    const turnPlan = planAssistantTurn(body.messages, body.context)
+    log.timing(
+      "PARSE",
+      bodyParseStart,
+      `Parsed ${body.messages.length} messages`
+    )
+    log.debug("PARSE", "Frontend hints", {
+      route: body.context.route ?? null,
+      selectedIds: body.context.selectedIds?.length ?? 0,
+    })
+
+    log.step("PLAN", "Planning assistant turn")
+    const planStart = Date.now()
+    const turnPlan = planAssistantTurn(body.messages, body.context, log)
+    log.timing("PLAN", planStart, "Turn planning complete")
+    log.info("PLAN", "Turn plan result", {
+      mode: turnPlan.mode,
+      lastUserText: turnPlan.lastUserText.slice(0, 100),
+      actionCount: turnPlan.actions.length,
+      actionKeys: turnPlan.actions.map((a) => a.key),
+      keepRecentToolMessageCount: turnPlan.keepRecentToolMessageCount,
+      contextPlan: turnPlan.context,
+    })
 
     const shouldExcludeHeavy =
       turnPlan.mode === "answer" &&
       turnPlan.actions.length === 0 &&
       !turnPlan.context.includeRecentTransactions
 
+    log.step("CONTEXT", "Fetching assistant context data")
     const context = await getAssistantContext(
       client,
       request,
       body.context,
-      turnPlan.context
+      turnPlan.context,
+      log
     )
 
+    log.step("TOOLS", "Creating action tools")
+    const toolsStart = Date.now()
     const actionTools: ToolSet = turnPlan.actions.length
       ? (createTools(
           client,
           context,
           body.context,
-          turnPlan.actions
+          turnPlan.actions,
+          log
         ) as ToolSet)
       : {}
 
     if (shouldExcludeHeavy) {
+      log.info(
+        "TOOLS",
+        "Adding lookupTransactions tool (answer mode, no heavy context)"
+      )
       const lookupTool = createLookupTransactionsTool(context)
       if (lookupTool) {
         actionTools.lookupTransactions = lookupTool
       }
     }
 
+    const toolNames = Object.keys(actionTools)
+    log.timing("TOOLS", toolsStart, `Created ${toolNames.length} tools`)
+    log.info("TOOLS", "Available tools", { tools: toolNames })
+
+    log.step("MESSAGES", "Preparing messages for model")
+    const messagesStart = Date.now()
     const preparedConversation = prepareMessagesForModel(
       body.messages,
       turnPlan.keepRecentToolMessageCount
     )
+    log.debug("MESSAGES", "Prepared conversation", {
+      totalInputMessages: body.messages.length,
+      preparedMessages: preparedConversation.messages.length,
+      hasMemory: preparedConversation.memory !== null,
+      memoryLength: preparedConversation.memory?.length ?? 0,
+    })
+
     const validationTools = actionTools as NonNullable<
       Parameters<typeof validateUIMessages>[0]["tools"]
     >
@@ -495,29 +594,56 @@ export async function chatWithAssistant(request: Request) {
           ? "before-last-2-messages"
           : "all",
     })
+    log.timing(
+      "MESSAGES",
+      messagesStart,
+      `Final model messages: ${modelMessages.length}`
+    )
+    log.debug("MESSAGES", "Model message roles", {
+      roles: modelMessages.map((m) => m.role),
+    })
 
     const maxSteps = turnPlan.mode === "action" ? 4 : 2
+    log.info("CONFIG", "Stream configuration", {
+      maxSteps,
+      shouldExcludeHeavy,
+      mode: turnPlan.mode,
+    })
+
+    log.step("STREAM", "Starting assistant response stream")
+    const systemPrompt = buildSystemPrompt(
+      context,
+      body.context,
+      preparedConversation.memory,
+      shouldExcludeHeavy
+    )
+    log.debug("STREAM", "System prompt length", {
+      systemPromptLength: systemPrompt.length,
+    })
 
     const result = streamAssistantResponse(
       {
         messages: modelMessages,
         stopWhen: stepCountIs(maxSteps),
-        system: buildSystemPrompt(
-          context,
-          body.context,
-          preparedConversation.memory,
-          shouldExcludeHeavy
-        ),
+        system: systemPrompt,
         tools: actionTools,
       },
-      turnPlan
+      turnPlan,
+      log
     )
 
+    log.step("DONE", "Returning UI message stream response")
+    log.timing("TOTAL", totalStart, "Full chatWithAssistant pipeline")
     return result.toUIMessageStreamResponse({
       originalMessages: body.messages,
       onError: toErrorMessage,
     })
   } catch (error) {
+    log.error("ERROR", "chatWithAssistant failed", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    })
+    log.timing("TOTAL", totalStart, "Pipeline failed")
     return new Response(toErrorMessage(error), {
       status: 400,
     })

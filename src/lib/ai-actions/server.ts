@@ -67,16 +67,23 @@ export function getAssistantModel() {
     throw new Error("OPENROUTER_MODEL must be set.")
   }
 
+  console.info(`[AI][MODEL] Primary model: ${openRouterPrimaryModelId}`)
   return getOpenRouter()(openRouterPrimaryModelId)
 }
 
 export function getAssistantFallbackModel() {
+  if (openRouterFallbackModelId) {
+    console.info(`[AI][MODEL] Fallback model: ${openRouterFallbackModelId}`)
+  }
   return openRouterFallbackModelId
     ? getOpenRouter()(openRouterFallbackModelId)
     : null
 }
 
 export function getAssistantFastModel() {
+  if (openRouterFastModelId) {
+    console.info(`[AI][MODEL] Fast model: ${openRouterFastModelId}`)
+  }
   return openRouterFastModelId ? getOpenRouter()(openRouterFastModelId) : null
 }
 
