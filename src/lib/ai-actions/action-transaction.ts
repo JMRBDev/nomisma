@@ -244,7 +244,10 @@ function resolveUpdateTransactionAction(
   const resolvedAccount = parsed.data.accountName
     ? resolveAccount(context, parsed.data.accountName)
     : transaction.accountId
-      ? { id: transaction.accountId, name: transaction.accountName ?? "Account" }
+      ? {
+          id: transaction.accountId,
+          name: transaction.accountName ?? "Account",
+        }
       : null
 
   if (Array.isArray(resolvedAccount)) {
@@ -523,7 +526,8 @@ function resolveAutocategorizeAction(
 ): NormalizeResult<
   z.infer<typeof transactionAutocategorizeNormalizedInputSchema>
 > {
-  const parsed = transactionAutocategorizeGeneratedInputSchema.safeParse(rawInput)
+  const parsed =
+    transactionAutocategorizeGeneratedInputSchema.safeParse(rawInput)
 
   if (!parsed.success) {
     return { type: "no_match", reason: "The categorize input was invalid." }
@@ -681,12 +685,15 @@ export const transactionAutocategorizeDefinition: AiActionDefinition = {
   normalize: resolveAutocategorizeAction,
   execute: async (client, input) => {
     const parsed = transactionAutocategorizeNormalizedInputSchema.parse(input)
-    const result = await client.mutation(api.aiActions.autoCategorizeTransactions, {
-      assignments: parsed.assignments.map((assignment) => ({
-        transactionId: assignment.transactionId as any,
-        categoryId: assignment.categoryId as any,
-      })),
-    })
+    const result = await client.mutation(
+      api.aiActions.autoCategorizeTransactions,
+      {
+        assignments: parsed.assignments.map((assignment) => ({
+          transactionId: assignment.transactionId as any,
+          categoryId: assignment.categoryId as any,
+        })),
+      }
+    )
 
     return {
       message: `Auto-categorized ${result.count} transaction${result.count === 1 ? "" : "s"}.`,

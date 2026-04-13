@@ -52,7 +52,8 @@ export async function getPlannerContext(
 ) {
   const user = await requireUser(ctx)
   const selectedIds = new Set(args.selectedIds ?? [])
-  const needsTransactionData = selectedIds.size > 0 || args.includeRecentTransactions
+  const needsTransactionData =
+    selectedIds.size > 0 || args.includeRecentTransactions
   const needsAccountDocs =
     args.includeAccounts || args.includeRecurringRules || needsTransactionData
   const needsCategoryDocs =
@@ -65,31 +66,42 @@ export async function getPlannerContext(
     20
   )
 
-  const [{ settings }, accountDocs, categoryDocs, budgets, recurringRules, recentTransactions, selectedTransactions] =
-    await Promise.all([
-      getResolvedSettings(ctx, user._id),
-      needsAccountDocs ? getAccountsByUserId(ctx, user._id) : [],
-      needsCategoryDocs ? getCategoriesByUserId(ctx, user._id) : [],
-      args.includeBudgets
-        ? getBudgetsByUserIdMonth(ctx, user._id, args.currentMonth)
-        : [],
-      args.includeRecurringRules
-        ? getActiveRecurringRulesByUserId(ctx, user._id)
-        : [],
-      args.includeRecentTransactions
-        ? getRecentTransactionsByUserId(ctx, user._id, recentTransactionsLimit)
-        : [],
-      selectedIds.size > 0
-        ? Promise.all(
-            [...selectedIds].map(async (transactionId) => {
-              const transaction = await ctx.db.get(transactionId as Id<"transactions">)
-              return transaction?.userId === user._id ? transaction : null
-            })
-          )
-        : [],
-    ])
+  const [
+    { settings },
+    accountDocs,
+    categoryDocs,
+    budgets,
+    recurringRules,
+    recentTransactions,
+    selectedTransactions,
+  ] = await Promise.all([
+    getResolvedSettings(ctx, user._id),
+    needsAccountDocs ? getAccountsByUserId(ctx, user._id) : [],
+    needsCategoryDocs ? getCategoriesByUserId(ctx, user._id) : [],
+    args.includeBudgets
+      ? getBudgetsByUserIdMonth(ctx, user._id, args.currentMonth)
+      : [],
+    args.includeRecurringRules
+      ? getActiveRecurringRulesByUserId(ctx, user._id)
+      : [],
+    args.includeRecentTransactions
+      ? getRecentTransactionsByUserId(ctx, user._id, recentTransactionsLimit)
+      : [],
+    selectedIds.size > 0
+      ? Promise.all(
+          [...selectedIds].map(async (transactionId) => {
+            const transaction = await ctx.db.get(
+              transactionId as Id<"transactions">
+            )
+            return transaction?.userId === user._id ? transaction : null
+          })
+        )
+      : [],
+  ])
 
-  const accountMap = new Map(accountDocs.map((account) => [account._id, account]))
+  const accountMap = new Map(
+    accountDocs.map((account) => [account._id, account])
+  )
   const categoryMap = new Map(
     categoryDocs.map((category) => [category._id, category])
   )
@@ -217,10 +229,7 @@ export async function autoCategorizeTransactions(
     throw new ConvexError("Select at least one transaction.")
   }
 
-  const uniqueAssignments = new Map<
-    Id<"transactions">,
-    Id<"categories">
-  >()
+  const uniqueAssignments = new Map<Id<"transactions">, Id<"categories">>()
 
   for (const assignment of args.assignments) {
     uniqueAssignments.set(assignment.transactionId, assignment.categoryId)

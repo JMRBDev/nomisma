@@ -304,3 +304,19 @@ export const recurringConfirmNormalizedInputSchema = z.object({
   recurringDescription: z.string().min(1),
   date: ds,
 })
+
+export type AssistantContextPlan = {
+  includeAccounts: boolean
+  includeBudgets: boolean
+  includeCategories: boolean
+  includeRecentTransactions: boolean
+  includeRecurringRules: boolean
+}
+
+export type AssistantTurnPlan = {
+  actions: Array<AiActionDefinition>
+  context: AssistantContextPlan
+  keepRecentToolMessageCount: number
+  lastUserText: string
+  mode: "action" | "answer"
+}

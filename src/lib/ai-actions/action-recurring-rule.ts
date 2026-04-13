@@ -50,10 +50,12 @@ function resolveRuleOrAsk(
     activeOnly?: boolean
     allowSingleDueItem?: boolean
   }
-):
-  | PlannerRecurringRule
-  | RuleLookupFailure {
-  if (options?.allowSingleDueItem && !input.ruleId && !input.recurringDescription) {
+): PlannerRecurringRule | RuleLookupFailure {
+  if (
+    options?.allowSingleDueItem &&
+    !input.ruleId &&
+    !input.recurringDescription
+  ) {
     const dueRules = context.recurringRules.filter(
       (rule) => rule.active && rule.nextDueDate <= context.today
     )
@@ -180,7 +182,10 @@ function resolveRecurringCreateAction(
   }
 
   const startDate = resolveDate(parsed.data.startDate, context.today)
-  const nextDueDate = resolveDate(parsed.data.nextDueDate, startDate ?? context.today)
+  const nextDueDate = resolveDate(
+    parsed.data.nextDueDate,
+    startDate ?? context.today
+  )
   const endDate = resolveDate(parsed.data.endDate)
 
   if (!startDate || !nextDueDate) {
@@ -252,7 +257,9 @@ function resolveRecurringUpdateAction(
   const rule = ruleResolution
   const type = parsed.data.type ?? rule.type
   const amount =
-    parsed.data.amount === undefined ? rule.amount : resolveAmount(parsed.data.amount)
+    parsed.data.amount === undefined
+      ? rule.amount
+      : resolveAmount(parsed.data.amount)
 
   if (!amount) {
     return {

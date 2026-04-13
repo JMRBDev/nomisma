@@ -63,7 +63,9 @@ export function DashboardAiChatMessages({
                 isAssistant ? (
                   <MarkdownText content={text} />
                 ) : (
-                  <div className="break-words whitespace-pre-wrap">{text}</div>
+                  <div className="wrap-break-word whitespace-pre-wrap">
+                    {text}
+                  </div>
                 )
               ) : isAssistant ? (
                 <span className="inline-flex items-center gap-1.5 text-muted-foreground">

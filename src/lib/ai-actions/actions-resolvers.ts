@@ -214,7 +214,7 @@ export function resolveTransactions(
     const resolved = requestedIds
       .map((id) => availableMap.get(id))
       .filter((t): t is PlannerTransaction => Boolean(t))
-  if (resolved.length === requestedIds.length)
+    if (resolved.length === requestedIds.length)
       return { type: "ready", normalizedInput: resolved, summary: "" }
   }
   const requestedDate = resolveDate(input.transactionDate)
