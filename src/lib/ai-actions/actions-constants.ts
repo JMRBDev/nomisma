@@ -21,6 +21,7 @@ import {
   transactionDeleteDefinition,
   transactionUpdateDefinition,
 } from "./action-transaction"
+import { categorizeDefinition } from "./action-categorize"
 import type {
   ActionDomain,
   AiActionDefinition,
@@ -67,8 +68,6 @@ export const actionDefinitions: Array<AiActionDefinition> = [
   recurringCreateDefinition,
   recurringMarkDefinition,
 ]
-
-export { categorizeDefinition } from "./action-categorize"
 
 export const routeFallbackDomains: Record<RouteScope, Array<ActionDomain>> = {
   overview: ["transaction", "account", "budget", "recurring"],
