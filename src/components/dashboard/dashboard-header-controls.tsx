@@ -1,6 +1,6 @@
 import { Suspense, lazy, startTransition, useState } from "react"
 import { getRouteApi, useNavigate } from "@tanstack/react-router"
-import { CalendarRangeIcon } from "lucide-react"
+import { BotIcon, CalendarRangeIcon } from "lucide-react"
 import type { WeekStartsOnPreference } from "@/components/dashboard/settings/settings-shared"
 import type { OverviewDateFilterValues } from "@/components/dashboard/overview/overview-date-filter"
 import {
@@ -11,9 +11,15 @@ import {
   normalizeOverviewDateFilterValues,
   resolveOverviewDateFilterValues,
 } from "@/components/dashboard/overview/overview-date-filter"
-import { DashboardAiActions } from "@/components/dashboard/dashboard-ai-actions"
 import { DashboardSearch } from "@/components/dashboard/dashboard-search"
 import { Button } from "@/components/ui/button"
+import { t } from "@/lib/i18n"
+
+const loadDashboardAiActions = () =>
+  import("@/components/dashboard/dashboard-ai-actions")
+const LazyDashboardAiActions = lazy(async () => ({
+  default: (await loadDashboardAiActions()).DashboardAiActions,
+}))
 
 const dashboardRouteApi = getRouteApi("/_authenticated/dashboard")
 const loadOverviewDateFilterSheet = () =>
@@ -127,7 +133,25 @@ export function DashboardHeaderControls({
   return (
     <div className="flex items-center gap-2 md:ml-auto">
       <OverviewDateFilterControl weekStartsOn={weekStartsOn} />
-      <DashboardAiActions />
+      <Suspense
+        fallback={
+          <Button variant="outline" disabled aria-label={t("ai_open")}>
+            <BotIcon className="size-4" />
+            <span className="hidden sm:inline">{t("ai_open")}</span>
+          </Button>
+        }
+      >
+        <div
+          onFocus={() => {
+            void loadDashboardAiActions()
+          }}
+          onPointerEnter={() => {
+            void loadDashboardAiActions()
+          }}
+        >
+          <LazyDashboardAiActions />
+        </div>
+      </Suspense>
       <DashboardSearch />
     </div>
   )

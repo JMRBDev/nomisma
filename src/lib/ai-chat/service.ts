@@ -1,32 +1,35 @@
+/* eslint-disable max-lines */
 import {
   convertToModelMessages,
   pruneMessages,
   stepCountIs,
   streamText,
+  tool,
   validateUIMessages,
 } from "ai"
-import type { UIMessage } from "ai"
-import type { ToolSet } from "ai"
-import type { ConvexHttpClient } from "convex/browser"
 import { z } from "zod"
 import { api } from "../../../convex/_generated/api"
+import type { ToolSet, UIMessage } from "ai"
+import type { ConvexHttpClient } from "convex/browser"
+import type {
+  AssistantContextPlan,
+  AssistantTurnPlan,
+  PlannerContext,
+} from "@/lib/ai-actions/actions"
+import type { FrontendHints } from "@/lib/ai-actions/shared"
 import {
   createTools,
   getChatToolTitle,
   planAssistantTurn,
 } from "@/lib/ai-actions/actions"
-import type {
-  AssistantContextPlan,
-  PlannerContext,
-} from "@/lib/ai-actions/actions"
 import {
   createAuthedConvexServerClient,
   getAssistantFallbackModel,
+  getAssistantFastModel,
   getAssistantModel,
   resolveAiRequestContext,
 } from "@/lib/ai-actions/server"
 import { FrontendHintsSchema } from "@/lib/ai-actions/shared"
-import type { FrontendHints } from "@/lib/ai-actions/shared"
 
 const ChatRequestSchema = z.object({
   messages: z.array(z.custom<UIMessage>()),
@@ -56,7 +59,9 @@ function truncateText(value: string, maxLength: number) {
 
 function getMessageText(message: UIMessage) {
   return message.parts
-    .filter((part): part is { type: "text"; text: string } => part.type === "text")
+    .filter(
+      (part): part is { type: "text"; text: string } => part.type === "text"
+    )
     .map((part) => part.text)
     .join("\n")
     .trim()
@@ -152,7 +157,10 @@ function pruneMessageForModel(message: UIMessage, keepToolParts: boolean) {
     parts: [
       {
         type: "text" as const,
-        text: message.role === "assistant" ? summary.replace(/^Assistant:\s*/, "") : summary.replace(/^User:\s*/, ""),
+        text:
+          message.role === "assistant"
+            ? summary.replace(/^Assistant:\s*/, "")
+            : summary.replace(/^User:\s*/, ""),
       },
     ],
   } satisfies UIMessage
@@ -163,7 +171,9 @@ function prepareMessagesForModel(
   keepRecentToolMessageCount: number
 ) {
   const recentMessages = messages.slice(-RECENT_MESSAGE_LIMIT)
-  const memory = buildConversationMemory(messages.slice(0, -RECENT_MESSAGE_LIMIT))
+  const memory = buildConversationMemory(
+    messages.slice(0, -RECENT_MESSAGE_LIMIT)
+  )
   const toolMessageStartIndex =
     keepRecentToolMessageCount > 0
       ? Math.max(recentMessages.length - keepRecentToolMessageCount, 0)
@@ -219,7 +229,8 @@ async function getAssistantContext(
 
 function buildAssistantContextPrompt(
   context: PlannerContext,
-  hints: FrontendHints
+  hints: FrontendHints,
+  excludeHeavyContext: boolean
 ) {
   const promptContext: Record<string, unknown> = {
     currentDate: context.today,
@@ -252,27 +263,31 @@ function buildAssistantContextPrompt(
       context.categories.map((category) => [category.id, category.name])
     )
 
-    promptContext.currentMonthBudgets = context.budgets.slice(0, 12).map((budget) => ({
-      id: budget.id,
-      month: budget.month,
-      categoryId: budget.categoryId,
-      categoryName: budget.categoryId
-        ? categoryNameById.get(budget.categoryId) ?? null
-        : "Total",
-      limitAmount: budget.limitAmount,
-    }))
+    promptContext.currentMonthBudgets = context.budgets
+      .slice(0, 12)
+      .map((budget) => ({
+        id: budget.id,
+        month: budget.month,
+        categoryId: budget.categoryId,
+        categoryName: budget.categoryId
+          ? (categoryNameById.get(budget.categoryId) ?? null)
+          : "Total",
+        limitAmount: budget.limitAmount,
+      }))
   }
 
   if (context.recurringRules.length > 0) {
     promptContext.activeRecurringRules = context.recurringRules.slice(0, 12)
   }
 
-  if (context.selectedTransactions.length > 0) {
-    promptContext.selectedTransactions = context.selectedTransactions
-  }
+  if (!excludeHeavyContext) {
+    if (context.selectedTransactions.length > 0) {
+      promptContext.selectedTransactions = context.selectedTransactions
+    }
 
-  if (context.recentTransactions.length > 0) {
-    promptContext.recentTransactions = context.recentTransactions
+    if (context.recentTransactions.length > 0) {
+      promptContext.recentTransactions = context.recentTransactions
+    }
   }
 
   return JSON.stringify(promptContext, null, 2)
@@ -281,7 +296,8 @@ function buildAssistantContextPrompt(
 function buildSystemPrompt(
   context: PlannerContext,
   hints: FrontendHints,
-  sessionMemory: string | null
+  sessionMemory: string | null,
+  excludeHeavyContext: boolean
 ) {
   const parts = [
     "You are Nomisma's built-in finance assistant.",
@@ -297,11 +313,19 @@ function buildSystemPrompt(
     "Keep replies concise and specific to the user's finances.",
   ]
 
+  if (excludeHeavyContext) {
+    parts.push(
+      "Use the lookupTransactions tool when you need details about recent or specific transactions."
+    )
+  }
+
   if (sessionMemory) {
     parts.push(`Earlier conversation summary:\n${sessionMemory}`)
   }
 
-  parts.push(`App context:\n${buildAssistantContextPrompt(context, hints)}`)
+  parts.push(
+    `App context:\n${buildAssistantContextPrompt(context, hints, excludeHeavyContext)}`
+  )
 
   return parts.join("\n\n")
 }
@@ -312,19 +336,26 @@ function streamAssistantResponse(
     stopWhen: Parameters<typeof streamText>[0]["stopWhen"]
     system: NonNullable<Parameters<typeof streamText>[0]["system"]>
     tools: ToolSet
-  }
+  },
+  turnPlan: AssistantTurnPlan
 ) {
+  const fastModel = turnPlan.mode === "answer" ? getAssistantFastModel() : null
+  const primaryModel = getAssistantModel()
   const fallbackModel = getAssistantFallbackModel()
-  const models = fallbackModel
-    ? [getAssistantModel(), fallbackModel]
-    : [getAssistantModel()]
+
+  const models = fastModel
+    ? [fastModel, primaryModel, fallbackModel].filter(Boolean)
+    : fallbackModel
+      ? [primaryModel, fallbackModel]
+      : [primaryModel]
+
   let lastError: unknown
 
   for (const model of models) {
     try {
       return streamText({
         ...parameters,
-        model,
+        model: model!,
       })
     } catch (error) {
       lastError = error
@@ -334,26 +365,100 @@ function streamAssistantResponse(
   throw lastError ?? new Error("No assistant model is configured.")
 }
 
+function createLookupTransactionsTool(context: PlannerContext) {
+  const transactions = [
+    ...context.selectedTransactions,
+    ...context.recentTransactions.filter(
+      (rt) => !context.selectedTransactions.some((st) => st.id === rt.id)
+    ),
+  ]
+
+  if (transactions.length === 0) {
+    return null
+  }
+
+  return tool({
+    description:
+      "Look up recent or selected transactions. Returns transaction details including amount, category, account, date, and note.",
+    inputSchema: z.object({
+      query: z
+        .string()
+        .optional()
+        .describe("Optional text filter to narrow down transactions"),
+    }),
+    execute: (input) => {
+      let results = transactions
+
+      if (input.query) {
+        const lowerQuery = input.query.toLowerCase()
+        results = results.filter(
+          (tx) =>
+            (tx.note && tx.note.toLowerCase().includes(lowerQuery)) ||
+            (tx.categoryName &&
+              tx.categoryName.toLowerCase().includes(lowerQuery)) ||
+            (tx.accountName &&
+              tx.accountName.toLowerCase().includes(lowerQuery))
+        )
+      }
+
+      return {
+        transactions: results.slice(0, 10).map((tx) => ({
+          id: tx.id,
+          amount: tx.amount,
+          date: tx.date,
+          note: tx.note ?? null,
+          categoryName: tx.categoryName ?? null,
+          accountName: tx.accountName ?? null,
+          type: tx.type,
+          status: tx.status,
+        })),
+        total: results.length,
+      }
+    },
+  })
+}
+
 export async function chatWithAssistant(request: Request) {
   try {
     const client = await requireClient()
     const body = ChatRequestSchema.parse(await request.json())
     const turnPlan = planAssistantTurn(body.messages, body.context)
+
+    const shouldExcludeHeavy =
+      turnPlan.mode === "answer" &&
+      turnPlan.actions.length === 0 &&
+      !turnPlan.context.includeRecentTransactions
+
     const context = await getAssistantContext(
       client,
       request,
       body.context,
       turnPlan.context
     )
-    const tools: ToolSet = turnPlan.actions.length
-      ? (createTools(client, context, body.context, turnPlan.actions) as ToolSet)
+
+    const actionTools: ToolSet = turnPlan.actions.length
+      ? (createTools(
+          client,
+          context,
+          body.context,
+          turnPlan.actions
+        ) as ToolSet)
       : {}
+
+    if (shouldExcludeHeavy) {
+      const lookupTool = createLookupTransactionsTool(context)
+      if (lookupTool) {
+        actionTools.lookupTransactions = lookupTool
+      }
+    }
+
     const preparedConversation = prepareMessagesForModel(
       body.messages,
       turnPlan.keepRecentToolMessageCount
     )
-    const validationTools =
-      tools as NonNullable<Parameters<typeof validateUIMessages>[0]["tools"]>
+    const validationTools = actionTools as NonNullable<
+      Parameters<typeof validateUIMessages>[0]["tools"]
+    >
     const validatedMessages = await validateUIMessages({
       messages: preparedConversation.messages,
       tools: validationTools,
@@ -367,16 +472,22 @@ export async function chatWithAssistant(request: Request) {
           : "all",
     })
 
-    const result = streamAssistantResponse({
-      messages: modelMessages,
-      stopWhen: stepCountIs(6),
-      system: buildSystemPrompt(
-        context,
-        body.context,
-        preparedConversation.memory
-      ),
-      tools,
-    })
+    const maxSteps = turnPlan.mode === "action" ? 4 : 2
+
+    const result = streamAssistantResponse(
+      {
+        messages: modelMessages,
+        stopWhen: stepCountIs(maxSteps),
+        system: buildSystemPrompt(
+          context,
+          body.context,
+          preparedConversation.memory,
+          shouldExcludeHeavy
+        ),
+        tools: actionTools,
+      },
+      turnPlan
+    )
 
     return result.toUIMessageStreamResponse({
       originalMessages: body.messages,

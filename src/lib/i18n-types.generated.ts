@@ -46,6 +46,7 @@ export type TranslationKey =
   | "accounts_table_totals"
   | "accounts_update_error"
   | "ai_approve"
+  | "ai_connecting"
   | "ai_deny"
   | "ai_open"
   | "ai_prompt_placeholder"

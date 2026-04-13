@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import { useChat } from "@ai-sdk/react"
 import {
@@ -26,6 +26,8 @@ export function DashboardAiActions() {
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState("")
+  const isNearBottomRef = useRef(true)
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
   const {
     messages,
     sendMessage,
@@ -40,39 +42,34 @@ export function DashboardAiActions() {
     }),
     sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithApprovalResponses,
     onFinish: async ({ message, isAbort, isError }) => {
-      if (isAbort || isError) {
-        return
-      }
-
+      if (isAbort || isError) return
       const successMessages = getMutationSuccessMessages(message)
-
-      if (successMessages.length === 0) {
-        return
-      }
-
+      if (successMessages.length === 0) return
       toast.success(successMessages[successMessages.length - 1])
       await queryClient.invalidateQueries()
     },
   })
-
   const isBusy = status === "submitted" || status === "streaming"
-
+  const scrollToBottom = useCallback(() => {
+    const container = scrollContainerRef.current
+    if (container && isNearBottomRef.current)
+      container.scrollTop = container.scrollHeight
+  }, [])
+  const handleScroll = useCallback(() => {
+    const container = scrollContainerRef.current
+    if (!container) return
+    isNearBottomRef.current =
+      container.scrollHeight - container.scrollTop - container.clientHeight < 60
+  }, [])
   const handleOpenChange = (nextOpen: boolean) => {
-    if (!nextOpen && isBusy) {
-      stop()
-    }
-
+    if (!nextOpen && isBusy) stop()
     setOpen(nextOpen)
   }
-
   const handleSubmit = async () => {
     const trimmedInput = input.trim()
-
-    if (!trimmedInput || isBusy) {
-      return
-    }
-
+    if (!trimmedInput || isBusy) return
     setInput("")
+    isNearBottomRef.current = true
     await sendMessage({ text: trimmedInput })
   }
 
@@ -86,7 +83,6 @@ export function DashboardAiActions() {
         <BotIcon className="size-4" />
         <span className="hidden sm:inline">{t("ai_open")}</span>
       </Button>
-
       <Sheet open={open} onOpenChange={handleOpenChange}>
         <SheetContent
           side="right"
@@ -98,15 +94,17 @@ export function DashboardAiActions() {
               {t("ai_title")}
             </SheetTitle>
           </SheetHeader>
-
           <div className="flex min-h-0 flex-1 flex-col">
             <DashboardAiChatMessages
               messages={messages}
               error={error}
+              status={status}
+              scrollContainerRef={scrollContainerRef}
+              onScroll={handleScroll}
+              scrollToBottom={scrollToBottom}
               addToolApprovalResponse={addToolApprovalResponse}
             />
           </div>
-
           <div className="border-t px-5 py-4">
             <div className="flex items-end gap-2">
               <Textarea
@@ -120,7 +118,6 @@ export function DashboardAiActions() {
                   }
                 }}
                 placeholder={t("ai_prompt_placeholder")}
-                disabled={isBusy}
                 className="max-h-32 min-h-9 resize-none py-2.5"
               />
               {isBusy ? (

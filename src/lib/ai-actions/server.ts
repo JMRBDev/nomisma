@@ -17,6 +17,8 @@ const openRouterApiKey = process.env.OPENROUTER_API_KEY
 const openRouterPrimaryModelId = process.env.OPENROUTER_MODEL?.trim()
 const openRouterFallbackModelId =
   process.env.OPENROUTER_FALLBACK_MODEL?.trim() || undefined
+const openRouterFastModelId =
+  process.env.OPENROUTER_FAST_MODEL?.trim() || undefined
 
 function getCookieValue(request: Request, name: string) {
   const cookieHeader = request.headers.get("cookie")
@@ -72,6 +74,10 @@ export function getAssistantFallbackModel() {
   return openRouterFallbackModelId
     ? getOpenRouter()(openRouterFallbackModelId)
     : null
+}
+
+export function getAssistantFastModel() {
+  return openRouterFastModelId ? getOpenRouter()(openRouterFastModelId) : null
 }
 
 export function resolveAiRequestContext(request: Request) {

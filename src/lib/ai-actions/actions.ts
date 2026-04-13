@@ -1,6 +1,4 @@
-/* eslint-disable max-lines */
 import { tool } from "ai"
-import type { UIMessage } from "ai"
 import { accountCreateDefinition } from "./action-account"
 import { budgetAdjustDefinition, budgetCreateDefinition } from "./action-budget"
 import {
@@ -26,6 +24,7 @@ import {
   transactionDeleteDefinition,
   transactionUpdateDefinition,
 } from "./action-transaction"
+import type { UIMessage } from "ai"
 import type {
   ActionDomain,
   AiActionDefinition,
@@ -140,7 +139,9 @@ function getApplyToolName(actionKey: string) {
 
 function getMessageText(message: UIMessage) {
   return message.parts
-    .filter((part): part is { type: "text"; text: string } => part.type === "text")
+    .filter(
+      (part): part is { type: "text"; text: string } => part.type === "text"
+    )
     .map((part) => part.text)
     .join("\n")
     .trim()
@@ -184,7 +185,11 @@ function inferDomains(text: string) {
     domains.add("category")
   }
 
-  if (/\b(recurring|reminder|repeat|subscription|subscriptions|due)\b/.test(normalized)) {
+  if (
+    /\b(recurring|reminder|repeat|subscription|subscriptions|due)\b/.test(
+      normalized
+    )
+  ) {
     domains.add("recurring")
   }
 
