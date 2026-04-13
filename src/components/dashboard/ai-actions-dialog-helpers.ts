@@ -1,7 +1,17 @@
+import { api } from "../../../convex/_generated/api"
+import type { QueryClient, QueryKey } from "@tanstack/react-query"
 import type { UIMessage } from "ai"
+import { resolveBrowserCalendarContext } from "@/lib/browser-calendar"
+import {
+  getAccountsPageDataQueryOptions,
+  getBudgetsPageDataQueryOptions,
+  getRecurringPageDataQueryOptions,
+  getTransactionsPageDataQueryOptions,
+} from "@/lib/dashboard-query-options"
 
 export type MessagePart = UIMessage["parts"][number]
 export type ToolPart = Extract<MessagePart, { type: `tool-${string}` }>
+type ConvexQueryKey = [string, unknown, Record<string, unknown>, ...Array<unknown>]
 
 export function getCurrentFrontendHints() {
   if (typeof window === "undefined") {
@@ -109,4 +119,37 @@ export function getMutationSuccessMessages(message: UIMessage) {
       return null
     })
     .filter((value): value is string => Boolean(value))
+}
+
+function isConvexQueryKey(queryKey: QueryKey): queryKey is ConvexQueryKey {
+  return Array.isArray(queryKey) && queryKey[0] === "convexQuery"
+}
+
+function matchesConvexQuery(
+  queryKey: QueryKey,
+  functions: ReadonlyArray<unknown>
+) {
+  return isConvexQueryKey(queryKey) && functions.includes(queryKey[1])
+}
+
+export async function invalidateDashboardQueries(queryClient: QueryClient) {
+  const calendarContext = resolveBrowserCalendarContext()
+  const exactKeys = [
+    getAccountsPageDataQueryOptions().queryKey,
+    getTransactionsPageDataQueryOptions().queryKey,
+    getBudgetsPageDataQueryOptions(calendarContext).queryKey,
+    getRecurringPageDataQueryOptions(calendarContext).queryKey,
+  ]
+  const predicateFunctions = [
+    api.overview.getOverviewData,
+    api.search.getGlobalSearchResults,
+  ] as const
+
+  await Promise.all([
+    ...exactKeys.map((queryKey) => queryClient.invalidateQueries({ queryKey })),
+    queryClient.invalidateQueries({
+      predicate: (query) =>
+        matchesConvexQuery(query.queryKey, predicateFunctions),
+    }),
+  ])
 }

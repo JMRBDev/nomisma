@@ -1,6 +1,8 @@
 /* eslint-disable max-lines */
 import {
   convertToModelMessages,
+  createUIMessageStream,
+  createUIMessageStreamResponse,
   pruneMessages,
   stepCountIs,
   streamText,
@@ -24,6 +26,10 @@ import {
   planAssistantTurn,
 } from "@/lib/ai-actions/actions"
 import {
+  getActionByToolPartType,
+  toToolSegment,
+} from "@/lib/ai-actions/actions-utils"
+import {
   createAuthedConvexServerClient,
   getAssistantFallbackModel,
   getAssistantFastModel,
@@ -35,12 +41,19 @@ import { FrontendHintsSchema } from "@/lib/ai-actions/shared"
 const ChatRequestSchema = z.object({
   messages: z.array(z.custom<UIMessage>()),
   context: FrontendHintsSchema.optional().default({}),
+  route: z.string().trim().min(1).optional(),
+  selectedIds: z.array(z.string().trim().min(1)).max(20).optional(),
 })
 
 const RECENT_MESSAGE_LIMIT = 10
 const MEMORY_LINE_LIMIT = 8
 const MEMORY_LINE_LENGTH = 200
 const RECENT_TRANSACTION_LIMIT = 12
+const ACTIVE_TOOL_FLOW_MESSAGE_LIMIT = 6
+const AFFIRMATIVE_REPLY_PATTERN =
+  /^\s*(?:y|yes|yep|yeah|sure|ok|okay|please do|do it|go ahead|confirm|sounds good|fine)\b/i
+const NEGATIVE_REPLY_PATTERN =
+  /^\s*(?:n|no|nope|don't|do not|cancel|stop|never mind)\b/i
 
 function toErrorMessage(error: unknown) {
   if (typeof error === "string") {
@@ -110,6 +123,38 @@ function summarizeToolPart(
   }
 
   if (part.state === "output-available") {
+    if (
+      typeof part.output === "object" &&
+      part.output !== null &&
+      "state" in part.output
+    ) {
+      const toolOutputState = part.output.state
+
+      if (
+        toolOutputState === "ready" &&
+        "summary" in part.output &&
+        typeof part.output.summary === "string"
+      ) {
+        return part.output.summary
+      }
+
+      if (
+        toolOutputState === "clarify" &&
+        "question" in part.output &&
+        typeof part.output.question === "string"
+      ) {
+        return part.output.question
+      }
+
+      if (
+        toolOutputState === "no_match" &&
+        "reason" in part.output &&
+        typeof part.output.reason === "string"
+      ) {
+        return part.output.reason
+      }
+    }
+
     if (
       typeof part.output === "object" &&
       part.output !== null &&
@@ -491,6 +536,275 @@ function createLookupTransactionsTool(context: PlannerContext) {
   })
 }
 
+function createToolCallId() {
+  return `tool_${Math.random().toString(36).slice(2, 12)}`
+}
+
+function createApprovalId() {
+  return `approval_${Math.random().toString(36).slice(2, 12)}`
+}
+
+function getApplyToolName(actionKey: string) {
+  return `apply${toToolSegment(actionKey)}`
+}
+
+function getLatestPreparedReadyAction(messages: Array<UIMessage>) {
+  for (const message of [...messages].reverse()) {
+    if (message.role !== "assistant") {
+      continue
+    }
+
+    for (const part of [...message.parts].reverse()) {
+      if (!isToolPart(part) || !part.type.startsWith("tool-prepare")) {
+        continue
+      }
+
+      const toolPart = part
+
+      if (
+        toolPart.state !== "output-available" ||
+        typeof toolPart.output !== "object" ||
+        toolPart.output === null ||
+        !("state" in toolPart.output) ||
+        toolPart.output.state !== "ready" ||
+        !("normalizedInput" in toolPart.output)
+      ) {
+        continue
+      }
+
+      const action = getActionByToolPartType(toolPart.type)
+      const normalizedInput = toolPart.output.normalizedInput
+
+      if (!action || typeof normalizedInput !== "object" || normalizedInput === null) {
+        continue
+      }
+
+      return {
+        action,
+        normalizedInput: normalizedInput as Record<string, unknown>,
+      }
+    }
+  }
+
+  return null
+}
+
+function getLatestApplyApproval(messages: Array<UIMessage>) {
+  for (const message of [...messages].reverse()) {
+    if (message.role !== "assistant") {
+      continue
+    }
+
+    for (const part of [...message.parts].reverse()) {
+      if (!isToolPart(part) || !part.type.startsWith("tool-apply")) {
+        continue
+      }
+
+      const toolPart = part
+
+      if (toolPart.state !== "approval-responded") {
+        continue
+      }
+
+      const action = getActionByToolPartType(toolPart.type)
+
+      if (!action) {
+        continue
+      }
+
+      return {
+        action,
+        input: toolPart.input as Record<string, unknown>,
+        toolCallId: toolPart.toolCallId,
+        approved: toolPart.approval.approved,
+        reason: toolPart.approval.reason,
+      }
+    }
+  }
+
+  return null
+}
+
+function hasRecentApplyAttempt(
+  messages: Array<UIMessage>,
+  actionKey: string
+) {
+  const applyToolName = getApplyToolName(actionKey)
+
+  return messages.some((message) =>
+    message.parts.some(
+      (part) => {
+        if (!isToolPart(part) || !part.type.startsWith("tool-apply")) {
+          return false
+        }
+
+        return (
+          part.type === `tool-${applyToolName}` &&
+          (part.state === "approval-requested" ||
+            part.state === "approval-responded" ||
+            part.state === "output-available")
+        )
+      }
+    )
+  )
+}
+
+function createDirectToolResponse(
+  bodyMessages: Array<UIMessage>,
+  execute: Parameters<typeof createUIMessageStream>[0]["execute"]
+) {
+  const stream = createUIMessageStream({
+    originalMessages: bodyMessages,
+    onError: toErrorMessage,
+    execute,
+  })
+
+  return createUIMessageStreamResponse({ stream })
+}
+
+function maybeHandlePreparedActionConfirmation(
+  messages: Array<UIMessage>,
+  lastUserText: string,
+  log: AiLogger
+) {
+  if (!AFFIRMATIVE_REPLY_PATTERN.test(lastUserText)) {
+    return null
+  }
+
+  const recentMessages = messages.slice(-ACTIVE_TOOL_FLOW_MESSAGE_LIMIT)
+  const preparedAction = getLatestPreparedReadyAction(recentMessages)
+
+  if (!preparedAction) {
+    return null
+  }
+
+  if (hasRecentApplyAttempt(recentMessages, preparedAction.action.key)) {
+    return null
+  }
+
+  const toolCallId = createToolCallId()
+  const approvalId = createApprovalId()
+  const toolName = getApplyToolName(preparedAction.action.key)
+
+  log.info("FAST_PATH", "Creating approval request from prepared action", {
+    actionKey: preparedAction.action.key,
+    toolName,
+  })
+
+  return createDirectToolResponse(messages, ({ writer }) => {
+    writer.write({
+      type: "tool-input-available",
+      toolCallId,
+      toolName,
+      input: preparedAction.normalizedInput,
+    })
+    writer.write({
+      type: "tool-approval-request",
+      toolCallId,
+      approvalId,
+    })
+  })
+}
+
+function maybeHandlePreparedActionCancellation(
+  messages: Array<UIMessage>,
+  lastUserText: string,
+  log: AiLogger
+) {
+  if (!NEGATIVE_REPLY_PATTERN.test(lastUserText)) {
+    return null
+  }
+
+  const recentMessages = messages.slice(-ACTIVE_TOOL_FLOW_MESSAGE_LIMIT)
+  const preparedAction = getLatestPreparedReadyAction(recentMessages)
+
+  if (!preparedAction) {
+    return null
+  }
+
+  log.info("FAST_PATH", "Cancelling prepared action from user reply", {
+    actionKey: preparedAction.action.key,
+  })
+
+  return createDirectToolResponse(messages, ({ writer }) => {
+    const textId = createToolCallId()
+    writer.write({ type: "text-start", id: textId })
+    writer.write({
+      type: "text-delta",
+      id: textId,
+      delta: "Okay, I won't make that change.",
+    })
+    writer.write({ type: "text-end", id: textId })
+  })
+}
+
+async function maybeHandleApplyApprovalResponse(
+  client: ConvexHttpClient,
+  messages: Array<UIMessage>,
+  log: AiLogger
+) {
+  const recentMessages = messages.slice(-ACTIVE_TOOL_FLOW_MESSAGE_LIMIT)
+  const approval = getLatestApplyApproval(recentMessages)
+
+  if (!approval) {
+    return null
+  }
+
+  if (!approval.approved) {
+    log.info("FAST_PATH", "Approval denied for apply tool", {
+      actionKey: approval.action.key,
+    })
+
+    return createDirectToolResponse(messages, ({ writer }) => {
+      const textId = createToolCallId()
+      writer.write({ type: "text-start", id: textId })
+      writer.write({
+        type: "text-delta",
+        id: textId,
+        delta: approval.reason?.trim() || "Okay, I won't make that change.",
+      })
+      writer.write({ type: "text-end", id: textId })
+    })
+  }
+
+  log.info("FAST_PATH", "Executing approved apply tool directly", {
+    actionKey: approval.action.key,
+    toolCallId: approval.toolCallId,
+  })
+
+  try {
+    const result = await approval.action.execute(client, approval.input)
+
+    return createDirectToolResponse(messages, ({ writer }) => {
+      writer.write({
+        type: "tool-input-available",
+        toolCallId: approval.toolCallId,
+        toolName: getApplyToolName(approval.action.key),
+        input: approval.input,
+      })
+      writer.write({
+        type: "tool-output-available",
+        toolCallId: approval.toolCallId,
+        output: result,
+      })
+    })
+  } catch (error) {
+    return createDirectToolResponse(messages, ({ writer }) => {
+      writer.write({
+        type: "tool-input-available",
+        toolCallId: approval.toolCallId,
+        toolName: getApplyToolName(approval.action.key),
+        input: approval.input,
+      })
+      writer.write({
+        type: "tool-output-error",
+        toolCallId: approval.toolCallId,
+        errorText: toErrorMessage(error),
+      })
+    })
+  }
+}
+
 export async function chatWithAssistant(request: Request, log: AiLogger) {
   const totalStart = Date.now()
   try {
@@ -502,19 +816,65 @@ export async function chatWithAssistant(request: Request, log: AiLogger) {
     log.step("PARSE", "Parsing and validating request body")
     const bodyParseStart = Date.now()
     const body = ChatRequestSchema.parse(await request.json())
+    const requestContext = FrontendHintsSchema.parse({
+      route: body.route,
+      selectedIds: body.selectedIds,
+      ...body.context,
+    })
     log.timing(
       "PARSE",
       bodyParseStart,
       `Parsed ${body.messages.length} messages`
     )
     log.debug("PARSE", "Frontend hints", {
-      route: body.context.route ?? null,
-      selectedIds: body.context.selectedIds?.length ?? 0,
+      route: requestContext.route ?? null,
+      selectedIds: requestContext.selectedIds?.length ?? 0,
     })
+
+    const lastUserMessage = [...body.messages]
+      .reverse()
+      .find((message) => message.role === "user")
+    const lastUserText = lastUserMessage ? getMessageText(lastUserMessage) : ""
+
+    const directApplyResponse = await maybeHandleApplyApprovalResponse(
+      client,
+      body.messages,
+      log
+    )
+
+    if (directApplyResponse) {
+      log.step("DONE", "Returning direct apply response")
+      log.timing("TOTAL", totalStart, "Handled approved tool without model")
+      return directApplyResponse
+    }
+
+    const directApprovalRequest = maybeHandlePreparedActionConfirmation(
+      body.messages,
+      lastUserText,
+      log
+    )
+
+    if (directApprovalRequest) {
+      log.step("DONE", "Returning direct approval request response")
+      log.timing("TOTAL", totalStart, "Handled confirmation without model")
+      return directApprovalRequest
+    }
+
+    const directCancellationResponse = maybeHandlePreparedActionCancellation(
+      body.messages,
+      lastUserText,
+      log
+    )
+
+    if (directCancellationResponse) {
+      log.step("DONE", "Returning direct cancellation response")
+      log.timing("TOTAL", totalStart, "Handled cancellation without model")
+      return directCancellationResponse
+    }
 
     log.step("PLAN", "Planning assistant turn")
     const planStart = Date.now()
-    const turnPlan = planAssistantTurn(body.messages, body.context, log)
+    const turnPlan = planAssistantTurn(body.messages, requestContext, log)
     log.timing("PLAN", planStart, "Turn planning complete")
     log.info("PLAN", "Turn plan result", {
       mode: turnPlan.mode,
@@ -534,7 +894,7 @@ export async function chatWithAssistant(request: Request, log: AiLogger) {
     const context = await getAssistantContext(
       client,
       request,
-      body.context,
+      requestContext,
       turnPlan.context,
       log
     )
@@ -545,7 +905,7 @@ export async function chatWithAssistant(request: Request, log: AiLogger) {
       ? (createTools(
           client,
           context,
-          body.context,
+          requestContext,
           turnPlan.actions,
           log
         ) as ToolSet)
@@ -613,7 +973,7 @@ export async function chatWithAssistant(request: Request, log: AiLogger) {
     log.step("STREAM", "Starting assistant response stream")
     const systemPrompt = buildSystemPrompt(
       context,
-      body.context,
+      requestContext,
       preparedConversation.memory,
       shouldExcludeHeavy
     )

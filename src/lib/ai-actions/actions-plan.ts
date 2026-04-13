@@ -28,6 +28,10 @@ function selectIntentActions(
   domains: Array<ActionDomain>,
   routeScope: RouteScope | null
 ) {
+  if (domains.length === 0 && !routeScope) {
+    return []
+  }
+
   let selected = actionDefinitions
 
   if (domains.length > 0) {
@@ -67,7 +71,7 @@ function selectIntentActions(
     )
   }
 
-  return actionDefinitions
+  return []
 }
 
 function buildContextFromActions(actions: Array<AiActionDefinition>) {
@@ -136,12 +140,16 @@ export function planAssistantTurn(
   })
 
   const referencedActions = getReferencedActions(recentMessages)
+  const shouldLimitToReferencedActions =
+    activeToolFlow && referencedActions.length > 0 && !hasDomainContext
   const domainFallbackActions =
     !hasActionVerb && hasDomainContext && !isInformational
       ? selectIntentActions(domains, routeScope)
       : []
   const intentActions =
-    mode === "action" ? selectIntentActions(domains, routeScope) : []
+    mode === "action" && !shouldLimitToReferencedActions
+      ? selectIntentActions(domains, routeScope)
+      : []
   const actions =
     intentActions.length > 0 ||
     referencedActions.length > 0 ||

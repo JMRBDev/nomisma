@@ -11,6 +11,7 @@ import { toast } from "sonner"
 import {
   getCurrentFrontendHints,
   getMutationSuccessMessages,
+  invalidateDashboardQueries,
 } from "./ai-actions-dialog-helpers"
 import { DashboardAiChatMessages } from "./ai-actions-dialog-messages"
 import { Button } from "@/components/ui/button"
@@ -22,6 +23,21 @@ import {
 } from "@/components/ui/sheet"
 import { Textarea } from "@/components/ui/textarea"
 import { t } from "@/lib/i18n"
+
+const AI_CLIENT_DEBUG_LOGGING_ENABLED = import.meta.env.DEV
+
+function logAiClientDebug(message: string, data?: unknown) {
+  if (!AI_CLIENT_DEBUG_LOGGING_ENABLED) {
+    return
+  }
+
+  if (data === undefined) {
+    console.info(`[AI][CLIENT] ${message}`)
+    return
+  }
+
+  console.info(`[AI][CLIENT] ${message}`, data)
+}
 
 export function DashboardAiActions() {
   const queryClient = useQueryClient()
@@ -42,23 +58,23 @@ export function DashboardAiActions() {
       api: "/api/chat",
       body: () => {
         const hints = getCurrentFrontendHints()
-        console.info("[AI][CLIENT] Sending request with hints", {
+        logAiClientDebug("Sending request with hints", {
           route: hints.route,
           selectedIds: hints.selectedIds?.length ?? 0,
         })
-        return hints
+        return { context: hints }
       },
     }),
     sendAutomaticallyWhen: (message) => {
       const result =
         lastAssistantMessageIsCompleteWithApprovalResponses(message)
       if (result) {
-        console.info("[AI][CLIENT] Auto-sending after approval responses")
+        logAiClientDebug("Auto-sending after approval responses")
       }
       return result
     },
     onFinish: async ({ message, isAbort, isError }) => {
-      console.info("[AI][CLIENT] onFinish", {
+      logAiClientDebug("onFinish", {
         isAbort,
         isError,
         messageParts: message.parts.length,
@@ -67,9 +83,9 @@ export function DashboardAiActions() {
       if (isAbort || isError) return
       const successMessages = getMutationSuccessMessages(message)
       if (successMessages.length === 0) return
-      console.info("[AI][CLIENT] Mutation success messages", successMessages)
+      logAiClientDebug("Mutation success messages", successMessages)
       toast.success(successMessages[successMessages.length - 1])
-      await queryClient.invalidateQueries()
+      await invalidateDashboardQueries(queryClient)
     },
     onError: (err) => {
       console.error("[AI][CLIENT] useChat error", {
@@ -96,8 +112,8 @@ export function DashboardAiActions() {
   const handleSubmit = async () => {
     const trimmedInput = input.trim()
     if (!trimmedInput || isBusy) return
-    console.info("[AI][CLIENT] Sending message", {
-      text: trimmedInput.slice(0, 100),
+    logAiClientDebug("Sending message", {
+      textLength: trimmedInput.length,
       currentMessageCount: messages.length,
     })
     setInput("")

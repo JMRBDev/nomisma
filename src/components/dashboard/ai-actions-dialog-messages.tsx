@@ -29,6 +29,7 @@ export function DashboardAiChatMessages({
   addToolApprovalResponse: (args: { id: string; approved: boolean }) => void
 }) {
   const isBusy = status === "submitted" || status === "streaming"
+  const lastMessageId = messages[messages.length - 1]?.id
 
   useEffect(() => {
     scrollToBottom()
@@ -52,32 +53,38 @@ export function DashboardAiChatMessages({
       {messages.map((message) => {
         const text = getMessageText(message)
         const isAssistant = message.role === "assistant"
+        const hasToolParts =
+          isAssistant && message.parts.some((part) => isToolPart(part))
+        const shouldShowLoadingBubble =
+          isAssistant && isBusy && message.id === lastMessageId && !text
         const bubbleClassName = isAssistant
           ? "mr-10 rounded-2xl border bg-muted/40"
           : "ml-10 rounded-2xl bg-foreground text-background"
 
         return (
           <div key={message.id} className="space-y-2">
-            <div className={`px-3.5 py-2.5 text-sm ${bubbleClassName}`}>
-              {text ? (
-                isAssistant ? (
-                  <MarkdownText content={text} />
+            {text || shouldShowLoadingBubble || !hasToolParts ? (
+              <div className={`px-3.5 py-2.5 text-sm ${bubbleClassName}`}>
+                {text ? (
+                  isAssistant ? (
+                    <MarkdownText content={text} />
+                  ) : (
+                    <div className="wrap-break-word whitespace-pre-wrap">
+                      {text}
+                    </div>
+                  )
+                ) : shouldShowLoadingBubble ? (
+                  <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                    <LoaderIcon className="size-3 animate-spin" />
+                    {status === "submitted"
+                      ? t("ai_connecting")
+                      : t("ai_thinking")}
+                  </span>
                 ) : (
-                  <div className="wrap-break-word whitespace-pre-wrap">
-                    {text}
-                  </div>
-                )
-              ) : isAssistant ? (
-                <span className="inline-flex items-center gap-1.5 text-muted-foreground">
-                  <LoaderIcon className="size-3 animate-spin" />
-                  {status === "submitted"
-                    ? t("ai_connecting")
-                    : t("ai_thinking")}
-                </span>
-              ) : (
-                " "
-              )}
-            </div>
+                  " "
+                )}
+              </div>
+            ) : null}
 
             {isAssistant
               ? message.parts.filter(isToolPart).map((part) => {

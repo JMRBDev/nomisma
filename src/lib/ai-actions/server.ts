@@ -7,6 +7,7 @@ import {
   resolveBrowserCalendarContext,
 } from "@/lib/browser-calendar"
 import { resolveLocaleFromRequest } from "@/lib/i18n"
+import { AI_DEBUG_LOGGING_ENABLED as AI_SERVER_DEBUG_LOGGING_ENABLED } from "@/lib/ai-chat/logger"
 
 const convexUrl = process.env.VITE_CONVEX_URL
 if (!convexUrl) {
@@ -67,12 +68,14 @@ export function getAssistantModel() {
     throw new Error("OPENROUTER_MODEL must be set.")
   }
 
-  console.info(`[AI][MODEL] Primary model: ${openRouterPrimaryModelId}`)
+  if (AI_SERVER_DEBUG_LOGGING_ENABLED) {
+    console.info(`[AI][MODEL] Primary model: ${openRouterPrimaryModelId}`)
+  }
   return getOpenRouter()(openRouterPrimaryModelId)
 }
 
 export function getAssistantFallbackModel() {
-  if (openRouterFallbackModelId) {
+  if (AI_SERVER_DEBUG_LOGGING_ENABLED && openRouterFallbackModelId) {
     console.info(`[AI][MODEL] Fallback model: ${openRouterFallbackModelId}`)
   }
   return openRouterFallbackModelId
@@ -81,7 +84,7 @@ export function getAssistantFallbackModel() {
 }
 
 export function getAssistantFastModel() {
-  if (openRouterFastModelId) {
+  if (AI_SERVER_DEBUG_LOGGING_ENABLED && openRouterFastModelId) {
     console.info(`[AI][MODEL] Fast model: ${openRouterFastModelId}`)
   }
   return openRouterFastModelId ? getOpenRouter()(openRouterFastModelId) : null

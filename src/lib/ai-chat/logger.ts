@@ -1,4 +1,5 @@
 const REQUEST_ID_LENGTH = 8
+const AI_DEBUG_LOGGING_ENABLED = process.env.NODE_ENV !== "production"
 
 function generateRequestId(): string {
   return Math.random()
@@ -16,6 +17,9 @@ export function createAiLogger(requestId?: string) {
   return {
     requestId: id,
     info(label: string, message: string, data?: unknown) {
+      if (!AI_DEBUG_LOGGING_ENABLED) {
+        return
+      }
       const formatted = formatMessage(label, message)
       if (data !== undefined) {
         console.info(
@@ -49,6 +53,9 @@ export function createAiLogger(requestId?: string) {
       }
     },
     debug(label: string, message: string, data?: unknown) {
+      if (!AI_DEBUG_LOGGING_ENABLED) {
+        return
+      }
       const formatted = formatMessage(label, message)
       if (data !== undefined) {
         console.debug(
@@ -60,6 +67,9 @@ export function createAiLogger(requestId?: string) {
       }
     },
     step(stepName: string, message: string, data?: unknown) {
+      if (!AI_DEBUG_LOGGING_ENABLED) {
+        return
+      }
       const formatted = formatMessage("STEP", `${stepName}: ${message}`)
       if (data !== undefined) {
         console.info(
@@ -71,6 +81,9 @@ export function createAiLogger(requestId?: string) {
       }
     },
     timing(label: string, startTime: number, message?: string) {
+      if (!AI_DEBUG_LOGGING_ENABLED) {
+        return Date.now() - startTime
+      }
       const duration = Date.now() - startTime
       const formatted = formatMessage(
         "TIMING",
@@ -83,3 +96,4 @@ export function createAiLogger(requestId?: string) {
 }
 
 export type AiLogger = ReturnType<typeof createAiLogger>
+export { AI_DEBUG_LOGGING_ENABLED }

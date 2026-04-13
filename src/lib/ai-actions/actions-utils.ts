@@ -40,15 +40,55 @@ export function isToolPart(
   return typeof part.type === "string" && part.type.startsWith("tool-")
 }
 
+function isPrepareToolPart(
+  part: Extract<UIMessage["parts"][number], { type: `tool-${string}` }>
+) {
+  return part.type.startsWith("tool-prepare")
+}
+
+function isApplyToolPart(
+  part: Extract<UIMessage["parts"][number], { type: `tool-${string}` }>
+) {
+  return part.type.startsWith("tool-apply")
+}
+
 export function hasActiveToolFlow(messages: Array<UIMessage>) {
   return messages.some((message) =>
     message.parts.some(
-      (part) =>
-        isToolPart(part) &&
-        (part.state === "approval-requested" ||
-          part.state === "approval-responded" ||
-          part.state === "input-available" ||
-          part.state === "input-streaming")
+      (part) => {
+        if (!isToolPart(part)) {
+          return false
+        }
+
+        if (
+          isApplyToolPart(part) &&
+          (part.state === "approval-requested" ||
+            part.state === "approval-responded")
+        ) {
+          return true
+        }
+
+        if (
+          isPrepareToolPart(part) &&
+          (part.state === "input-available" ||
+            part.state === "input-streaming")
+        ) {
+          return true
+        }
+
+        if (
+          isPrepareToolPart(part) &&
+          part.state === "output-available" &&
+          typeof part.output === "object" &&
+          part.output !== null &&
+          "state" in part.output
+        ) {
+          const toolState = part.output.state
+          return toolState === "ready" || toolState === "clarify"
+        }
+
+        return false
+      }
     )
   )
 }
