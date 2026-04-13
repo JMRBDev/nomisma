@@ -1,12 +1,10 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router"
+import { DEFAULT_WEEK_STARTS_ON } from "../../../shared/settings"
+import type { WeekStartsOnPreference } from "../../../shared/settings"
 import { parseOverviewDateFilterSearch } from "@/components/dashboard/overview/overview-date-filter"
 import { AppShell } from "@/components/app-shell"
 import { ensureAuthenticatedQueryData } from "@/lib/convex-auth"
 import { getUserSettingsQueryOptions } from "@/lib/dashboard-query-options"
-import {
-  DEFAULT_WEEK_STARTS_ON,
-  type WeekStartsOnPreference,
-} from "../../../shared/settings"
 
 type UserSettings = {
   settings: {
@@ -35,9 +33,8 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 function DashboardLayout() {
   const { userSettings } = Route.useLoaderData()
-  const weekStartsOn =
-    (userSettings.settings?.weekStartsOn as WeekStartsOnPreference) ??
-    DEFAULT_WEEK_STARTS_ON
+  const weekStartsOn = (userSettings.settings?.weekStartsOn ??
+    DEFAULT_WEEK_STARTS_ON) as WeekStartsOnPreference
 
   return (
     <AppShell weekStartsOn={weekStartsOn}>

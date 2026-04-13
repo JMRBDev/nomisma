@@ -2,13 +2,13 @@ import { DashboardHeaderControls } from "./dashboard/dashboard-header-controls"
 import { Breadcrumbs } from "./breadcrumbs"
 import { Separator } from "./ui/separator"
 import type { ReactNode } from "react"
+import type { WeekStartsOnPreference } from "@/components/dashboard/settings/settings-shared"
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
-import type { WeekStartsOnPreference } from "@/components/dashboard/settings/settings-shared"
 
 type AppShellProps = {
   children: ReactNode

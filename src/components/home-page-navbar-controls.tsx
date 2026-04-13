@@ -55,9 +55,7 @@ export function HomePageNavbarControls({
         onValueChange={handleLocaleChange}
         disabled={localePending}
       >
-        <SelectTrigger
-          aria-label={t("settings_language_title")}
-        >
+        <SelectTrigger aria-label={t("settings_language_title")}>
           <SelectValue placeholder={t("settings_choose_language")} />
         </SelectTrigger>
 

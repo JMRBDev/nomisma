@@ -1,9 +1,6 @@
 import { getRouteApi } from "@tanstack/react-router"
 import type { Id } from "../../../../convex/_generated/dataModel"
-import type {
-  TransactionStatusValue,
-  TransactionTypeValue,
-} from "@/lib/money"
+import type { TransactionStatusValue, TransactionTypeValue } from "@/lib/money"
 import {
   getCategoryOptions as getCategoryOptionsGeneric,
   resolveValidOption as resolveValidOptionGeneric,

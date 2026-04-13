@@ -1,6 +1,7 @@
 import { Suspense, lazy, startTransition, useState } from "react"
 import { getRouteApi, useNavigate } from "@tanstack/react-router"
 import { CalendarRangeIcon } from "lucide-react"
+import type { WeekStartsOnPreference } from "@/components/dashboard/settings/settings-shared"
 import type { OverviewDateFilterValues } from "@/components/dashboard/overview/overview-date-filter"
 import {
   DEFAULT_OVERVIEW_DATE_FILTER_VALUES,
@@ -10,9 +11,9 @@ import {
   normalizeOverviewDateFilterValues,
   resolveOverviewDateFilterValues,
 } from "@/components/dashboard/overview/overview-date-filter"
+import { DashboardAiActions } from "@/components/dashboard/dashboard-ai-actions"
 import { DashboardSearch } from "@/components/dashboard/dashboard-search"
 import { Button } from "@/components/ui/button"
-import type { WeekStartsOnPreference } from "@/components/dashboard/settings/settings-shared"
 
 const dashboardRouteApi = getRouteApi("/_authenticated/dashboard")
 const loadOverviewDateFilterSheet = () =>
@@ -126,6 +127,7 @@ export function DashboardHeaderControls({
   return (
     <div className="flex items-center gap-2 md:ml-auto">
       <OverviewDateFilterControl weekStartsOn={weekStartsOn} />
+      <DashboardAiActions />
       <DashboardSearch />
     </div>
   )

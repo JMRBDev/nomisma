@@ -5,7 +5,12 @@ import { tanstackConfig } from "@tanstack/eslint-config"
 export default [
   ...tanstackConfig,
   {
-    ignores: ["src/components/ui/**", ".output/**", "convex/_generated/**"],
+    ignores: [
+      "src/components/ui/**",
+      ".output/**",
+      "convex/_generated/**",
+      "**/*.generated.ts",
+    ],
   },
   {
     rules: {

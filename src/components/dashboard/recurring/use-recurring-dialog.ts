@@ -47,7 +47,8 @@ export function useRecurringDialog(data: RecurringData | null | undefined) {
   }
 
   const dialog = useFormDialog({
-    createDefaults: () => createRecurringDefaults(accountOptions, categoryOptions),
+    createDefaults: () =>
+      createRecurringDefaults(accountOptions, categoryOptions),
     createFormValues: createRecurringFormValues,
     validate: (values) => validateRecurringValues(values, editorOptions),
     onSubmit: async (values) => {

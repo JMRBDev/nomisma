@@ -6,7 +6,9 @@ export type { AppLocale } from "../../shared/i18n"
 export const defaultAppLocale = DEFAULT_APP_LOCALE
 export const localeCookieName = "nomisma-app-locale"
 
-export function isAppLocale(value: string | null | undefined): value is AppLocale {
+export function isAppLocale(
+  value: string | null | undefined
+): value is AppLocale {
   return typeof value === "string" && appLocales.includes(value as AppLocale)
 }
 
@@ -50,7 +52,7 @@ export function parseCookieValue(cookieHeader: string | null, name: string) {
 }
 
 export function resolveLocaleFromAcceptLanguage(
-  header: string | null | undefined,
+  header: string | null | undefined
 ) {
   if (!header) {
     return defaultAppLocale
@@ -74,16 +76,14 @@ export function resolveLocaleFromAcceptLanguage(
 
 export function resolveLocaleFromRequest(request: Request) {
   const cookieLocale = normalizeAppLocale(
-    parseCookieValue(request.headers.get("cookie"), localeCookieName),
+    parseCookieValue(request.headers.get("cookie"), localeCookieName)
   )
 
   if (cookieLocale) {
     return cookieLocale
   }
 
-  return resolveLocaleFromAcceptLanguage(
-    request.headers.get("accept-language"),
-  )
+  return resolveLocaleFromAcceptLanguage(request.headers.get("accept-language"))
 }
 
 export function buildLocaleCookieValue(locale: AppLocale) {
@@ -103,7 +103,8 @@ export function getLocaleRedirectPath(pathname: string) {
 
   return {
     locale,
-    pathname: nextPathname === "/" ? nextPathname : nextPathname.replace(/\/$/, ""),
+    pathname:
+      nextPathname === "/" ? nextPathname : nextPathname.replace(/\/$/, ""),
   }
 }
 

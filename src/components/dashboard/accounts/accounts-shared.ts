@@ -9,12 +9,9 @@ import {
 import { getRouteApi } from "@tanstack/react-router"
 import type { LucideIcon } from "lucide-react"
 import type { IconOption } from "@/components/picker-shared"
-import type {AccountTypeValue} from "@/lib/money";
+import type { AccountTypeValue } from "@/lib/money"
 import { COLOR_OPTIONS } from "@/components/picker-shared"
-import {
-  
-  getAccountTypeLabel as getAccountTypeLabelFromLocale
-} from "@/lib/money"
+import { getAccountTypeLabel as getAccountTypeLabelFromLocale } from "@/lib/money"
 import { t } from "@/lib/i18n"
 import { pickRandomItem } from "@/lib/random"
 
@@ -26,12 +23,20 @@ export type AccountRecord = AccountsData["accounts"]["active"][number]
 export type AccountType = AccountTypeValue
 
 export const ACCOUNT_ICON_OPTIONS: Array<IconOption> = [
-  { name: "piggy-bank", label: t("accounts_icon_savings"), icon: PiggyBankIcon },
+  {
+    name: "piggy-bank",
+    label: t("accounts_icon_savings"),
+    icon: PiggyBankIcon,
+  },
   { name: "credit-card", label: t("accounts_icon_card"), icon: CreditCardIcon },
   { name: "landmark", label: t("accounts_icon_bank"), icon: LandmarkIcon },
   { name: "hand-coins", label: t("accounts_icon_cash"), icon: HandCoinsIcon },
   { name: "wallet", label: t("accounts_icon_wallet"), icon: WalletIcon },
-  { name: "receipt-text", label: t("accounts_icon_bills"), icon: ReceiptTextIcon },
+  {
+    name: "receipt-text",
+    label: t("accounts_icon_bills"),
+    icon: ReceiptTextIcon,
+  },
 ]
 
 export const ACCOUNT_ICON_MAP = ACCOUNT_ICON_OPTIONS.reduce<

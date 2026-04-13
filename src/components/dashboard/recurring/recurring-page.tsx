@@ -46,7 +46,7 @@ export function RecurringPage() {
     if (dateRange.endDate && item.nextDueDate > dateRange.endDate) return false
     return true
   })
-  const currency = data.settings?.baseCurrency
+  const currency = data.settings.baseCurrency
   const today = calendarContext.today
   const hasRecurringItems = recurringItems.length > 0
 
@@ -113,8 +113,10 @@ export function RecurringPage() {
           )
         }
         onUnarchiveCategory={(categoryId) =>
-          categoryActions.handleUnarchiveCategory(categoryId, (nextCategoryId) =>
-            dialog.handleValueChange("categoryId", nextCategoryId)
+          categoryActions.handleUnarchiveCategory(
+            categoryId,
+            (nextCategoryId) =>
+              dialog.handleValueChange("categoryId", nextCategoryId)
           )
         }
       />

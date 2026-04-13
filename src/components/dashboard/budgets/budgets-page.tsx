@@ -9,7 +9,12 @@ import { BudgetsEmptyState } from "@/components/dashboard/budgets/budgets-empty-
 import { BudgetsSummaryCards } from "@/components/dashboard/budgets/budgets-summary-cards"
 import { BudgetsTable } from "@/components/dashboard/budgets/budgets-table"
 import { CategoryReferenceDialog } from "@/components/dashboard/category-reference-dialog"
-import { buildBudgetPayload, createBudgetDefaults, createBudgetFormValues, validateBudgetValues } from "@/components/dashboard/budgets/budgets-shared"
+import {
+  buildBudgetPayload,
+  createBudgetDefaults,
+  createBudgetFormValues,
+  validateBudgetValues,
+} from "@/components/dashboard/budgets/budgets-shared"
 import { DashboardPageActions } from "@/components/dashboard/dashboard-page-actions"
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
 import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
@@ -31,40 +36,27 @@ export function BudgetsPage() {
   )
   const upsertBudget = useConvexMutation(api.budgets.upsertBudget)
   const deleteBudgetMutation = useConvexMutation(api.budgets.deleteBudget)
-  const [pendingBudgetId, setPendingBudgetId] = useState<BudgetRecord["_id"] | null>(null)
+  const [pendingBudgetId, setPendingBudgetId] = useState<string | null>(null)
   const categoryActions = useCategoryReferenceActions()
   const dialog = useFormDialog({
-    createDefaults: () => {
-      const categoryOptions = data.categories.active
-      return createBudgetDefaults(categoryOptions)
-    },
+    createDefaults: () => createBudgetDefaults(data.categories.active),
     createFormValues: createBudgetFormValues,
     validate: (values) => validateBudgetValues(values, data.categories.active),
-    onSubmit: async (values) => {
-      await upsertBudget(buildBudgetPayload(values, data.budgets.currentMonth))
-    },
+    onSubmit: (values) =>
+      upsertBudget(buildBudgetPayload(values, data.budgets.currentMonth)),
   })
   const deleteConfirmation = useDeleteConfirmation<BudgetRecord["_id"]>({
     onConfirm: async (id) => {
       setPendingBudgetId(id)
       try {
         await deleteBudgetMutation({ budgetId: id })
-        if (dialog.editingEntity?._id === id) {
-          dialog.handleDialogOpenChange(false)
-        }
+        dialog.editingEntity?._id === id && dialog.handleDialogOpenChange(false)
       } finally {
         setPendingBudgetId(null)
       }
     },
     errorMessage: t("budgets_delete_error"),
   })
-  const categoryOptions = data.categories.active
-  const allCategoryOptions = data.categories.all
-  const budgets = data.budgets.items
-  const currency = data.settings?.baseCurrency
-  const monthLabel = formatMonthLabel(data.budgets.currentMonth)
-  const overBudgetCount = budgets.filter((b) => b.status === "over").length
-  const nearBudgetCount = budgets.filter((b) => b.status === "near").length
   return (
     <DashboardPageSection>
       <DashboardPageHeader
@@ -78,21 +70,25 @@ export function BudgetsPage() {
           </DashboardPageActions>
         }
       />
-      {budgets.length > 0 ? (
+      {data.budgets.items.length > 0 ? (
         <>
           <BudgetsSummaryCards
-            budgets={budgets}
+            budgets={data.budgets.items}
             data={data}
-            currency={currency}
-            monthLabel={monthLabel}
-            overBudgetCount={overBudgetCount}
-            nearBudgetCount={nearBudgetCount}
+            currency={data.settings.baseCurrency}
+            monthLabel={formatMonthLabel(data.budgets.currentMonth)}
+            overBudgetCount={
+              data.budgets.items.filter((b) => b.status === "over").length
+            }
+            nearBudgetCount={
+              data.budgets.items.filter((b) => b.status === "near").length
+            }
           />
           <Card>
             <CardContent>
               <BudgetsTable
-                budgets={budgets}
-                currency={currency}
+                budgets={data.budgets.items}
+                currency={data.settings.baseCurrency}
                 pendingBudgetId={pendingBudgetId}
                 onEdit={dialog.openEditDialog}
                 onDelete={deleteConfirmation.requestDelete}
@@ -101,7 +97,10 @@ export function BudgetsPage() {
           </Card>
         </>
       ) : (
-        <BudgetsEmptyState monthLabel={monthLabel} onAddBudget={dialog.openCreateDialog} />
+        <BudgetsEmptyState
+          monthLabel={formatMonthLabel(data.budgets.currentMonth)}
+          onAddBudget={dialog.openCreateDialog}
+        />
       )}
       <BudgetFormDialog
         open={dialog.dialogOpen}
@@ -113,18 +112,16 @@ export function BudgetsPage() {
             : undefined
         }
         editing={dialog.isEditing}
-        monthLabel={monthLabel}
+        monthLabel={formatMonthLabel(data.budgets.currentMonth)}
         values={dialog.values}
         errors={dialog.errors}
         formError={dialog.formError}
         pending={
           dialog.pending ||
-          (dialog.editingEntity
-            ? pendingBudgetId === dialog.editingEntity._id
-            : false)
+          (dialog.editingEntity && pendingBudgetId === dialog.editingEntity._id)
         }
-        categoryOptions={categoryOptions}
-        allCategoryOptions={allCategoryOptions}
+        categoryOptions={data.categories.active}
+        allCategoryOptions={data.categories.all}
         onValueChange={dialog.handleValueChange}
         onCreateCategory={(name) =>
           categoryActions.handleCreateCategory(name, (categoryId) =>
@@ -132,8 +129,10 @@ export function BudgetsPage() {
           )
         }
         onUnarchiveCategory={(categoryId) =>
-          categoryActions.handleUnarchiveCategory(categoryId, (nextCategoryId) =>
-            dialog.handleValueChange("categoryId", nextCategoryId)
+          categoryActions.handleUnarchiveCategory(
+            categoryId,
+            (nextCategoryId) =>
+              dialog.handleValueChange("categoryId", nextCategoryId)
           )
         }
       />

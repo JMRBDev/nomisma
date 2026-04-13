@@ -3,7 +3,13 @@ import { useMemo } from "react"
 import { PlusIcon, TagIcon } from "lucide-react"
 import type { CategoryTableRow } from "@/components/dashboard/transactions/categories-table"
 import { Button } from "@/components/ui/button"
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { CategoryFormDialog } from "@/components/dashboard/transactions/category-form-dialog"
 import { CategoriesTable } from "@/components/dashboard/transactions/categories-table"
 import {
@@ -23,11 +29,7 @@ const transactionsRouteApi = getRouteApi(
 
 type PageData = ReturnType<typeof transactionsRouteApi.useLoaderData>
 
-export function CategoriesSection({
-  data,
-}: {
-  data: PageData
-}) {
+export function CategoriesSection({ data }: { data: PageData }) {
   const { dialog: categoryDialog, toggleCategoryArchived } =
     useCategoryManager()
 
@@ -38,14 +40,16 @@ export function CategoriesSection({
         txCounts.set(tx.categoryId, (txCounts.get(tx.categoryId) ?? 0) + 1)
       }
     }
-    return data.categories.all.map((cat: PageData["categories"]["all"][number]) => ({
-      _id: cat._id,
-      name: cat.name,
-      color: cat.color,
-      icon: cat.icon,
-      archived: cat.archived,
-      transactionCount: txCounts.get(cat._id) ?? 0,
-    }))
+    return data.categories.all.map(
+      (cat: PageData["categories"]["all"][number]) => ({
+        _id: cat._id,
+        name: cat.name,
+        color: cat.color,
+        icon: cat.icon,
+        archived: cat.archived,
+        transactionCount: txCounts.get(cat._id) ?? 0,
+      })
+    )
   }, [data])
 
   return (

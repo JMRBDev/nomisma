@@ -50,7 +50,10 @@ export async function getOverviewData(
         d.dashboardTransactions,
         d.selectedDateRange
       ),
-      categoryBreakdown: buildCategoryBreakdown(d.dashboardTransactions, d.selectedDateRange),
+      categoryBreakdown: buildCategoryBreakdown(
+        d.dashboardTransactions,
+        d.selectedDateRange
+      ),
     },
   }
 }

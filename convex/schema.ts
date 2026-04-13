@@ -68,8 +68,7 @@ export default defineSchema({
     archived: v.boolean(),
     createdAt: v.number(),
     updatedAt: v.number(),
-  })
-    .index("by_userId", ["userId"]),
+  }).index("by_userId", ["userId"]),
 
   transactions: defineTable({
     userId: v.string(),

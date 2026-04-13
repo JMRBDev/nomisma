@@ -47,10 +47,7 @@ export function AccountFormDialog({
         title ??
         (editing ? t("accounts_form_edit_title") : t("accounts_add_account"))
       }
-      description={
-        description ??
-        t("accounts_form_description")
-      }
+      description={description ?? t("accounts_form_description")}
     >
       <form className="space-y-4" onSubmit={onSubmit}>
         <AccountFormFields

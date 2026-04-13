@@ -1,7 +1,7 @@
 import type { RecurringRecord } from "@/components/dashboard/recurring/recurring-shared"
 import { DashboardSummaryCard } from "@/components/dashboard/dashboard-summary-card"
 import { canConfirmRecurringItem } from "@/components/dashboard/recurring/recurring-shared"
-import { formatDateLabel, getRecurringFrequencyLabel  } from "@/lib/money"
+import { formatDateLabel, getRecurringFrequencyLabel } from "@/lib/money"
 import { t } from "@/lib/i18n"
 
 interface RecurringSummaryCardsProps {

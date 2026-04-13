@@ -1,16 +1,16 @@
 import { Suspense, lazy } from "react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
-import { ArrowRightIcon, CheckCircle2Icon, FunnelIcon, ReceiptTextIcon, RepeatIcon } from "lucide-react"
+import { ArrowRightIcon, CheckCircle2Icon, RepeatIcon } from "lucide-react"
 import { OverviewAlerts } from "@/components/dashboard/overview/overview-alerts"
 import { OverviewChartsRowFallback } from "@/components/dashboard/overview/overview-charts-row-fallback"
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header"
 import { DashboardPageSection } from "@/components/dashboard/dashboard-page-section"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
 import { OverviewPanelCard } from "@/components/dashboard/overview/overview-panel-card"
+import { OverviewRecentTransactionsPanel } from "@/components/dashboard/overview/overview-recent-transactions-panel"
 import { OverviewSummaryCards } from "@/components/dashboard/overview/overview-summary-cards"
 import { RecurringTable } from "@/components/dashboard/recurring/recurring-table"
-import { TransactionsTable } from "@/components/dashboard/transactions/transactions-table"
 import { Button } from "@/components/ui/button"
 import { useCalendarContext } from "@/hooks/use-calendar-context"
 import { useDateFilter } from "@/hooks/use-date-filter"
@@ -31,7 +31,7 @@ export function OverviewPage() {
   const { data } = useSuspenseQuery(
     getOverviewDataQueryOptions(calendarContext, dateRange)
   )
-  const currency = data.settings?.baseCurrency
+  const currency = data.settings.baseCurrency
   const isSingleMonth =
     !hasDateFilter ||
     dateFilter.fromDate.slice(0, 7) === dateFilter.toDate.slice(0, 7)
@@ -48,65 +48,22 @@ export function OverviewPage() {
         activityLabel={activityLabel}
       />
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(340px,1fr)]">
-        <OverviewPanelCard
-          title={t("overview_recent_transactions_title")}
-          description={
-            hasDateFilter
-              ? t("overview_recent_transactions_filtered", {
-                  filter: filterLabel,
-                })
-              : t("overview_recent_transactions_description")
-          }
-          action={
-            <Button asChild size="sm" variant="outline">
-              <Link to="/dashboard/transactions" search={(previous) => previous}>
-                {t("common_view_all")}
-                <ArrowRightIcon />
-              </Link>
-            </Button>
-          }
-        >
-          {data.overview.recentTransactions.length > 0 ? (
-            <TransactionsTable
-              transactions={data.overview.recentTransactions}
-              currency={currency}
-              columnVisibilityStorageKey="nomisma-table-columns:overview-recent-transactions"
-              defaultPageSize={5}
-              showBreakdown={false}
-            />
-          ) : (
-            <FilteredResultsEmptyState
-              title={
-                hasDateFilter
-                  ? t("overview_no_transactions_filtered_title")
-                  : t("overview_no_transactions_title")
-              }
-              description={
-                hasDateFilter
-                  ? t("overview_no_transactions_filtered_description")
-                  : t("overview_no_transactions_description")
-              }
-              icon={hasDateFilter ? FunnelIcon : ReceiptTextIcon}
-              action={
-                hasDateFilter ? null : (
-                  <Button asChild>
-                    <Link to="/dashboard/transactions" search={(previous) => previous}>
-                      {t("overview_open_transactions")}
-                      <ArrowRightIcon />
-                    </Link>
-                  </Button>
-                )
-              }
-            />
-          )}
-        </OverviewPanelCard>
+        <OverviewRecentTransactionsPanel
+          recentTransactions={data.overview.recentTransactions}
+          currency={currency}
+          hasDateFilter={hasDateFilter}
+          filterLabel={filterLabel}
+        />
         <div className="grid gap-4">
           <OverviewPanelCard
             title={t("overview_alerts_title")}
             description={t("overview_alerts_description")}
           >
             {data.overview.alerts.length > 0 ? (
-              <OverviewAlerts alerts={data.overview.alerts} currency={currency} />
+              <OverviewAlerts
+                alerts={data.overview.alerts}
+                currency={currency}
+              />
             ) : (
               <FilteredResultsEmptyState
                 title={t("overview_no_alerts_title")}

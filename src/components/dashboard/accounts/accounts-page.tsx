@@ -1,5 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { PlusIcon } from "lucide-react"
 import { toast } from "sonner"
@@ -47,18 +47,11 @@ export function AccountsPage() {
 
   const active = data.accounts.active
   const archived = data.accounts.archived
-  const currency = data.settings?.baseCurrency
-  const totalBalance = useMemo(
-    () => active.reduce((s, a) => s + a.currentBalance, 0),
-    [active]
-  )
-  const includedBalance = useMemo(
-    () =>
-      active.reduce(
-        (s, a) => (a.includeInTotals ? s + a.currentBalance : s),
-        0
-      ),
-    [active]
+  const currency = data.settings.baseCurrency
+  const totalBalance = active.reduce((s, a) => s + a.currentBalance, 0)
+  const includedBalance = active.reduce(
+    (s, a) => (a.includeInTotals ? s + a.currentBalance : s),
+    0
   )
   const hasAny = active.length > 0 || archived.length > 0
 

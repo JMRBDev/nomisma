@@ -27,9 +27,15 @@ export function useTransactionSearchFilter(args: {
       filterTransactions(
         args.transactions.filter((transaction) => {
           if (transactionId && transaction._id !== transactionId) return false
-          if (args.dateRange.startDate && transaction.date < args.dateRange.startDate)
+          if (
+            args.dateRange.startDate &&
+            transaction.date < args.dateRange.startDate
+          )
             return false
-          if (args.dateRange.endDate && transaction.date > args.dateRange.endDate)
+          if (
+            args.dateRange.endDate &&
+            transaction.date > args.dateRange.endDate
+          )
             return false
           return true
         }),

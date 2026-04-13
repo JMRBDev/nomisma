@@ -33,7 +33,9 @@ export function useAccountReferenceActions() {
     onSelect: (accountId: string) => void
   ) => {
     await toggleAccountArchived({
-      accountId: accountId as Parameters<typeof toggleAccountArchived>[0]["accountId"],
+      accountId: accountId as Parameters<
+        typeof toggleAccountArchived
+      >[0]["accountId"],
       archived: false,
     })
     await router.invalidate()
@@ -46,4 +48,3 @@ export function useAccountReferenceActions() {
     handleUnarchiveAccount,
   }
 }
-

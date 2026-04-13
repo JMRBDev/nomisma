@@ -1,6 +1,6 @@
 import { useRouter } from "@tanstack/react-router"
 import type { BrowserCalendarContext } from "@/lib/browser-calendar"
-import { getLocale, toCalendarLocale  } from "@/lib/i18n"
+import { getLocale, toCalendarLocale } from "@/lib/i18n"
 import {
   detectBrowserCalendarPreferences,
   writeBrowserCalendarCookies,

@@ -39,12 +39,12 @@ export function SettingsForm({
   )
     ? defaultCurrencyOptions
     : [
-      {
-        value: values.baseCurrency,
-        label: `${values.baseCurrency} (current)`,
-      },
-      ...defaultCurrencyOptions,
-    ]
+        {
+          value: values.baseCurrency,
+          label: `${values.baseCurrency} (current)`,
+        },
+        ...defaultCurrencyOptions,
+      ]
 
   const isDirty =
     values.baseCurrency !== savedValues.baseCurrency ||

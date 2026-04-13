@@ -1,5 +1,4 @@
 import { ConvexError } from "convex/values"
-import type { WeekStartsOnPreference } from "../../shared/settings"
 import { groupCategories } from "./read_models_categories"
 import {
   getAccountsByUserId,
@@ -7,6 +6,7 @@ import {
   getResolvedSettings,
   requireUser,
 } from "./queries"
+import type { WeekStartsOnPreference } from "../../shared/settings"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
 
 export async function getSettingsPageData(ctx: QueryCtx) {

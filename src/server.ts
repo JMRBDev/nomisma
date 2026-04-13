@@ -1,10 +1,10 @@
 import { AsyncLocalStorage } from "node:async_hooks"
 import handler from "@tanstack/react-start/server-entry"
+import type { AppLocale } from "@/lib/i18n"
 import {
   buildLocaleCookieValue,
   getLocaleRedirectPath,
   resolveLocaleFromRequest,
-  type AppLocale,
 } from "@/lib/i18n"
 
 type RequestLocaleStore = {
@@ -13,8 +13,9 @@ type RequestLocaleStore = {
 
 const localeStore = new AsyncLocalStorage<RequestLocaleStore>()
 
-;(globalThis as { __nomismaLocaleStore?: typeof localeStore }).__nomismaLocaleStore =
-  localeStore
+;(
+  globalThis as { __nomismaLocaleStore?: typeof localeStore }
+).__nomismaLocaleStore = localeStore
 
 export default {
   fetch(request: Request) {

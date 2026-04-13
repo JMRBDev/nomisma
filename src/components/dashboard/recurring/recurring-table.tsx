@@ -41,7 +41,11 @@ const BASE_COLUMNS: Array<DashboardTableColumn> = [
   },
   { id: "accountName", column: "accountName", header: t("common_account") },
   { id: "categoryName", column: "categoryName", header: t("common_category") },
-  { id: "frequency", column: "frequency", header: t("recurring_table_schedule") },
+  {
+    id: "frequency",
+    column: "frequency",
+    header: t("recurring_table_schedule"),
+  },
   { id: "status", column: "status", header: t("common_status") },
   {
     id: "amount",
@@ -83,9 +87,7 @@ export function RecurringTable({
   showBreakdown?: boolean
 }) {
   const showActions = Boolean(today && onConfirm && onEdit && onToggle)
-  const columns = showActions
-    ? [...BASE_COLUMNS, ACTIONS_COLUMN]
-    : BASE_COLUMNS
+  const columns = showActions ? [...BASE_COLUMNS, ACTIONS_COLUMN] : BASE_COLUMNS
 
   const table = useDataTable({
     data: recurringItems,

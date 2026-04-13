@@ -22,9 +22,7 @@ export function RecurringEmptyState({
           <RepeatIcon className="size-5" />
         </EmptyMedia>
         <EmptyTitle>{t("recurring_empty_title")}</EmptyTitle>
-        <EmptyDescription>
-          {t("recurring_empty_description")}
-        </EmptyDescription>
+        <EmptyDescription>{t("recurring_empty_description")}</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
         <Button onClick={onAddRecurring}>

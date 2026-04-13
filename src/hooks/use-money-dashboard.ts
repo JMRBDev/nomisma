@@ -1,7 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import {
-  getGlobalSearchQueryOptions,
-} from "@/lib/dashboard-query-options"
+import { getGlobalSearchQueryOptions } from "@/lib/dashboard-query-options"
 import { useCalendarContext } from "@/hooks/use-calendar-context"
 
 export function useGlobalSearch(query: string) {

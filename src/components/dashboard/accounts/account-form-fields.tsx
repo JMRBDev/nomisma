@@ -48,7 +48,7 @@ export function AccountFormFields({
             <FieldTitle>{t("account_form_name_and_appearance")}</FieldTitle>
           </FieldLabel>
 
-          <div className="flex gap-2 items-center">
+          <div className="flex items-center gap-2">
             <AppearancePicker
               colorValue={values.color}
               iconValue={values.icon}

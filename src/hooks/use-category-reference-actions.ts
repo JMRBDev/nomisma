@@ -33,8 +33,9 @@ export function useCategoryReferenceActions() {
     onSelect: (categoryId: string) => void
   ) => {
     await toggleCategoryArchived({
-      categoryId:
-        categoryId as Parameters<typeof toggleCategoryArchived>[0]["categoryId"],
+      categoryId: categoryId as Parameters<
+        typeof toggleCategoryArchived
+      >[0]["categoryId"],
       archived: false,
     })
     await router.invalidate()

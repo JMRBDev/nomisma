@@ -22,7 +22,9 @@ export function AccountReferenceDialog({
       description={description}
       submitLabel={t("accounts_create_and_select")}
       onValueChange={accountActions.creator.handleValueChange}
-      onIncludeInTotalsChange={accountActions.creator.handleIncludeInTotalsChange}
+      onIncludeInTotalsChange={
+        accountActions.creator.handleIncludeInTotalsChange
+      }
     />
   )
 }

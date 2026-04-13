@@ -16,7 +16,7 @@ export function SettingsPage() {
     {
       ...userSettings.settings,
     },
-    getLocale(),
+    getLocale()
   )
 
   return (

@@ -29,7 +29,9 @@ export function getTransactionsPageDataQueryOptions() {
   return convexQuery(api.transactions.getTransactionsPageData, {})
 }
 
-export function getBudgetsPageDataQueryOptions(calendar: DashboardCalendarInput) {
+export function getBudgetsPageDataQueryOptions(
+  calendar: DashboardCalendarInput
+) {
   return convexQuery(api.budgets.getBudgetsPageData, {
     currentMonth: calendar.currentMonth,
   })

@@ -18,9 +18,8 @@ import {
 import { cn } from "@/lib/utils"
 
 export function ColorThemeField() {
-  const [colorTheme, setColorThemeState] = useState<ColorTheme>(
-    DEFAULT_COLOR_THEME
-  )
+  const [colorTheme, setColorThemeState] =
+    useState<ColorTheme>(DEFAULT_COLOR_THEME)
   const colorThemeOptions = getColorThemeOptions()
 
   useMountEffect(() => {

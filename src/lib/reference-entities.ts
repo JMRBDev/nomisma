@@ -47,7 +47,9 @@ export function getEntityNameMatchState<TOption extends NamedEntityReference>(
   }
 }
 
-export function getCreateOrRestoreActions<TOption extends NamedEntityReference>({
+export function getCreateOrRestoreActions<
+  TOption extends NamedEntityReference,
+>({
   options,
   query,
   createKey,

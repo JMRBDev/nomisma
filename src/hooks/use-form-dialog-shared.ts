@@ -21,4 +21,3 @@ export type FormDialogOptions<TValues, TFieldErrors, TEntity> = {
   ) => void
   onDelete?: (entity: TEntity) => Promise<unknown>
 }
-

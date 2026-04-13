@@ -11,9 +11,7 @@ import {
   buildRecurringResults,
   normalizeSearchQuery,
 } from "./search_shared"
-import type {
-  TransactionSearchResult,
-} from "./search_shared"
+import type { TransactionSearchResult } from "./search_shared"
 import type { QueryCtx } from "../_generated/server"
 
 const TRANSACTION_RESULT_LIMIT = 8

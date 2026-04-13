@@ -84,7 +84,9 @@ export function ReferenceAutocompleteField({
             autoComplete="off"
             onFocus={() => !disabled && autocomplete.setOpen(true)}
             onClick={() => !disabled && autocomplete.setOpen(true)}
-            onChange={(event) => autocomplete.handleInputChange(event.target.value)}
+            onChange={(event) =>
+              autocomplete.handleInputChange(event.target.value)
+            }
             onKeyDown={autocomplete.handleInputKeyDown}
           />
           <InputGroupAddon align="inline-end">

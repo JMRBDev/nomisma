@@ -1,0 +1,12 @@
+{
+  "open": "AI Assistant",
+  "title": "AI Assistant",
+  "prompt_placeholder": "Type a message...",
+  "thinking": "Thinking",
+  "submit": "Send",
+  "approve": "Approve",
+  "deny": "Deny",
+  "working": "Working...",
+  "stop": "Stop",
+  "welcome": "How can I help you today?"
+}

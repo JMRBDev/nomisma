@@ -50,15 +50,16 @@ export function RecurringFormDialog({
   onCreateCategory: (name: string) => void
   onUnarchiveCategory: (categoryId: string) => void
 }) {
-  const resolvedCategoryOptions = getCategoryOptions(values.type, categoryOptions)
+  const resolvedCategoryOptions = getCategoryOptions(
+    values.type,
+    categoryOptions
+  )
 
   return (
     <DashboardFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={
-        editing ? t("recurring_form_edit_title") : t("recurring_add_item")
-      }
+      title={editing ? t("recurring_form_edit_title") : t("recurring_add_item")}
       description={t("recurring_form_description")}
     >
       <form className="space-y-4" onSubmit={onSubmit}>

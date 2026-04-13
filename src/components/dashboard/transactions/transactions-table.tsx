@@ -19,7 +19,9 @@ const SORT_ACCESSORS: Record<
   description: (row) => row.description.toLowerCase(),
   accountName: (row) => getAccountDisplayName(row.accountName).toLowerCase(),
   categoryName: (row) =>
-    (getTransactionCategoryLabel(row) ?? t("transaction_type_transfer")).toLowerCase(),
+    (
+      getTransactionCategoryLabel(row) ?? t("transaction_type_transfer")
+    ).toLowerCase(),
   type: (row) => row.type,
   status: (row) => row.status,
   amount: (row) => {
@@ -77,9 +79,7 @@ export function TransactionsTable({
   showBreakdown?: boolean
 }) {
   const showActions = Boolean(onEdit && onDelete)
-  const columns = showActions
-    ? [...BASE_COLUMNS, ACTIONS_COLUMN]
-    : BASE_COLUMNS
+  const columns = showActions ? [...BASE_COLUMNS, ACTIONS_COLUMN] : BASE_COLUMNS
 
   const table = useDataTable({
     data: transactions,

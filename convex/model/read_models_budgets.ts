@@ -69,7 +69,8 @@ export function buildBudgetStatuses(
       categoryIcon: category?.icon ?? null,
       categoryColor: category?.color ?? null,
       isTotal: budget.categoryId === undefined,
-      categoryMissing: budget.categoryId !== undefined && category === undefined,
+      categoryMissing:
+        budget.categoryId !== undefined && category === undefined,
       spent,
       remaining,
       progress,

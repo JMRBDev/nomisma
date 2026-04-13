@@ -110,9 +110,9 @@ export function AppearancePicker({
                     getPickerButtonClassName(selected),
                     selected && !customColorSelected && colorValue,
                     selected &&
-                    !customColorSelected &&
-                    colorValue &&
-                    "text-white",
+                      !customColorSelected &&
+                      colorValue &&
+                      "text-white",
                     !selected && "text-muted-foreground"
                   )}
                   aria-label={`Select ${option.label} ${entityName} icon`}

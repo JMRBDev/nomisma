@@ -1,0 +1,12 @@
+{
+  "open": "Asistente IA",
+  "title": "Asistente IA",
+  "prompt_placeholder": "Escribe un mensaje...",
+  "thinking": "Pensando",
+  "submit": "Enviar",
+  "approve": "Aprobar",
+  "deny": "Rechazar",
+  "working": "Trabajando...",
+  "stop": "Detener",
+  "welcome": "¿En qué puedo ayudarte hoy?"
+}

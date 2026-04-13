@@ -76,7 +76,7 @@ export function DashboardTable({
         )}
       </Table>
 
-      <div className="flex justify-between items-end gap-4">
+      <div className="flex items-end justify-between gap-4">
         <DataTablePagination
           page={table.page}
           pageSize={table.pageSize}

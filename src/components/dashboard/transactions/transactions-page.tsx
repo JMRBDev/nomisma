@@ -3,8 +3,14 @@ import { useMemo, useState } from "react"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { PlusIcon } from "lucide-react"
 import { api } from "../../../../convex/_generated/api"
-import type { TransactionFilterValues, TransactionRecord } from "@/components/dashboard/transactions/transactions-shared"
-import { DEFAULT_FILTER_VALUES, countActiveFilters } from "@/components/dashboard/transactions/transactions-shared"
+import type {
+  TransactionFilterValues,
+  TransactionRecord,
+} from "@/components/dashboard/transactions/transactions-shared"
+import {
+  DEFAULT_FILTER_VALUES,
+  countActiveFilters,
+} from "@/components/dashboard/transactions/transactions-shared"
 import { useTransactionSearchFilter } from "@/components/dashboard/transactions/transactions-page-shared"
 import { DashboardFilterButton } from "@/components/dashboard/dashboard-filter-button"
 import { DashboardPageActions } from "@/components/dashboard/dashboard-page-actions"
@@ -44,7 +50,8 @@ export function TransactionsPage() {
       updateTx({ transactionId: id, ...payload }),
     onDeleteTransaction: (id) => deleteTx({ transactionId: id }),
   })
-  const transactionReferences = useTransactionReferenceHandlers(transactionEditor)
+  const transactionReferences =
+    useTransactionReferenceHandlers(transactionEditor)
   const deleteConfirmation = useDeleteConfirmation<TransactionRecord["_id"]>({
     onConfirm: (id) => deleteTx({ transactionId: id }),
     errorMessage: t("transactions_delete_error"),
@@ -86,7 +93,7 @@ export function TransactionsPage() {
       <TransactionsContent
         accountOptions={accountOptions}
         filteredTransactions={searchFilter.filteredTransactions}
-        currency={data.settings?.baseCurrency}
+        currency={data.settings.baseCurrency}
         hasActiveFilters={hasActiveFilters}
         hasDateFilter={hasDateFilter}
         filterLabel={filterLabel}

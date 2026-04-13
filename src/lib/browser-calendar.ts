@@ -85,7 +85,10 @@ export function writeBrowserCalendarCookies(input: {
   )
 
   if (!hasTimeZoneCookie) {
-    document.cookie = buildCookieValue(BROWSER_TIME_ZONE_COOKIE_NAME, nextTimeZone)
+    document.cookie = buildCookieValue(
+      BROWSER_TIME_ZONE_COOKIE_NAME,
+      nextTimeZone
+    )
   }
 
   if (!hasLocaleCookie) {

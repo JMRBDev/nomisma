@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/chart"
 import { formatCurrency, formatDateLabel } from "@/lib/money"
 import { FilteredResultsEmptyState } from "@/components/filtered-results-empty-state"
-import { getLocale, t , toCalendarLocale  } from "@/lib/i18n"
+import { getLocale, t, toCalendarLocale } from "@/lib/i18n"
 
 export function OverviewSpendingChart({
   data,

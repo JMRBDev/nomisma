@@ -41,9 +41,7 @@ export function DashboardSearchDialog({
       ...buildPageSearchItems(navigate).filter(
         (item) => !normalizedQuery || contains(item.value, normalizedQuery)
       ),
-      ...(searchResults
-        ? buildEntitySearchItems(navigate, searchResults)
-        : []),
+      ...(searchResults ? buildEntitySearchItems(navigate, searchResults) : []),
     ],
     [navigate, normalizedQuery, searchResults]
   )
@@ -103,7 +101,7 @@ export function DashboardSearchDialog({
                     <div className="min-w-0 flex-1">
                       <div className="truncate">{item.title}</div>
                       {item.subtitle ? (
-                        <div className="text-muted-foreground truncate text-xs">
+                        <div className="truncate text-xs text-muted-foreground">
                           {item.subtitle}
                         </div>
                       ) : null}

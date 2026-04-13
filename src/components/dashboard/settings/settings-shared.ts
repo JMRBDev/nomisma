@@ -1,7 +1,8 @@
-import {
-  resolveUserSettings
+import { resolveUserSettings } from "../../../../shared/settings"
+import type {
+  UserSettingsLike,
+  WeekStartsOnPreference,
 } from "../../../../shared/settings"
-import type { UserSettingsLike, WeekStartsOnPreference } from "../../../../shared/settings"
 import type { AppLocale } from "../../../../shared/i18n"
 import { getCurrencyOptions } from "@/lib/currency"
 import { t } from "@/lib/i18n"

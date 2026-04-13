@@ -33,7 +33,7 @@ export function HomePage({
             search={{ redirect: undefined }}
             className="font-heading text-xl tracking-tight"
           >
-            <span className="font-heading text-2xl tracking-tight text-center">
+            <span className="text-center font-heading text-2xl tracking-tight">
               {APP_NAME}
             </span>
           </Link>

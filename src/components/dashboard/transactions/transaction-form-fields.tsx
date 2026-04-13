@@ -1,6 +1,4 @@
-import type {
-  TransactionStatus,
-} from "@/components/dashboard/transactions/transactions-shared"
+import type { TransactionStatus } from "@/components/dashboard/transactions/transactions-shared"
 import type { TransactionFormFieldsProps } from "@/components/dashboard/transactions/transaction-form-types"
 import {
   Field,
@@ -11,7 +9,6 @@ import {
 import { FormErrorMessage } from "@/components/form-error-message"
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
-import { Textarea } from "@/components/ui/textarea"
 import { getCategoryOptions } from "@/components/dashboard/transactions/transactions-shared"
 import { t } from "@/lib/i18n"
 import {
@@ -19,6 +16,7 @@ import {
   getTransactionTypeOptions,
 } from "@/lib/money"
 import { TransactionSelectFields } from "@/components/dashboard/transactions/transaction-select-fields"
+import { TransactionTextFields } from "@/components/dashboard/transactions/transaction-text-fields"
 
 export function TransactionFormFields({
   values,
@@ -35,7 +33,10 @@ export function TransactionFormFields({
   onCreateCategory,
   onUnarchiveCategory,
 }: TransactionFormFieldsProps) {
-  const resolvedCategoryOptions = getCategoryOptions(values.type, categoryOptions)
+  const resolvedCategoryOptions = getCategoryOptions(
+    values.type,
+    categoryOptions
+  )
   const transactionStatusOptions = getTransactionStatusOptions()
   const transactionTypeOptions = getTransactionTypeOptions()
 
@@ -50,7 +51,10 @@ export function TransactionFormFields({
             id="transaction-type"
             value={values.type}
             onChange={(event) =>
-              onTypeChange(event.target.value as TransactionFormFieldsProps["values"]["type"])
+              onTypeChange(
+                event.target
+                  .value as TransactionFormFieldsProps["values"]["type"]
+              )
             }
           >
             {transactionTypeOptions.map((option) => (
@@ -119,32 +123,7 @@ export function TransactionFormFields({
         onCreateCategory={onCreateCategory}
         onUnarchiveCategory={onUnarchiveCategory}
       />
-      <Field>
-        <FieldLabel htmlFor="transaction-description">
-          <FieldTitle>{t("common_description")}</FieldTitle>
-        </FieldLabel>
-        <Input
-          id="transaction-description"
-          value={values.description}
-          onChange={(event) => onValueChange("description", event.target.value)}
-          placeholder={
-            values.type === "transfer"
-              ? t("transaction_form_transfer_placeholder")
-              : t("transaction_form_expense_placeholder")
-          }
-        />
-      </Field>
-      <Field>
-        <FieldLabel htmlFor="transaction-note">
-          <FieldTitle>{t("common_note")}</FieldTitle>
-        </FieldLabel>
-        <Textarea
-          id="transaction-note"
-          value={values.note}
-          onChange={(event) => onValueChange("note", event.target.value)}
-          placeholder={t("transaction_form_note_placeholder")}
-        />
-      </Field>
+      <TransactionTextFields values={values} onValueChange={onValueChange} />
     </FieldGroup>
   )
 }

@@ -9,12 +9,15 @@
  */
 
 import type * as accounts from "../accounts.js";
+import type * as aiActions from "../aiActions.js";
 import type * as auth from "../auth.js";
 import type * as budgets from "../budgets.js";
 import type * as categories from "../categories.js";
 import type * as http from "../http.js";
 import type * as model_account_name_conflicts from "../model/account_name_conflicts.js";
 import type * as model_accounts from "../model/accounts.js";
+import type * as model_ai_actions from "../model/ai_actions.js";
+import type * as model_ai_actions_recurring from "../model/ai_actions_recurring.js";
 import type * as model_balances from "../model/balances.js";
 import type * as model_budgets from "../model/budgets.js";
 import type * as model_categories from "../model/categories.js";
@@ -38,6 +41,7 @@ import type * as model_recurring_actions from "../model/recurring_actions.js";
 import type * as model_recurring_mutations from "../model/recurring_mutations.js";
 import type * as model_search from "../model/search.js";
 import type * as model_search_shared from "../model/search_shared.js";
+import type * as model_search_terms from "../model/search_terms.js";
 import type * as model_settings from "../model/settings.js";
 import type * as model_shared from "../model/shared.js";
 import type * as model_transaction_delete from "../model/transaction_delete.js";
@@ -58,12 +62,15 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   accounts: typeof accounts;
+  aiActions: typeof aiActions;
   auth: typeof auth;
   budgets: typeof budgets;
   categories: typeof categories;
   http: typeof http;
   "model/account_name_conflicts": typeof model_account_name_conflicts;
   "model/accounts": typeof model_accounts;
+  "model/ai_actions": typeof model_ai_actions;
+  "model/ai_actions_recurring": typeof model_ai_actions_recurring;
   "model/balances": typeof model_balances;
   "model/budgets": typeof model_budgets;
   "model/categories": typeof model_categories;
@@ -87,6 +94,7 @@ declare const fullApi: ApiFromModules<{
   "model/recurring_mutations": typeof model_recurring_mutations;
   "model/search": typeof model_search;
   "model/search_shared": typeof model_search_shared;
+  "model/search_terms": typeof model_search_terms;
   "model/settings": typeof model_settings;
   "model/shared": typeof model_shared;
   "model/transaction_delete": typeof model_transaction_delete;

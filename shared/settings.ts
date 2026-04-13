@@ -8,9 +8,7 @@ export type UserSettingsLike = {
 export const DEFAULT_BASE_CURRENCY = "EUR"
 export const DEFAULT_WEEK_STARTS_ON: WeekStartsOnPreference = "monday"
 
-export function resolveUserSettings(
-  settings?: UserSettingsLike | null
-): {
+export function resolveUserSettings(settings?: UserSettingsLike | null): {
   baseCurrency: string
   weekStartsOn: WeekStartsOnPreference
 } {

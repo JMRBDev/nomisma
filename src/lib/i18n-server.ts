@@ -1,8 +1,5 @@
 import type { AppLocale } from "@/lib/i18n"
-import {
-  defaultAppLocale,
-  resolveLocaleFromRequest,
-} from "@/lib/i18n"
+import { defaultAppLocale, resolveLocaleFromRequest } from "@/lib/i18n"
 
 type RequestLocaleStore = {
   locale: AppLocale
@@ -13,9 +10,11 @@ type LocaleStore = {
 }
 
 function getLocaleStore() {
-  return (globalThis as {
-    __nomismaLocaleStore?: LocaleStore
-  }).__nomismaLocaleStore
+  return (
+    globalThis as {
+      __nomismaLocaleStore?: LocaleStore
+    }
+  ).__nomismaLocaleStore
 }
 
 export function getRequestLocale() {

@@ -33,7 +33,7 @@ const getRequestState = createServerFn({ method: "GET" }).handler(async () => {
   const locale = resolveRequestLocale(
     new Request("http://nomisma.local", {
       headers: getRequestHeaders(),
-    }),
+    })
   )
 
   setRequestLocale(locale)
@@ -57,18 +57,31 @@ export const Route = createRootRouteWithContext<{
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "theme-color", content: "#ffffff", media: "(prefers-color-scheme: light)" },
-      { name: "theme-color", content: "#0a0a0a", media: "(prefers-color-scheme: dark)" },
+      {
+        name: "theme-color",
+        content: "#ffffff",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        name: "theme-color",
+        content: "#0a0a0a",
+        media: "(prefers-color-scheme: dark)",
+      },
       { title: APP_NAME },
       { name: "description", content: t("app_description") },
     ],
-    links: [{ rel: "stylesheet", href: appCss }, { rel: "icon", href: "/favicon.ico" }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: "/favicon.ico" },
+    ],
   }),
   beforeLoad: async (ctx) => {
     const { token, locale, calendarContext } = await getRequestState()
 
     if (token) {
-      ctx.context.convexQueryClient.convexClient.setAuth(() => Promise.resolve(token))
+      ctx.context.convexQueryClient.convexClient.setAuth(() =>
+        Promise.resolve(token)
+      )
       ctx.context.convexQueryClient.serverHttpClient?.setAuth(token)
     }
 
@@ -112,7 +125,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             __html: `document.documentElement.lang=${JSON.stringify(locale)};document.cookie=${JSON.stringify(buildLocaleCookieValue(locale))}`,
           }}
         />
-        <script dangerouslySetInnerHTML={{ __html: getBrowserCalendarBootstrapScript() }} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: getBrowserCalendarBootstrapScript(),
+          }}
+        />
         <HeadContent />
       </head>
       <body className="bg-background text-foreground antialiased">

@@ -120,7 +120,8 @@ export function mapTransaction(
     toAccountName: toAccount?.name ?? null,
     toAccountIcon: toAccount?.icon ?? null,
     toAccountColor: toAccount?.color ?? null,
-    toAccountMissing: transaction.toAccountId !== undefined && toAccount === undefined,
+    toAccountMissing:
+      transaction.toAccountId !== undefined && toAccount === undefined,
   }
 }
 

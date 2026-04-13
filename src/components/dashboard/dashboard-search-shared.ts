@@ -105,7 +105,8 @@ export function buildEntitySearchItems(
       },
       title: getSearchBudgetTitle(item),
       subtitle: getSearchBudgetSubtitle(item),
-      value: `${getSearchBudgetTitle(item)} ${getSearchBudgetSubtitle(item)}`.trim(),
+      value:
+        `${getSearchBudgetTitle(item)} ${getSearchBudgetSubtitle(item)}`.trim(),
     })),
     ...results.recurring.map<SearchItem>((item) => ({
       group: t("search_group_recurring"),

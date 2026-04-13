@@ -42,7 +42,9 @@ export function BudgetsSummaryCards({
       <DashboardSummaryCard
         title={t("budgets_summary_spent_title")}
         value={formatCurrency(data.budgets.totalSpent, currency)}
-        description={t("budgets_summary_spent_description", { month: monthLabel })}
+        description={t("budgets_summary_spent_description", {
+          month: monthLabel,
+        })}
       />
       <DashboardSummaryCard
         title={t("budgets_summary_remaining_title")}

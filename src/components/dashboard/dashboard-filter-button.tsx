@@ -11,7 +11,11 @@ export function DashboardFilterButton({
   children?: ReactNode
 }) {
   return (
-    <Button size={activeCount > 0 ? "default" : "icon"} variant={activeCount > 0 ? "secondary" : "outline"} {...props}>
+    <Button
+      size={activeCount > 0 ? "default" : "icon"}
+      variant={activeCount > 0 ? "secondary" : "outline"}
+      {...props}
+    >
       {activeCount || null}
       {children ?? <FilterIcon />}
     </Button>

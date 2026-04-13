@@ -10,11 +10,7 @@ import {
   CATEGORY_ICON_OPTIONS,
 } from "@/components/dashboard/transactions/categories-shared"
 import { FormErrorMessage } from "@/components/form-error-message"
-import {
-  Field,
-  FieldLabel,
-  FieldTitle,
-} from "@/components/ui/field"
+import { Field, FieldLabel, FieldTitle } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { t } from "@/lib/i18n"
 
@@ -66,7 +62,7 @@ export function CategoryFormDialog({
             <FieldTitle>{t("account_form_name_and_appearance")}</FieldTitle>
           </FieldLabel>
 
-          <div className="flex gap-2 items-center">
+          <div className="flex items-center gap-2">
             <AppearancePicker
               colorValue={values.color}
               iconValue={values.icon}

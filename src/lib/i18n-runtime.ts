@@ -43,7 +43,7 @@ function buildDictionaries(modules: Record<string, LocaleModule>) {
       Object.entries(module.default).map(([key, value]) => [
         `${namespace}_${key}`,
         value,
-      ]),
+      ])
     )
 
     nextDictionaries[locale as AppLocale] = {
@@ -56,9 +56,11 @@ function buildDictionaries(modules: Record<string, LocaleModule>) {
 }
 
 function getLocaleStore() {
-  return (globalThis as {
-    __nomismaLocaleStore?: LocaleStore
-  }).__nomismaLocaleStore
+  return (
+    globalThis as {
+      __nomismaLocaleStore?: LocaleStore
+    }
+  ).__nomismaLocaleStore
 }
 
 function getActiveLocale() {
@@ -76,7 +78,7 @@ function getDictionary(locale: AppLocale) {
 function formatTranslation(
   key: TranslationKey,
   locale: AppLocale,
-  params?: TranslationParams,
+  params?: TranslationParams
 ) {
   const template = getDictionary(locale)[key]
 
@@ -102,7 +104,7 @@ export function setLocale(
   locale: AppLocale,
   options?: {
     reload?: boolean
-  },
+  }
 ) {
   syncLocale(locale)
 

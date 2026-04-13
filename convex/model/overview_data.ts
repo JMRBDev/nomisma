@@ -16,7 +16,11 @@ import {
   getResolvedSettings,
   requireUser,
 } from "./queries"
-import { getCalendarMonthRange, getCurrentCalendarMonth, toDayKey } from "./dates"
+import {
+  getCalendarMonthRange,
+  getCurrentCalendarMonth,
+  toDayKey,
+} from "./dates"
 import { applyTransactionToBalances } from "./balances"
 import type { Id } from "../_generated/dataModel"
 import type { QueryCtx } from "../_generated/server"
@@ -112,15 +116,12 @@ export async function fetchOverviewData(
     currentMonthDashboardTransactions,
     currentMonth
   )
-  const postedTransactions = dashboardTransactions.filter(
-    (transaction) => transaction.status === "posted"
-  )
-  const income = postedTransactions
-    .filter((transaction) => transaction.type === "income")
-    .reduce((total, transaction) => total + transaction.amount, 0)
-  const expenses = postedTransactions
-    .filter((transaction) => transaction.type === "expense")
-    .reduce((total, transaction) => total + transaction.amount, 0)
+  const income = dashboardTransactions
+    .filter((t) => t.status === "posted" && t.type === "income")
+    .reduce((total, t) => total + t.amount, 0)
+  const expenses = dashboardTransactions
+    .filter((t) => t.status === "posted" && t.type === "expense")
+    .reduce((total, t) => total + t.amount, 0)
   const currentMoney = accounts
     .filter((account) => !account.archived && account.includeInTotals)
     .reduce(

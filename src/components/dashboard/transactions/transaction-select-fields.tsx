@@ -42,7 +42,10 @@ export function TransactionSelectFields({
   onCreateCategory: (name: string) => void
   onUnarchiveCategory: (categoryId: string) => void
 }) {
-  const getAccountActions = (query: string, fieldName: "accountId" | "toAccountId") => {
+  const getAccountActions = (
+    query: string,
+    fieldName: "accountId" | "toAccountId"
+  ) => {
     return getCreateOrRestoreActions({
       options: allAccountOptions,
       query,

@@ -1,4 +1,4 @@
-import { getLocale, toCalendarLocale  } from "@/lib/i18n"
+import { getLocale, toCalendarLocale } from "@/lib/i18n"
 
 export const CURRENCY_OPTIONS = [
   { value: "USD", fallbackLabel: "US Dollar", locale: "en-US" },

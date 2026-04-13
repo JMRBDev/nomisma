@@ -49,7 +49,10 @@ export function RecurringFormFields({
   onCreateCategory: (name: string) => void
   onUnarchiveCategory: (categoryId: string) => void
 }) {
-  const resolvedCategoryOptions = getCategoryOptions(values.type, categoryOptions)
+  const resolvedCategoryOptions = getCategoryOptions(
+    values.type,
+    categoryOptions
+  )
   const recurringFrequencyOptions = getRecurringFrequencyOptions()
   return (
     <FieldGroup>

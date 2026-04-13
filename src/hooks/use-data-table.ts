@@ -81,16 +81,21 @@ export function useDataTable<T>({
     return sortedData.slice(start, start + pageSize)
   }, [currentPage, pageSize, sortedData])
 
-  const handlePageSizeChange = useCallback((size: number) => {
-    const pageSizeStorageKey = getPageSizeStorageKey(columnVisibilityStorageKey)
+  const handlePageSizeChange = useCallback(
+    (size: number) => {
+      const pageSizeStorageKey = getPageSizeStorageKey(
+        columnVisibilityStorageKey
+      )
 
-    if (typeof window !== "undefined" && pageSizeStorageKey) {
-      window.localStorage.setItem(pageSizeStorageKey, String(size))
-    }
+      if (typeof window !== "undefined" && pageSizeStorageKey) {
+        window.localStorage.setItem(pageSizeStorageKey, String(size))
+      }
 
-    setPageSize(size)
-    setPage(1)
-  }, [columnVisibilityStorageKey])
+      setPageSize(size)
+      setPage(1)
+    },
+    [columnVisibilityStorageKey]
+  )
 
   const handlePageChange = useCallback((nextPage: number) => {
     setPage(Math.max(1, nextPage))

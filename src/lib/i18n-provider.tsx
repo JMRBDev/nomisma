@@ -1,7 +1,13 @@
 import { createContext, useContext } from "react"
 import type { ReactNode } from "react"
 import type { AppLocale } from "@/lib/i18n-locale"
-import { createTranslator, getLocale, setLocale, syncLocale, t } from "@/lib/i18n-runtime"
+import {
+  createTranslator,
+  getLocale,
+  setLocale,
+  syncLocale,
+  t,
+} from "@/lib/i18n-runtime"
 
 const I18nContext = createContext<{
   locale: AppLocale
