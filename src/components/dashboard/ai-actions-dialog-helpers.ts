@@ -18,12 +18,34 @@ export function getCurrentFrontendHints() {
 }
 
 export function getMessageText(message: UIMessage) {
-  return message.parts
+  const texts = message.parts
     .filter(
       (part): part is { type: "text"; text: string } => part.type === "text"
     )
     .map((part) => part.text)
-    .join("\n")
+
+  if (texts.length === 0) return ""
+
+  return texts
+    .reduce((acc: Array<string>, text, i) => {
+      if (i === 0) {
+        acc.push(text)
+        return acc
+      }
+
+      const prev = acc[acc.length - 1]
+      const prevEndsWithSpace = /\s$/.test(prev)
+      const currentStartsWithSpace = /^\s/.test(text)
+
+      if (!prevEndsWithSpace && !currentStartsWithSpace) {
+        acc[acc.length - 1] = prev + " " + text
+      } else {
+        acc.push(text)
+      }
+
+      return acc
+    }, [])
+    .join("\n\n")
     .trim()
 }
 

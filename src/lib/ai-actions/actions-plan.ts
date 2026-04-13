@@ -113,20 +113,28 @@ export function planAssistantTurn(
   const text = (lastUserMessage ? getMessageText(lastUserMessage) : "").trim()
   const domains = inferDomains(text)
   const activeToolFlow = hasActiveToolFlow(recentMessages)
+  const hasActionVerb = text !== "" && actionIntentPattern.test(text)
+  const isInformational = informationalPattern.test(text)
+  const hasDomainContext = domains.length > 0
   const mode =
-    activeToolFlow ||
-    (text !== "" &&
-      actionIntentPattern.test(text) &&
-      !informationalPattern.test(text))
-      ? "action"
-      : "answer"
+    activeToolFlow || (hasActionVerb && !isInformational) ? "action" : "answer"
 
   const referencedActions = getReferencedActions(recentMessages)
+  const domainFallbackActions =
+    !hasActionVerb && hasDomainContext && !isInformational
+      ? selectIntentActions(domains, routeScope)
+      : []
   const intentActions =
     mode === "action" ? selectIntentActions(domains, routeScope) : []
   const actions =
-    intentActions.length > 0 || referencedActions.length > 0
-      ? uniqueActions([...intentActions, ...referencedActions])
+    intentActions.length > 0 ||
+    referencedActions.length > 0 ||
+    domainFallbackActions.length > 0
+      ? uniqueActions([
+          ...intentActions,
+          ...referencedActions,
+          ...domainFallbackActions,
+        ])
       : []
 
   return {

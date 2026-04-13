@@ -30,7 +30,7 @@ export function getMessageText(message: UIMessage) {
       (part): part is { type: "text"; text: string } => part.type === "text"
     )
     .map((part) => part.text)
-    .join("\n")
+    .join("\n\n")
     .trim()
 }
 

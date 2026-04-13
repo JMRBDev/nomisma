@@ -81,10 +81,10 @@ export const routeFallbackDomains: Record<RouteScope, Array<ActionDomain>> = {
 }
 
 export const actionIntentPattern =
-  /\b(add|adjust|archive|auto-?categorize|categorize|change|close|confirm|create|delete|edit|make|mark|move|pause|remove|rename|reopen|restore|resume|save|transfer|update)\b/i
+  /\b(activate|add|adjust|archive|auto-?categorize|categorize|change|close|confirm|create|deactivate|delete|edit|make|mark|move|need|open|pause|please|reactivate|remove|rename|reopen|restore|resume|save|set|start|stop|transfer|unarchive|update|want)\b/i
 
 export const informationalPattern =
-  /^\s*(explain|how|list|show|summarize|tell me|what|when|where|which|who|why)\b/i
+  /^\s*(can you (?:explain|list|show|summarize|tell me)|could you (?:explain|list|show|summarize|tell me)|explain|how|list|show|summarize|tell me|what|when|where|which|who|why)\b/i
 
 export const transactionQuestionPattern =
   /\b(expense|expenses|income|latest|last|pay(?:ment)?|paid|recent|spent|spend|transaction|transactions|transfer)\b/i

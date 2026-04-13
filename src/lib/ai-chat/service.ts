@@ -58,12 +58,34 @@ function truncateText(value: string, maxLength: number) {
 }
 
 function getMessageText(message: UIMessage) {
-  return message.parts
+  const texts = message.parts
     .filter(
       (part): part is { type: "text"; text: string } => part.type === "text"
     )
     .map((part) => part.text)
-    .join("\n")
+
+  if (texts.length === 0) return ""
+
+  return texts
+    .reduce((acc: Array<string>, text, i) => {
+      if (i === 0) {
+        acc.push(text)
+        return acc
+      }
+
+      const prev = acc[acc.length - 1]
+      const prevEndsWithSpace = /\s$/.test(prev)
+      const currentStartsWithSpace = /^\s/.test(text)
+
+      if (!prevEndsWithSpace && !currentStartsWithSpace) {
+        acc[acc.length - 1] = prev + " " + text
+      } else {
+        acc.push(text)
+      }
+
+      return acc
+    }, [])
+    .join("\n\n")
     .trim()
 }
 
@@ -309,7 +331,8 @@ function buildSystemPrompt(
     "If a prepare tool returns ready and the user is asking for the change to happen, call the matching apply tool immediately.",
     "Apply tools require user approval before they execute.",
     "Never invent IDs, categories, accounts, budgets, or transactions.",
-    "If no matching tool is available for the user's request, respond in plain natural language. Never output raw JSON, code blocks, or fake tool calls.",
+    "If no matching tool is available for the user's request, respond in plain natural language. Never output raw JSON, code blocks, or fake tool calls. Do NOT invent tool names or output tool-call-like JSON.",
+    "If you do not have a tool that matches the user's request, just reply in plain text explaining what you can do.",
     "If approval is denied, do not retry the same write automatically.",
     "Keep replies concise and specific to the user's finances.",
   ]
