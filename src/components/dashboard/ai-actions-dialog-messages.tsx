@@ -6,6 +6,7 @@ import {
   isToolPart,
 } from "./ai-actions-dialog-helpers"
 import type { UIMessage } from "ai"
+import { MarkdownText } from "@/components/ui/markdown-text"
 import { t } from "@/lib/i18n"
 
 export function DashboardAiChatMessages({
@@ -37,10 +38,18 @@ export function DashboardAiChatMessages({
 
         return (
           <div key={message.id} className="space-y-2">
-            <div
-              className={`px-3.5 py-2.5 text-sm whitespace-pre-wrap ${bubbleClassName}`}
-            >
-              {text || (isAssistant ? t("ai_working") : " ")}
+            <div className={`px-3.5 py-2.5 text-sm ${bubbleClassName}`}>
+              {text ? (
+                isAssistant ? (
+                  <MarkdownText content={text} />
+                ) : (
+                  <div className="break-words whitespace-pre-wrap">{text}</div>
+                )
+              ) : isAssistant ? (
+                t("ai_working")
+              ) : (
+                " "
+              )}
             </div>
 
             {isAssistant

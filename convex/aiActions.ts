@@ -6,6 +6,13 @@ import { recurringFrequencyValidator } from "./schema"
 
 export const getPlannerContext = query({
   args: {
+    currentMonth: v.string(),
+    includeAccounts: v.optional(v.boolean()),
+    includeBudgets: v.optional(v.boolean()),
+    includeCategories: v.optional(v.boolean()),
+    includeRecentTransactions: v.optional(v.boolean()),
+    includeRecurringRules: v.optional(v.boolean()),
+    recentTransactionsLimit: v.optional(v.number()),
     selectedIds: v.optional(v.array(v.string())),
   },
   handler: (ctx, args) => AiActions.getPlannerContext(ctx, args),

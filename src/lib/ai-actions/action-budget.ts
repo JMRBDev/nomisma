@@ -120,6 +120,8 @@ function createBudgetDefinition(
     key,
     title,
     description,
+    domains: ["budget"],
+    contextFields: ["budgets", "categories"],
     generatedInputSchema: budgetGeneratedInputSchema,
     normalizedInputSchema: budgetNormalizedInputSchema,
     routeScopes: ["budgets"],

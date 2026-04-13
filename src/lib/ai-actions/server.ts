@@ -14,7 +14,9 @@ if (!convexUrl) {
 }
 
 const openRouterApiKey = process.env.OPENROUTER_API_KEY
-const openRouterModelId = process.env.OPENROUTER_MODEL ?? "openrouter/free"
+const openRouterPrimaryModelId = process.env.OPENROUTER_MODEL?.trim()
+const openRouterFallbackModelId =
+  process.env.OPENROUTER_FALLBACK_MODEL?.trim() || undefined
 
 function getCookieValue(request: Request, name: string) {
   const cookieHeader = request.headers.get("cookie")
@@ -59,7 +61,17 @@ function getOpenRouter() {
 }
 
 export function getAssistantModel() {
-  return getOpenRouter()(openRouterModelId)
+  if (!openRouterPrimaryModelId) {
+    throw new Error("OPENROUTER_MODEL must be set.")
+  }
+
+  return getOpenRouter()(openRouterPrimaryModelId)
+}
+
+export function getAssistantFallbackModel() {
+  return openRouterFallbackModelId
+    ? getOpenRouter()(openRouterFallbackModelId)
+    : null
 }
 
 export function resolveAiRequestContext(request: Request) {

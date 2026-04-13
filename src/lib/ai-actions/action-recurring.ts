@@ -105,6 +105,8 @@ function createRecurringDefinition(
     key,
     title,
     description,
+    domains: ["recurring", "transaction"],
+    contextFields: ["transactions"],
     generatedInputSchema: recurringGeneratedInputSchema,
     normalizedInputSchema: recurringNormalizedInputSchema,
     routeScopes,

@@ -107,6 +107,8 @@ export const accountCreateDefinition: AiActionDefinition = {
   key: "account.create",
   title: "Create account",
   description: "Create a new account.",
+  domains: ["account"],
+  contextFields: ["accounts"],
   generatedInputSchema: accountCreateGeneratedInputSchema,
   normalizedInputSchema: accountCreateNormalizedInputSchema,
   routeScopes: ["accounts", "overview"],

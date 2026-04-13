@@ -4,6 +4,18 @@ import type { ConvexHttpClient } from "convex/browser"
 
 export type Frequency = "daily" | "weekly" | "monthly" | "yearly"
 export type RouteScope = "overview" | "accounts" | "transactions" | "budgets" | "recurring"
+export type ActionDomain =
+  | "account"
+  | "budget"
+  | "category"
+  | "recurring"
+  | "transaction"
+export type PlannerContextField =
+  | "accounts"
+  | "budgets"
+  | "categories"
+  | "recurringRules"
+  | "transactions"
 export type PlannerCategory = {
   id: string
   name: string
@@ -74,6 +86,8 @@ export type AiActionDefinition = {
   description: string
   generatedInputSchema: z.ZodTypeAny
   normalizedInputSchema: z.ZodTypeAny
+  domains: Array<ActionDomain>
+  contextFields: Array<PlannerContextField>
   routeScopes?: Array<RouteScope>
   requiresTransactions?: boolean
   normalize: (context: PlannerContext, input: Record<string, unknown>) => NormalizeResult<Record<string, unknown>>

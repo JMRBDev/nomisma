@@ -52,11 +52,48 @@ export async function getBudgetsByUserId(ctx: MoneyCtx, userId: string) {
     .collect()
 }
 
+export async function getBudgetsByUserIdMonth(
+  ctx: MoneyCtx,
+  userId: string,
+  month: string
+) {
+  return ctx.db
+    .query("budgets")
+    .withIndex("by_userId_month", (q) =>
+      q.eq("userId", userId).eq("month", month)
+    )
+    .collect()
+}
+
 export async function getRecurringRulesByUserId(ctx: MoneyCtx, userId: string) {
   return ctx.db
     .query("recurringRules")
     .withIndex("by_userId", (q) => q.eq("userId", userId))
     .collect()
+}
+
+export async function getActiveRecurringRulesByUserId(
+  ctx: MoneyCtx,
+  userId: string
+) {
+  return ctx.db
+    .query("recurringRules")
+    .withIndex("by_userId_active", (q) =>
+      q.eq("userId", userId).eq("active", true)
+    )
+    .collect()
+}
+
+export async function getRecentTransactionsByUserId(
+  ctx: MoneyCtx,
+  userId: string,
+  limit: number
+) {
+  return ctx.db
+    .query("transactions")
+    .withIndex("by_userId_date", (q) => q.eq("userId", userId))
+    .order("desc")
+    .take(limit)
 }
 
 export async function getOwnedAccount(

@@ -77,6 +77,8 @@ export const categorizeDefinition: AiActionDefinition = {
   key: "transaction.categorize",
   title: "Categorize transactions",
   description: "Apply one category to one or more transactions.",
+  domains: ["transaction"],
+  contextFields: ["categories", "transactions"],
   generatedInputSchema: categorizeGeneratedInputSchema,
   normalizedInputSchema: categorizeNormalizedInputSchema,
   routeScopes: ["transactions"],
