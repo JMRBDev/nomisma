@@ -1,3 +1,4 @@
+import { accountArchiveDefinition } from "./action-account-archive"
 import { accountCreateDefinition } from "./action-account"
 import { budgetAdjustDefinition, budgetCreateDefinition } from "./action-budget"
 import {
@@ -29,6 +30,7 @@ import type {
 } from "./actions-types"
 
 export const chatToolTitleOverrides: Record<string, string> = {
+  AccountArchive: "Archive account",
   AccountCreate: "Create account",
   BudgetCreate: "Create budget",
   BudgetAdjust: "Adjust budget",
@@ -56,6 +58,7 @@ export const actionDefinitions: Array<AiActionDefinition> = [
   transactionAutocategorizeDefinition,
   categorizeDefinition,
   accountCreateDefinition,
+  accountArchiveDefinition,
   categoryCreateDefinition,
   categoryUpdateDefinition,
   budgetCreateDefinition,
@@ -78,7 +81,7 @@ export const routeFallbackDomains: Record<RouteScope, Array<ActionDomain>> = {
 }
 
 export const actionIntentPattern =
-  /\b(add|adjust|auto-?categorize|categorize|change|confirm|create|delete|edit|make|mark|move|pause|remove|rename|resume|save|transfer|update)\b/i
+  /\b(add|adjust|archive|auto-?categorize|categorize|change|close|confirm|create|delete|edit|make|mark|move|pause|remove|rename|reopen|restore|resume|save|transfer|update)\b/i
 
 export const informationalPattern =
   /^\s*(explain|how|list|show|summarize|tell me|what|when|where|which|who|why)\b/i

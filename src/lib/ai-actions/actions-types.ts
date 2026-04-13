@@ -240,6 +240,15 @@ export const accountCreateNormalizedInputSchema = z.object({
   color: z.string().min(1),
   icon: z.string().min(1),
 })
+export const accountArchiveGeneratedInputSchema = z.object({
+  accountName: s1.optional(),
+  archived: z.boolean().optional(),
+})
+export const accountArchiveNormalizedInputSchema = z.object({
+  accountId: z.string().min(1),
+  accountName: z.string().min(1),
+  archived: z.boolean(),
+})
 export const categoryCreateGeneratedInputSchema = z.object({
   name: s1.optional(),
 })

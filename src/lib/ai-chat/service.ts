@@ -309,6 +309,7 @@ function buildSystemPrompt(
     "If a prepare tool returns ready and the user is asking for the change to happen, call the matching apply tool immediately.",
     "Apply tools require user approval before they execute.",
     "Never invent IDs, categories, accounts, budgets, or transactions.",
+    "If no matching tool is available for the user's request, respond in plain natural language. Never output raw JSON, code blocks, or fake tool calls.",
     "If approval is denied, do not retry the same write automatically.",
     "Keep replies concise and specific to the user's finances.",
   ]
