@@ -29,7 +29,7 @@
     "@tanstack/react-router-ssr-query": "1.166.10",
     "@tanstack/react-start": "1.167.16",
     "@tanstack/router-plugin": "1.167.12",
-    "better-auth": "1.6.11",
+    "better-auth": "1.6.22",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -65,10 +65,17 @@
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "typescript": "^5.9.3",
-    "vite": "^7.3.1"
+    "vite": "^7.3.5"
   },
   "overrides": {
-    "shell-quote": "1.8.4",
-    "seroval": "1.5.3"
+    "shell-quote": "1.9.0",
+    "seroval": "1.5.3",
+    "fast-uri": "3.1.5",
+    "undici": "7.29.0",
+    "postcss": "8.5.18",
+    "js-yaml": "4.3.0",
+    "ip-address": "10.3.1",
+    "hono": "4.12.25",
+    "brace-expansion": "5.0.9"
   }
 }

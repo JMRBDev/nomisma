@@ -9,6 +9,7 @@ import * as React from "react"
 import { createServerFn } from "@tanstack/react-start"
 import { getCookie, getRequestHeaders } from "@tanstack/react-start/server"
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react"
+import type { AuthClient } from "@convex-dev/better-auth/react"
 import type { ConvexQueryClient } from "@convex-dev/react-query"
 import type { QueryClient } from "@tanstack/react-query"
 import { BrowserCalendarSync } from "@/components/browser-calendar-sync"
@@ -83,7 +84,7 @@ function RootComponent() {
   return (
     <ConvexBetterAuthProvider
       client={context.convexQueryClient.convexClient}
-      authClient={authClient}
+      authClient={authClient as unknown as AuthClient}
       initialToken={context.token}
     >
       <I18nProvider locale={context.locale}>
