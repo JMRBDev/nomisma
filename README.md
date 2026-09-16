@@ -13,16 +13,16 @@ Personal finance tracker — accounts, transactions, budgets, and recurring remi
 ## Scripts
 
 ```bash
-npm run dev
-npm run build
-npm run lint
-npm run typecheck
-npm run check
-npm run convex:dev
-npm run convex:codegen
+pnpm dev
+pnpm build
+pnpm lint
+pnpm typecheck
+pnpm check
+pnpm convex:dev
+pnpm convex:codegen
 ```
 
-`npm run check` is the baseline verification command.
+`pnpm check` is the baseline verification command.
 
 ## Environment
 
@@ -44,10 +44,10 @@ Do not edit generated files by hand.
 
 ## Local Setup
 
-1. Install dependencies with `npm install`.
+1. Install dependencies with `pnpm install --frozen-lockfile`.
 2. Copy `.env.example` to a local env file and fill in the required values.
-3. Start Convex with `npm run convex:dev`.
-4. Start the app with `npm run dev`.
+3. Start Convex with `pnpm convex:dev`.
+4. Start the app with `pnpm dev`.
 
 ## License
 
