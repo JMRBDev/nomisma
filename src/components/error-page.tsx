@@ -39,7 +39,9 @@ export function ErrorPage({ error, reset }: ErrorComponentProps) {
           </div>
           {import.meta.env.DEV && (
             <pre className="mt-4 max-w-lg overflow-auto rounded-lg bg-muted p-4 text-left text-xs text-destructive">
-              {error.stack ?? error.message}
+              {error instanceof Error
+                ? (error.stack ?? error.message)
+                : String(error)}
             </pre>
           )}
         </EmptyContent>
