@@ -2,6 +2,7 @@ allowBuilds:
   esbuild: true
   unrs-resolver: true
 overrides:
+  "nitro@3.0.260429-beta>h3": 2.0.1-rc.20
   shell-quote: 1.9.0
   fast-uri: 3.1.8
   undici: 7.29.0
